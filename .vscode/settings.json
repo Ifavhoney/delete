@@ -1,0 +1,6 @@
+{
+    "files.associations": {
+        "svgparser.h": "c",
+        "xmlwriter.h": "c"
+    }
+}
