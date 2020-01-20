@@ -109,6 +109,7 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
 
         if (strcmp((char *)cur_node->name, "g") == 0)
         {
+
             printf("i: %d node type: Element, name: %s\n", i, cur_node->name);
 
             insertGroup(tempList, cur_node, tempData, storeAttribute);
@@ -153,7 +154,6 @@ void insertGroup(SVGimage *tempList, xmlNode *cur_node, Attribute *tempData, cha
 
         char *getAttrValue = (char *)snapshot->content;
         char *getAttrName = (char *)attr->name;
-
         if (strcmp((char *)cur_node->name, "g") == 0)
         {
 
@@ -161,16 +161,44 @@ void insertGroup(SVGimage *tempList, xmlNode *cur_node, Attribute *tempData, cha
             tempData->name = getAttrName;
             tempData->value = getAttrValue;
             //Properties with 1 attributeName must be returned immediately
+
             if (attr->next == NULL & i == 1)
             {
-                printf("Returned!");
-                insertBack(tempList->groups, tempData);
+
+                Group *group = malloc(sizeof(Group));
+                insertBack(otherAttributes, attributeToString(tempData));
+                group->otherAttributes = otherAttributes;
+                //    printf("%s", xmlNextElementSibling(cur_node -> children) -> name);
+                long nodeCounter = xmlChildElementCount(cur_node);
+                xmlNode *temp_cur_node = cur_node->children;
+
+                while (nodeCounter != 0)
+                {
+                    nodeCounter--;
+                    const char *validateName = (const char *)xmlNextElementSibling(temp_cur_node)->name;
+                    if (strcmp(validateName, "circle"))
+                    {
+                        for (xmlAttr *val = temp_cur_node->properties; val != NULL; val = attr->next)
+                        {
+                            printf("??");
+                        }
+                    }
+                    else if (strcmp(validateName, "path"))
+                    {
+                    }
+                    else if (strcmp(validateName, "rect"))
+                    {
+                    }
+                    else
+                    {
+                        //oa
+                    }
+                }
                 continue;
             }
             //Proceed by storing the first Attribute
             if (i == 1)
             {
-
                 //MALLOC ERROR
                 storeAttribute = attributeToString(tempData);
 
@@ -179,7 +207,6 @@ void insertGroup(SVGimage *tempList, xmlNode *cur_node, Attribute *tempData, cha
             //Concatenate attributes two, three, four etc
             attribute = attributeToString(tempData);
             storeAttribute = strcat((char *)storeAttribute, (char *)attribute);
-            printf("HI!%s\n", storeAttribute);
         }
         //When completed insert Paths sequentially
 
@@ -242,8 +269,9 @@ void insertCircle(SVGimage *tempList, xmlNode *cur_node, Attribute *tempData, ch
             //Properties with 1 attributeName must be returned immediately
             if (attr->next == NULL & i == 1)
             {
+
                 printf("zaza");
-                //changed from tempCircles to tempList
+                //changed from tempCircles to tempList - consider changing tempData to type circles
                 insertBack(tempList->circles, tempData);
                 continue;
             }
