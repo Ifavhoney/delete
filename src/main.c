@@ -6,7 +6,7 @@
 //  Copyright © 2020 Jason Eddy. All rights reserved.
 //
 
-#include "SVGParser.h"
+#include "../include/SVGParser.h"
 
 int main(int argc, const char *argv[])
 {
