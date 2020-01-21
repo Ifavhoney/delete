@@ -20,6 +20,6 @@ int main(int argc, const char *argv[])
     {
         printf("FOUND");
     }
-
+    free(image);
     return 0;
 }
