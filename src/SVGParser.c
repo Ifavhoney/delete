@@ -145,6 +145,7 @@ Circle* createCircleObject(float cx, float cy, float r, char units[50], List *ot
         insertBack(circle -> otherAttributes, dummyValue);
     }
     else{
+<<<<<<< HEAD
         //After insert
         Attribute *cur_attribute = malloc(sizeof(Attribute));
         cur_attribute = (Attribute *) otherAttributes -> head ->  data;
@@ -156,6 +157,22 @@ Circle* createCircleObject(float cx, float cy, float r, char units[50], List *ot
     deleteAttribute(cur_attribute);
 
         
+=======
+        Attribute *realValue = malloc(sizeof(Attribute));
+        realValue = (Attribute *) otherAttributes;
+        //After insert
+        Attribute *ok = malloc(sizeof(realValue));
+        ok = (Attribute *) otherAttributes -> head ->  data;
+        
+        while(otherAttributes -> head != NULL){
+            ok = (Attribute *) otherAttributes -> head ->  data;
+            otherAttributes -> head = otherAttributes -> head -> next;
+            insertBack(circle -> otherAttributes, ok);
+
+            printf("%s", ok -> name);
+        }
+     
+>>>>>>> 3057f8faec844a07e17f05926de48d6b0a2f04b2
     }
     free(toBeInserted);
     //might cause a double free?
@@ -182,13 +199,19 @@ SVGimage *createSVGimage(char *fileName)
     //valgrind MISTAKE
          insertBack(otherAttributes, value);
     insertBack(otherAttributes, value1);
+<<<<<<< HEAD
     
+=======
+>>>>>>> 3057f8faec844a07e17f05926de48d6b0a2f04b2
 
     
     Circle *circle = NULL;
     circle = createCircleObject(1,2,3, "dsd", otherAttributes);
     Attribute *otherValue = NULL;
+<<<<<<< HEAD
 
+=======
+>>>>>>> 3057f8faec844a07e17f05926de48d6b0a2f04b2
        otherValue = malloc(sizeof(Attribute));
    // char *convertedCircle = circleToString(circle);
 
@@ -430,6 +453,3 @@ void insertPath(SVGimage *tempList, xmlNode *cur_node, Attribute *tempData, char
 {
 
 }
-
-
-
