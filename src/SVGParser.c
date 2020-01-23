@@ -57,6 +57,7 @@ Rectangle* createRectangleObject(float x, float y, float width, float height, ch
 }
 
 Path* createPathObject(char *data, List *otherAttributes){
+    
     if(data == NULL){
     strcpy(data, " ");
     }
@@ -93,15 +94,14 @@ class Circle{
 
 
 Attribute* createAttribute(char* name, char* value){
-   Attribute *attribute = malloc(sizeof(Attribute));
-   Attribute *this = attribute;
+   Attribute *this = malloc(sizeof(Attribute));
     this->name = calloc(strlen(name) + 4, sizeof(char * ));
      this->value = calloc(strlen(value) + 4, sizeof(char * ));
 
     //TO DO
     if (name == NULL || value == NULL ){
         char* str = calloc(4, sizeof(char));
-        strcpy(str, " ");
+        strcpy(str, "EMPTYY");
         strcpy(this -> name, str);
         strcpy(this -> value, str);
         free(str);
@@ -113,20 +113,20 @@ Attribute* createAttribute(char* name, char* value){
      strcpy(this -> name, name);
      strcpy(this -> value, value);
     
-
-      
-
      return this;
 
 }
 
+///Create circle doesnt break code when otherAttributes is null
 Circle* createCircleObject(float cx, float cy, float r, char units[50], List *otherAttributes){
     Circle *circle = malloc(sizeof(Circle));
 
     circle -> cx = cx;
     circle -> cy = cy;
     circle -> r = r;
-    List *dummy = initializeList(attributeToString, deleteAttribute, compareAttributes);
+    //added
+    Attribute *dummyValue = createAttribute(" ", " ");
+    
     circle -> otherAttributes = NULL;
     char* toBeInserted = calloc(strlen(units) + 4, sizeof(char *));
 
@@ -142,14 +142,27 @@ Circle* createCircleObject(float cx, float cy, float r, char units[50], List *ot
         strcpy(circle -> units, toBeInserted);
     }
     if(hasAttribute(otherAttributes) == 0 || otherAttributes == NULL){
-        insertBack(circle -> otherAttributes, dummy);
+        insertBack(circle -> otherAttributes, dummyValue);
     }
     else{
+        Attribute *realValue = malloc(sizeof(Attribute));
+        realValue = (Attribute *) otherAttributes;
+        //After insert
+        Attribute *ok = malloc(sizeof(realValue));
+        ok = (Attribute *) otherAttributes -> head ->  data;
         
-        insertBack(circle -> otherAttributes, otherAttributes);
+        while(otherAttributes -> head != NULL){
+            ok = (Attribute *) otherAttributes -> head ->  data;
+            otherAttributes -> head = otherAttributes -> head -> next;
+            insertBack(circle -> otherAttributes, ok);
+
+            printf("%s", ok -> name);
+        }
+     
     }
-    free(dummy);
     free(toBeInserted);
+    //might cause a double free?
+    free(dummyValue);
     return circle;
     
     
@@ -164,29 +177,24 @@ SVGimage *createSVGimage(char *fileName)
     xmlNode *root_element = NULL;
       SVGimage* list = initializeObjects();
 
-    /*
-     Attribute *attribute = malloc(sizeof(Attribute));
-   Attribute *value =  createAttribute(attribute, "hello", "why");
-
-    deleteAttribute(attribute);
-    
-    /*
-   
-    */
-    //Creating a ppoint in memory,
-    
-   Attribute *value =  createAttribute("hello", "why");
+    //Added 1 more insert & attribute
+   Attribute *value =  createAttribute("OKKK", "SEE");
+    Attribute *value1 =  createAttribute("hello", "why");
 
      List * otherAttributes= initializeList(attributeToString,deleteAttribute, compareAttributes);
     //valgrind MISTAKE
-          insertBack(otherAttributes, value);
-    printf("dsdsdd%s", otherAttributes -> head -> data);
+         insertBack(otherAttributes, value);
+    insertBack(otherAttributes, value1);
 
+    
     Circle *circle = NULL;
     circle = createCircleObject(1,2,3, "dsd", otherAttributes);
-  //  char *convertedCircle = circleToString(circle);
-    //Free circle
+    Attribute *otherValue = NULL;
+       otherValue = malloc(sizeof(Attribute));
+   // char *convertedCircle = circleToString(circle);
+
     free(circle);
+    
     freeList(otherAttributes);
     xmlFreeDoc(doc);
     xmlCleanupParser();
@@ -350,10 +358,17 @@ char *circleToString(void *data){
         strcpy(dummy, this -> units);
         strcat(value, dummy);
             printf("%s", value);
-    
-    if(hasAttribute(this -> otherAttributes) == 0){
-        printf("hii");
+            
+    if(this -> otherAttributes != NULL){
+        printf("i got here");
+        Attribute *otherValue = NULL;
+         otherValue = malloc(sizeof(Attribute));
+         
+        otherValue = (Attribute *)this -> otherAttributes -> head -> data;
+        printf("%s", otherValue -> name) ;
     }
+    
+    
     
     free(dummy);
     return value;
@@ -416,6 +431,3 @@ void insertPath(SVGimage *tempList, xmlNode *cur_node, Attribute *tempData, char
 {
 
 }
-
-
-
