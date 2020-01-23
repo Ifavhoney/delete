@@ -10,7 +10,7 @@ ifeq ($(UNAME), Darwin)
 	INC_PATH = /System/Volumes/Data/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk/usr/include/libxml2
 endif
 
-all: parser
+all: parser main
 
 parser: bin/libsvgparse.so
 
@@ -28,3 +28,6 @@ main: src/main.c
 
 clean: 
 	rm main -rf *.o ./bin/*.so
+
+memTest: all
+	valgrind --leak-check=full ./main

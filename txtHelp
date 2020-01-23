@@ -1,0 +1,8 @@
+ /*How to initialize every Circle
+        Circle *circle = NULL;
+        circle = createCircleObject(1,2,3, "ss", otherAttributes);
+    
+    //Free circle
+        free(circle);
+//Freeing an otherAttribute
+    freeList(otherAttributes);

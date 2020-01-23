@@ -1,83 +1,205 @@
 #include "SVGParser.h"
 #include <stdlib.h>
-//ATTRIBUTES DONT
-/** Function to create an SVG object based on the contents of an SVG file.
- *@pre File name cannot be an empty string or NULL.
-       File represented by this name must exist and must be readable.
- *@post Either:
-        A valid SVGimage has been created and its address was returned
-        or
-        An error occurred, and NULL was returned
- *@return the pointer to the new struct or NULL
- *@param fileName - a string containing the name of the SVG file
-**/
-int StartsWith(const char *a, const char *b);
-SVGimage *print_element_names(xmlNode *a_node, SVGimage **list);
-void insertPath(SVGimage *tempList, xmlNode *cur_node, Attribute *tempData, char *storeAttribute);
-void insertCircle(SVGimage *tempList, xmlNode *cur_node, Attribute *tempData, char *storeAttribute);
-void insertGroup(SVGimage *tempList, xmlNode *cur_node, Attribute *tempData, char *storeAttribute);
 
 char *printFunction(void *);
-char *deleteFunction(void *);
+void deleteFunction(void *);
 int compareFunction(const void *, const void *);
+int StartsWith(const char *a, const char *b);
+SVGimage* initializeObjects(void);
+SVGimage *print_element_names(xmlNode *a_node, SVGimage **list);
+void insertPath(SVGimage *tempList, xmlNode *cur_node, Attribute *tempData, char *storeAttribute);
+Path* createPathObject( char *data, List *otherAttribute);
+Circle* createCircleObject(float cx, float cy, float r, char units[50], List *otherAttributes);
+Rectangle* createRectangleObject(float x, float y, float width, float height, char units[50], List* otherAttributes);
+Group* createGroupObject(Rectangle *rectangle, Circle circles, Path paths, Group groups);
+int hasAttribute(List *otherAttributes);
+int hasAttribute(List *otherAttributes){
+if(otherAttributes->length == 0){
+        return 0;
+    }
+    else{
+        return 1;
+    }
+}
+Group* createGroupObject(Rectangle *rectangle, Circle circles, Path paths, Group groups){
+
+return NULL;
+}
+Rectangle* createRectangleObject(float x, float y, float width, float height, char units[50], List* otherAttributes){
+    Rectangle *rect = malloc(sizeof(Rectangle));
+    rect -> x = x;
+    rect -> y = y;
+    rect -> width = width;
+    rect -> height = height;
+    rect -> otherAttributes = NULL;
+    List *dummy = initializeList(attributeToString, deleteAttribute, compareAttributes);
+    char* toBeInserted = calloc(strlen(units) + 4, sizeof(char *));
+    
+     if(strlen(units) == 0){
+         strcpy(toBeInserted, " ");
+        strcpy(rect -> units, toBeInserted);
+    }
+    else{
+        strcpy(rect -> units, units);
+    }
+   
+     if(hasAttribute(otherAttributes) == 0 || otherAttributes == NULL){
+        insertBack(rect -> otherAttributes, dummy);
+    }
+    else{
+        
+        insertBack(rect -> otherAttributes, otherAttributes);
+    }
+    free(toBeInserted);
+    free(dummy);
+    return rect;
+
+}
+
+Path* createPathObject(char *data, List *otherAttributes){
+    if(data == NULL){
+    strcpy(data, " ");
+    }
+    Path *path = malloc(sizeof(Path));
+    path -> data = data;
+    path -> otherAttributes = NULL;
+
+    List *dummy = initializeList(attributeToString, deleteAttribute, compareAttributes);
+
+     if(hasAttribute(otherAttributes) == 0 || otherAttributes == NULL){
+        insertBack(path -> otherAttributes, dummy);
+    }
+    else{
+        
+        insertBack(path -> otherAttributes, otherAttributes);
+    }
+    free(dummy);
+    
+    return path;
+
+}
+
+/*
+class Circle{
+    double cx = 0;
+    LinkedList
+
+    Circle(float cx ...){
+        this->cx = cx
+        this->LinkedList = new LinkedList<A>
+    }
+}
+*/
+
+
+Attribute* createAttribute(char* name, char* value){
+   Attribute *attribute = malloc(sizeof(Attribute));
+   Attribute *this = attribute;
+    this->name = calloc(strlen(name) + 4, sizeof(char * ));
+     this->value = calloc(strlen(value) + 4, sizeof(char * ));
+
+    //TO DO
+    if (name == NULL || value == NULL ){
+        char* str = calloc(4, sizeof(char));
+        strcpy(str, " ");
+        strcpy(this -> name, str);
+        strcpy(this -> value, str);
+        free(str);
+        return this;
+    }
+    
+
+   
+     strcpy(this -> name, name);
+     strcpy(this -> value, value);
+    
+
+      
+
+     return this;
+
+}
+
+Circle* createCircleObject(float cx, float cy, float r, char units[50], List *otherAttributes){
+    Circle *circle = malloc(sizeof(Circle));
+
+    circle -> cx = cx;
+    circle -> cy = cy;
+    circle -> r = r;
+    List *dummy = initializeList(attributeToString, deleteAttribute, compareAttributes);
+    circle -> otherAttributes = NULL;
+    char* toBeInserted = calloc(strlen(units) + 4, sizeof(char *));
+
+
+    if(strlen(units) == 0 || units == NULL){
+        printf("empty");
+        strcpy(toBeInserted, " ");
+        strcpy(circle -> units, toBeInserted);
+    }
+    else{
+
+        strcpy(toBeInserted, units);
+        strcpy(circle -> units, toBeInserted);
+    }
+    if(hasAttribute(otherAttributes) == 0 || otherAttributes == NULL){
+        insertBack(circle -> otherAttributes, dummy);
+    }
+    else{
+        
+        insertBack(circle -> otherAttributes, otherAttributes);
+    }
+    free(dummy);
+    free(toBeInserted);
+    return circle;
+    
+    
+}
+
 
 SVGimage *createSVGimage(char *fileName)
 {
 
+   //Initialize Our tempData - we'll be reusing this memory, modifying the data
     xmlDoc *doc = NULL;
     xmlNode *root_element = NULL;
+      SVGimage* list = initializeObjects();
 
-    SVGimage *list = NULL;
-    List *genericList = initializeList(printFunction, deleteFunction, compareFunction);
-
-    //initialize
-    list = malloc(sizeof(SVGimage));
-    strcpy(list->namespace, (char *)XML_XML_NAMESPACE);
-    list->paths = genericList;
     /*
-    list->circles = genericList;
-    list->rectangles = genericList;
-    list->groups = genericList;
-*/
-    LIBXML_TEST_VERSION
+     Attribute *attribute = malloc(sizeof(Attribute));
+   Attribute *value =  createAttribute(attribute, "hello", "why");
 
-    /*parse the file and get the DOM */
-    doc = xmlReadFile(fileName, NULL, 0);
+    deleteAttribute(attribute);
+    
+    /*
+   
+    */
+    //Creating a ppoint in memory,
+    
+   Attribute *value =  createAttribute("hello", "why");
 
-    if (doc == NULL)
-    {
-        printf("error: could not parse file %s\n", fileName);
-    }
-    else
-    {
+     List * otherAttributes= initializeList(attributeToString,deleteAttribute, compareAttributes);
+    //valgrind MISTAKE
+          insertBack(otherAttributes, value);
+    printf("dsdsdd%s", otherAttributes -> head -> data);
 
-        /*Get the root element node */
-        root_element = xmlDocGetRootElement(doc);
-        //root_element = xmlDoc
-        print_element_names(root_element, &list);
-        printf("%s\n", list->namespace);
-
-        printf("%s", list -> paths ->head -> next -> data);
-
-
-     
-
-        //printf("\n%s", list->circles -> head -> data);
-    }
-
-    return NULL;
-
-    //parses & check if null
+    Circle *circle = NULL;
+    circle = createCircleObject(1,2,3, "dsd", otherAttributes);
+  //  char *convertedCircle = circleToString(circle);
+    //Free circle
+    free(circle);
+    freeList(otherAttributes);
+    xmlFreeDoc(doc);
+    xmlCleanupParser();
+    return list;
 
     //Returns the pointer of type SVGimage containing all data
 }
 
 SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
 {
-    Attribute *tempData = NULL;
+     Attribute *tempData = NULL;
     SVGimage *tempList = *list;
     char *storeAttribute = " ";
-    char *storePrevname = NULL;
     xmlNode *cur_node = NULL;
     int i = 0;
 
@@ -90,15 +212,19 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
             
            // printf("i: %d node type: Element, name: %s\n", i, cur_node->name);
             if(strcmp((char *)cur_node -> name, "title") == 0){
-                storePrevname = (char *)cur_node -> name;
-              //  printf("i:%d content: %s \n", i, cur_node -> content);
+
+            strcpy(tempList -> title, (char *) cur_node -> children -> content );
+
+            }
+             else if(strcmp((char *)cur_node -> name, "desc") == 0){
+           strcpy(tempList -> description,  (char *)cur_node -> children -> content );
 
             }
             
         }
            if (cur_node->content != NULL)
            {
-             //  printf("i:%d content: %s \n", i, cur_node -> content);
+             // =printf("i:%d content: %s \n", i, cur_node -> content);
              
                }
 
@@ -114,6 +240,7 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
 
         
        
+       /*
          if (strcmp((char *)cur_node->name, "g") == 0)
                      {
 
@@ -123,404 +250,160 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
                      }
          
          
-        
+       
+   */
+
+ 
         if (strcmp((char *)cur_node->name, "path") == 0)
         {
             insertPath(tempList, cur_node, tempData, storeAttribute);
         }
-   
-
         //increments by children
         print_element_names(cur_node->children, &tempList);
     }
 
     return tempList;
-}
-void insertGroup(SVGimage *tempList, xmlNode *cur_node, Attribute *tempData, char *storeAttribute){
-   //Initialize Our tempData - we'll be reusing this memory, modifying the data
-    tempData = malloc(sizeof(Attribute));
-    char *attribute;
-        
-        /*
-         1. Counter is for debugging purpose,
-         2. Verifying when the next value is null
-         3. Storing data
-         */
-        int i = 0;
-
-        List *otherAttributes = initializeList(printFunction, deleteFunction, compareFunction);
-        //Gets the attributes (e.g (atrbName) fill = (atrbContent)"#fff")
-        xmlAttr *attr;
-        for (attr = cur_node->properties; attr != NULL; attr = attr->next)
-        {
-            i++;
-
-            //Ask about this
-            xmlNode *snapshot = attr->children;
-
-            char *getAttrValue = (char *)snapshot->content;
-            char *getAttrName = (char *)attr->name;
-            Circle* circle = malloc(sizeof(Circle));
-            if (strcmp((char *)cur_node->name, "g") == 0)
-            {
-                
-                //Initialize Our tempData
-                tempData->name = getAttrName;
-                tempData->value = getAttrValue;
-                //Properties with 1 attributeName must be returned immediately
-                
-                if (attr->next == NULL & i == 1)
-                {
-                 
-                    Group *group = malloc(sizeof(Group));
-                    insertBack(otherAttributes, attributeToString(tempData));
-                    group -> otherAttributes = otherAttributes;
-                //    printf("%s", xmlNextElementSibling(cur_node -> children) -> name);
-                    long nodeCounter = xmlChildElementCount(cur_node);
-                    xmlNode *temp_cur_children = cur_node -> children;
-                    //Looks at the sibling of the current children
-                    xmlNode *temp_cur_node = xmlNextElementSibling(temp_cur_children);
-                    while(nodeCounter != 0){
-                        nodeCounter--;
-                   
-                        //Gets the name of the element
-                       const char *validateName = (const char *) temp_cur_node -> name;
-    
-                        /*
-                        //Ask about this
-                            xmlNode *snapshot = attr->children;
-
-                            char *getAttrValue = (char *)snapshot->content;
-                            char *getAttrName = (char *)attr->name;
-
-                         */
-                        
-                    
-                        if(strcmp(validateName, "circle") == 0)
-                        {
-                            //Getting the properties of those elements e.g cx = 5f
-                            xmlAttr *data = temp_cur_node -> properties ;
-                            for (xmlAttr *attr = data; attr != NULL; attr = attr -> next) {
-                                char *getCircAttrbName = (char *)attr->name;
-                                char *getCircAttrbValue = (char *)attr->children -> content;
-
-                                if(strcmp(getCircAttrbName, "cx") == 0){
-                                    circle -> cx = atof(getCircAttrbValue);
-                                    
-                                }
-                                else if(strcmp(getCircAttrbName, "cy") == 0){
-                                    circle -> cy = atof(getCircAttrbValue);
-
-                                }
-                                else if(strcmp(getCircAttrbName, "r") == 0){
-                                    circle -> r = atof(getCircAttrbValue);
-
-                                }
-                                else{
-                                    
-                            insertBack(otherAttributes, attributeToString(strcat(getCircAttrbName, getCircAttrbValue)));
-                                }
-                                
-                               
-                            }
-                            if (otherAttributes->length == 0)
-                                      {
-                                          insertBack(otherAttributes, " ");
-                                      }
-                                      if(strlen(circle -> units) <= 1){
-                                          strcpy(circle -> units, " ");
-                                      }
-                            
-                            printf("--%f, %f,  %f, %s, --\n", circle -> cx, circle -> cy, circle ->r, circle -> units);
-                             
-                            
-                             
-                        }
-                        else if(strcmp(validateName, "path") == 0){
-                            printf("Path");
-                            
-                         
-                        }
-                        else if(strcmp(validateName, "rect") == 0){
-                                                
-                        }
-                        else{
-                               //oa
-                            }
-                        temp_cur_node = xmlNextElementSibling(temp_cur_node -> next);
-                        
-                    
-                        
-                    }
-                    continue;
-                }
-                //Proceed by storing the first Attribute
-                if (i == 1)
-                {
-                    //MALLOC ERROR
-                    storeAttribute = attributeToString(tempData);
-
-                    continue;
-                }
-                //Concatenate attributes two, three, four etc
-                attribute = attributeToString(tempData);
-                storeAttribute = strcat((char *)storeAttribute, (char *)attribute);
-            }
-            //When completed insert Paths sequentially
-           
-            /*
-            if (attr->next == NULL && strcmp((char *)cur_node->name, "svg") != 0)
-            {
-                printf("End at %d\n", i);
-                i = 0;
-                printf("%s\n", storeAttribute);
-                Circle *circle = malloc(sizeof(circle));
-                char *pch = strtok(storeAttribute, ">");
-                //Consider putting it above
-                while (pch != NULL)
-                {
-                    pch = strtok(NULL, ">");
-                }
-           
-             //   insertBack(tempList->circles, circle);
-
-            }
-             */
-        }
-    free(tempData);
+       
 }
 
 
+SVGimage* initializeObjects(){
+    SVGimage *list = NULL;
+         list = malloc(sizeof(SVGimage));
+
+    list->paths = initializeList(pathToString, deletePath, comparePaths);
+    list->circles =initializeList(circleToString, deleteCircle, compareCircles);
+    list->rectangles = initializeList(rectangleToString, deleteRectangle, compareRectangles);;
+    list->groups = initializeList(groupToString, deleteGroup, compareGroups);
+        list->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
+
+
+    //initialize
+    return list;
+}
+
+
+
 //helper functions
-//helper functions
+
+void deleteSVGimage(SVGimage *img){
+  freeList(img -> paths);
+    freeList(img -> circles);
+    freeList(img -> rectangles);
+    freeList(img -> groups);
+    freeList(img -> otherAttributes);
+    free(img);
+}
 
 
-
-//Consider optimizing, repetition
-void insertCircle(SVGimage *tempList, xmlNode *cur_node, Attribute *tempData, char *storeAttribute)
-{
-    //Initialize Our tempData - we'll be reusing this memory, modifying the data
-    tempData = malloc(sizeof(Attribute));
-    char *attribute;
+void deleteAttribute(void *data){
     
-    /*
-     1. Counter is for debugging purpose,
-     2. Verifying when the next value is null
-     3. Storing data
-     */
-    int i = 0;
-
-    List *otherAttributes = initializeList(printFunction, deleteFunction, compareFunction);
-    printf("%d", otherAttributes->length);
-    //Gets the attributes (e.g (atrbName) fill = (atrbContent)"#fff")
-    xmlAttr *attr;
-    for (attr = cur_node->properties; attr != NULL; attr = attr->next)
-    {
-        i++;
-
-        //Ask about this
-        xmlNode *snapshot = attr->children;
-
-        char *getAttrValue = (char *)snapshot->content;
-        char *getAttrName = (char *)attr->name;
-
-        if (strcmp((char *)cur_node->name, "circle") == 0)
-        {
-            //Initialize Our tempData
-            tempData->name = getAttrName;
-            tempData->value = getAttrValue;
-            //Properties with 1 attributeName must be returned immediately
-            if (attr->next == NULL & i == 1)
-            {
-                
-                printf("zaza");
-                //changed from tempCircles to tempList - consider changing tempData to type circles
-                insertBack(tempList->circles, tempData);
-                continue;
-            }
-            //Proceed by storing the first Attribute
-            if (i == 1)
-            {
-                //MALLOC ERROR
-                storeAttribute = attributeToString(tempData);
-
-                continue;
-            }
-            //Concatenate attributes two, three, four etc
-            attribute = attributeToString(tempData);
-            storeAttribute = strcat((char *)storeAttribute, (char *)attribute);
-        }
-        //When completed insert Paths sequentially
-
-        if (attr->next == NULL && strcmp((char *)cur_node->name, "svg") != 0)
-        {
-
-            printf("End at %d\n", i);
-            i = 0;
-            printf("%s\n", storeAttribute);
-            Circle *circle = malloc(sizeof(circle));
-            char *pch = strtok(storeAttribute, ">");
-            //Consider putting it above
-            while (pch != NULL)
-            {
-                if (strstr("cx", pch) == 0)
-                {
-
-                    if (StartsWith(pch, "cx"))
-                    {
-                        pch++;
-                        pch++;
-                        pch++;
-
-                        circle->cx = atof((char *)pch);
-                    }
-                    else if (StartsWith(pch, "cy"))
-                    {
-                        pch++;
-                        pch++;
-                        pch++;
-
-                        circle->cy = atof((char *)pch);
-                    }
-                    else if (StartsWith(pch, "r"))
-                    {
-                        pch++;
-                        pch++;
-
-                        circle->r = atof((char *)pch);
-                    }
-                    else if (StartsWith(pch, "units"))
-                                     {
-                                         pch++;
-                                         pch++;
-                                         pch++;
-                                         pch++;
-                                         pch++;
-                                         pch++;
-                                         strcpy(circle -> units, pch);
-                                     }
-                    else
-                    {
-                       insertBack(otherAttributes, pch);
-                        //other attribute
-                    }
-                    
-
-                    //RX, RY, R=
-                }
-
-                pch = strtok(NULL, ">");
-            }
-            
-            if (otherAttributes->length == 0)
-            {
-                insertBack(otherAttributes, " ");
-            }
-            if(strlen(circle -> units) <= 1){
-                strcpy(circle -> units, " ");
-            }
-            circle->otherAttributes = otherAttributes;
-
-            printf("cx: %f, cy: %f, r: %f, oa: %s ", circle->cx, circle->cy, circle->r, circle->otherAttributes->head->data);
-            insertBack(tempList->circles, circle);
-            /*
-
-*/
-        }
+    if(data == NULL){
+        return;
     }
-    printf("\n\ncomplete?");
-    free(tempData);
-
+    Attribute *this = data;
+     free(this -> name);
+     free(this -> value);
+     free(this);
 }
-Path* insertOnePath(xmlAttr *attrs, char * storeAttribute){
-    Path *path = malloc(sizeof(path));
-
-    List *otherAttributes = initializeList(printFunction, deleteFunction, compareFunction);
-    char *  attribute = NULL;
-    //Initialize Our tempData - we'll be reusing this memory, modifying the data
-  Attribute  *tempData = malloc(sizeof(Attribute));
+char *attributeToString(void *data){
     
-    xmlAttr *attr;
-    int i = 0;
-    for (attr = attrs; attr != NULL; attr = attr->next)
-       {
-           i++;
+    Attribute *newData = (Attribute *)data;
+    char *newBuffer = (char *)calloc(2,sizeof(Attribute) + 10);
+    strcat(newBuffer, newData->name);
+    strcat(newBuffer, "=");
+    strcat(newBuffer, newData->value);
+    strcat(newBuffer, "\0");
+    //ATTRIBUTE HAS A LIST???
 
-           //Ask about this
-           xmlNode *snapshot = attr->children;
+    return newBuffer;
+    
+}
+int compareAttributes(const void *first, const void *second){
+    return 0;
+}
+void deleteCircle(void *data){
+    if(data == NULL){
+        return;
+    }
+  Circle *this = data;
+  freeList(this -> otherAttributes);
+  free(this);
+}
+char *circleToString(void *data){
 
-           char *getAttrValue = (char *)snapshot->content;
-           char *getAttrName = (char *)attr->name;
+    if(data == NULL){
+        return " ";
+    }
+    
+        Circle *this = data;
+        char *value = calloc(6, sizeof(data) *  2);
+    char *dummy = malloc(sizeof(data));
+    sprintf(dummy, "%.2f",  this -> cx);
+    
+        strcat(value, dummy);
+    sprintf(dummy, "%.2f",  this -> cy);
+        strcat(value, dummy);
+    
+        sprintf(dummy, "%.2f",  this -> r);
+        strcat(value, dummy);
+        strcpy(dummy, this -> units);
+        strcat(value, dummy);
+            printf("%s", value);
+    
+    if(hasAttribute(this -> otherAttributes) == 0){
+        printf("hii");
+    }
+    
+    free(dummy);
+    return value;
+}
+int compareCircles(const void *first, const void *second){
 
-           if (strcmp((char *)attr -> name, "path") == 0)
-           {
-               //Initialize Our tempData
-               tempData->name = getAttrName;
-               tempData->value = getAttrValue;
-               //Properties with 1 attributeName must be returned immediately
-               if (attr->next == NULL & i == 1)
-               {
-                   printf("!!zaza!!");
-                   
-                   //insertBack(tempList->paths, tempData);
-                   continue;
-               }
-               //Proceed by storing the first Attribute
-               if (i == 1)
-               {
-                   //MALLOC ERROR
-                   storeAttribute = attributeToString(tempData);
+    return 0;
+}
 
-                   continue;
-               }
-               //Concatenate attributes two, three, four etc
-          attribute = attributeToString(tempData);
-           
-               storeAttribute = strcat(storeAttribute, attribute
-               );
+void deletePath(void *data){
+    if(data == NULL){
+        return;
+    }
+    Path *this = data;
+    free(this -> data);
+    freeList(this -> otherAttributes);
+    free(this);
+}
+char *pathToString(void *data){
+    
+    return " ";
+}
+int comparePaths(const void *first, const void *second){return 0;}
 
-              
-           }
-           //When completed insert Paths sequentially
-           if (attr->next == NULL && strcmp((char *)attr->name, "svg") != 0)
-           {
-               
+void deleteRectangle(void *data){
+    if(data == NULL){
+        return;
+    }
+  Rectangle *this = data;
+  freeList(this -> otherAttributes);
+  free(this);
+}
+char *rectangleToString(void *data){return " ";}
+int compareRectangles(const void *first, const void *second){return 0;}
 
-               //Seperate attributes
-               char *pch = strtok(storeAttribute, ">");
-               while (pch != NULL)
-               {
-                   if (!StartsWith(pch, "d"))
-                   {
-                       insertBack(otherAttributes, pch);
-                   }
-                   else
-                   {
-                       path->data = pch;
-                   }
+void deleteGroup(void *data){
+     if(data == NULL){
+        return;
+    }
+    Group *this = data;
 
-                   pch = strtok(NULL, ">");
-               }
-               if (otherAttributes->length == 0)
-               {
-                   insertBack(otherAttributes, " ");
-               }
-               i = 0;
-               path->otherAttributes = otherAttributes;
-               printf("End at %d\n", i);
-               
-           }
-       }
-    return path;
+    //TO DO
 
 }
-//Need to implenet other atributes (e.g fill)
-void insertPath(SVGimage *tempList, xmlNode *cur_node, Attribute *tempData, char *storeAttribute)
-{
-   Path *path = insertOnePath(cur_node -> properties, storeAttribute);
-    insertBack(tempList -> paths,path );
-    free(tempData);
+char *groupToString(void *data){
+    return " ";
 }
+int compareGroups(const void *first, const void *second){
+    return 0;
+};
 
 int StartsWith(const char *a, const char *b)
 {
@@ -528,30 +411,11 @@ int StartsWith(const char *a, const char *b)
         return 1;
     return 0;
 }
-
-char *attributeToString(void *data)
+//Need to implenet other atributes (e.g fill)
+void insertPath(SVGimage *tempList, xmlNode *cur_node, Attribute *tempData, char *storeAttribute)
 {
 
-    Attribute *newData = (Attribute *)data;
-    char *newBuffer = (char *)malloc(sizeof(data));
-    strcat(newBuffer, newData->name);
-    strcat(newBuffer, "=");
-
-    strcat(newBuffer, newData->value);
-    strcat(newBuffer, ">");
-
-    return newBuffer;
 }
 
-int compareFunction(const void *fun1, const void *fun2)
-{
-    return 0;
-}
-char *printFunction(void *fun)
-{
-    return " ";
-}
-char *deleteFunction(void *fun1)
-{
-    return "";
-}
+
+

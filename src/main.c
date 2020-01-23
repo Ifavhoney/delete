@@ -11,15 +11,17 @@
 int main(int argc, const char *argv[])
 {
     // insert code here...
-    SVGimage *image = createSVGimage("Emoji_poo.svg");
+    SVGimage *image = NULL;
+   image = createSVGimage("Emoji_poo.svg");
     if (image == NULL)
     {
         printf("NULL!!");
     }
     else
     {
-        printf("FOUND");
+
     }
-    free(image);
+            deleteSVGimage(image);    
+
     return 0;
 }
