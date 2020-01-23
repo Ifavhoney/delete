@@ -6,3 +6,12 @@
         free(circle);
 //Freeing an otherAttribute
     freeList(otherAttributes);
+
+//Make sure to free attributes outside
+    deleteAttribute(value);
+
+   Attribute *otherValue = NULL;
+    otherValue = malloc(sizeof(Attribute));
+    
+    otherValue = (Attribute *) otherAttributes -> head -> data;
+    printf("%s", otherValue -> name);
