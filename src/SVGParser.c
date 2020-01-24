@@ -237,6 +237,7 @@ void insertCircle(SVGimage *tempList, xmlNode *cur_node){
     xmlAttr *attr;
     for (attr = cur_node->properties; attr != NULL; attr = attr->next)
     {
+         
                 i++;
        // printf("%d\n",i);
         xmlNode *snapshot = attr->children;
@@ -244,11 +245,10 @@ void insertCircle(SVGimage *tempList, xmlNode *cur_node){
         char *getAttrName = (char *)attr->name;
         if(getAttrValue != NULL && getAttrName != NULL  ){
             
-         //seperate them
-        Attribute *attribute = createAttribute(getAttrName, getAttrValue);
-        char *parsedAttribute = attributeToString(attribute);
+         //seperate them        
         float cx, cy, r;
-        char *units = calloc(1, strlen(getAttrValue) + 1);         
+        char *units = NULL; 
+      
         if(strcmp("cx", getAttrName) == 0 ){
             cx = atof(getAttrValue);
         }
@@ -262,16 +262,42 @@ void insertCircle(SVGimage *tempList, xmlNode *cur_node){
 
             }
           else if(strcmp("units", getAttrName) == 0 ){
+            units = calloc(1, strlen(getAttrValue) + 1);   
             strcpy(units, getAttrValue);
         }
-        else{
-            
+        
+        if(attr->next == NULL){
+            //check for null
+        if(units == NULL){
+         units = calloc(1, strlen(getAttrValue) + 1);   
+        strcpy(units, " ");
         }
-       // insertBack(tempList -> circle, circle);
-        free(units);
+        
+        Circle *circle = createCircleObject(cx, cy, r, units);
+        xmlAttr* _attr;
 
-         free(parsedAttribute);
-        deleteAttribute(attribute);
+    for (_attr = cur_node->properties; _attr != NULL; _attr = _attr->next){
+            xmlNode *snapshot = _attr->children;
+            char *getAttrValue = (char *)snapshot->content;
+            char *getAttrName = (char *)_attr->name;
+
+
+                if(strcmp("cx", getAttrName) != 0 && strcmp("cy", getAttrName) != 0 && strcmp("r", getAttrName) != 0 && strcmp("units", getAttrName) != 0
+                ){
+                    Attribute *attribute = createAttribute(getAttrName, getAttrValue);
+                    insertBack(circle -> otherAttributes, attribute);
+                }
+    
+    }
+        printf("ends here");
+        free(units);
+        insertBack(tempList -> circles, circle);
+        
+         
+
+        }
+
+       // insertBack(tempList -> circle, circle);
     }
 
        
