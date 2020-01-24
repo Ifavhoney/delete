@@ -15,3 +15,6 @@
     
     otherValue = (Attribute *) otherAttributes -> head -> data;
     printf("%s", otherValue -> name);
+
+    //can rely on deleteCircle, deleteAttribute
+    //Never call deleteAttribute when you have freeList and if theres a gap of insertback memory leak will occure
