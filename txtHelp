@@ -21,12 +21,16 @@
             printf("%s", attribute -> value);
 
 //Units
-        char array[] = "25cm";
-            // Character end pointer
-               char* unit;
-             
-               // f1 variable to store float value
-               float ourValue = strtof(array, &unit);
+        temp = calloc(1, strlen(getAttrValue) + 1);
+             strcpy(temp, getAttrValue);
+             char *end;
+             width = strtof(temp, &end);
+             if(units == NULL){
+             units = calloc(1, strlen(getAttrValue) + 1);
+             strcpy(units, end);
+                printf("%s", units);
+             }
+             free(temp);
                 
             
 
@@ -34,6 +38,11 @@
             printf("%.2f\n%s\n", ourValue, unit);
             
     
+
+            
+        
+           
+        
 
     //can rely on deleteCircle, deleteAttribute
     //Never call deleteAttribute when you have freeList and if theres a gap of insertback memory leak will occure

@@ -12,7 +12,7 @@ int main(int argc, const char *argv[])
 {
     // insert code here...
     SVGimage *image = NULL;
-   image = createSVGimage("quad01.svg");
+   image = createSVGimage("rec_with_units.svg");
     if (image == NULL)
     {
         printf("NULL!!");
