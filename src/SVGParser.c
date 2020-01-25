@@ -1,6 +1,14 @@
 #include "SVGParser.h"
 #include <stdlib.h>
 
+typedef struct
+{
+    float value;
+    char * unit;
+
+} ParsedValue;
+ParsedValue *createValue(char *data);
+void deleteValue(ParsedValue *data);
 char *printFunction(void *);
 void deleteFunction(void *);
 int compareFunction(const void *, const void *);
@@ -8,15 +16,39 @@ int StartsWith(const char *a, const char *b);
 SVGimage* initializeObjects(void);
 SVGimage *print_element_names(xmlNode *a_node, SVGimage **list);
 Path* createPathObject(char *data);
+
 void insertPath(SVGimage *tempList, xmlNode *cur_node);
 void insertRect(SVGimage *tempList, xmlNode *cur_node);
 void insertCircle(SVGimage *tempList, xmlNode *cur_node);
-
+void insertNSUnits(SVGimage *tempList, xmlNode *cur_node);
 Attribute* createAttribute(char* name, char* value);
 Circle* createCircleObject(float cx, float cy, float r, char units[50]);
 Rectangle* createRectangleObject(float x, float y, float width, float height, char units[50]);
 Group* createGroupObject(Rectangle *rectangle, Circle circles, Path paths, Group groups);
 int hasAttribute(List *otherAttributes);
+
+ParsedValue *createValue(char *data){
+    ParsedValue *value = malloc(sizeof(ParsedValue));
+    char *temp;
+    char *end;
+
+        temp = calloc(1, strlen(data) + 1);
+                strcpy(temp, data);
+                value -> value = strtof(temp, &end);
+                value -> unit = calloc(1, strlen(data) + 1);
+                strcpy(value -> unit, end);
+                   printf("%s", value -> unit);
+    
+                free(temp);
+    return value;
+    
+}
+
+void deleteValue(ParsedValue *data){
+    free(data ->unit);
+    free(data);
+}
+
 int hasAttribute(List *otherAttributes){
 if(otherAttributes->length == 0){
         return 0;
@@ -85,10 +117,11 @@ SVGimage *createSVGimage(char *fileName)
         root_element = xmlDocGetRootElement(doc);
         //root_element = xmlDoc
         print_element_names(root_element, &list);
-        Rectangle* rect = (Rectangle *) list -> rectangles -> head -> next -> data;    
-            Attribute *attribute = rect -> otherAttributes -> head -> next -> data;
-            printf("%s", attribute -> value);
+             Rectangle* rect = (Rectangle *) list -> rectangles -> head -> data;
+            Attribute *attribute = rect -> otherAttributes -> head -> data;
+         //  printf("%s", attribute -> value);
         
+            
             
                     
         //printf("\n %s \n", path -> otherAttributes -> head );
@@ -112,23 +145,26 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
     //Iterates through xmlNode given by root_element, as you can see by its name
     for (cur_node = a_node; cur_node != NULL; cur_node = cur_node->next)
     {
+        
 
         char *parent = (char *)cur_node -> parent ->name;
 
         i++;
         if (cur_node->type == XML_ELEMENT_NODE)
         {
+            
            // printf("i: %d node type: Element, name: %s\n", i, cur_node->name);
             if(strcmp((char *)cur_node -> name, "title") == 0){
-
+            
             strcpy(tempList -> title, (char *) cur_node -> children -> content );
-
             }
              else if(strcmp((char *)cur_node -> name, "desc") == 0){
            strcpy(tempList -> description,  (char *)cur_node -> children -> content );
             }
-            
         }
+        if(strcmp((char *)cur_node->name, "svg") == 0){
+        }
+
 
            if (cur_node->content != NULL)
            {
@@ -202,8 +238,9 @@ void insertRect(SVGimage *tempList, xmlNode *cur_node){
  int i = 0;
     //printf("%s");
     xmlAttr *attr;
-    float x, y, width, height;
-    char *units = NULL;
+    float x = 0, y = 0, width = 0, height = 0;
+    ParsedValue *parsedValue = NULL;
+
     for (attr = cur_node->properties; attr != NULL; attr = attr->next)
       {
            i++;
@@ -216,28 +253,53 @@ void insertRect(SVGimage *tempList, xmlNode *cur_node){
             
          //seperate them
         if(strcmp("x", getAttrName) == 0 ){
-            x = atof(getAttrValue);
+          
+            if(parsedValue == NULL){
+            parsedValue = createValue(getAttrValue);
+            x = parsedValue -> value;
+            }
+            else{
+                x = atof(getAttrValue);
+            }
+
         }
          if(strcmp("y", getAttrName) == 0 ){
-            y = atof(getAttrValue);
+            if(parsedValue == NULL){
+             parsedValue = createValue(getAttrValue);
+            y = parsedValue -> value;
+            }
+            else{
+               y = atof(getAttrValue);
+            }
         }
         if(strcmp("width", getAttrName) == 0 ){
+            
+             if(parsedValue == NULL){
+             parsedValue = createValue(getAttrValue);
+            width = parsedValue -> value;
+            }
+            else{
             width = atof(getAttrValue);
+
+            }
         }
         if(strcmp("height", getAttrName) == 0 ){
+            if(parsedValue == NULL){
+             parsedValue = createValue(getAttrValue);
+            height = parsedValue -> value;
+            }
+            else{
             height = atof(getAttrValue);
+
+            }
         }
          if(attr->next == NULL){
             //check for null
-        if(units == NULL){
-         units = calloc(1, strlen(getAttrValue) + 1);
-        strcpy(units, "");
-        }
+    
         
-
-        Rectangle *rectangle = createRectangleObject(x, y, width, height, units);
-             
-             
+        Rectangle *rectangle = createRectangleObject(x, y, width, height, parsedValue -> unit);
+                    deleteValue(parsedValue);
+        printf("\n%s", rectangle -> units);
         xmlAttr* _attr;
 
     for (_attr = cur_node->properties; _attr != NULL; _attr = _attr->next){
@@ -255,10 +317,7 @@ void insertRect(SVGimage *tempList, xmlNode *cur_node){
     
     }
             
-            insertBack(tempList -> rectangles, rectangle);
-
-        free(units);
-        
+            insertBack(tempList -> rectangles, rectangle);        
          
 
         }
@@ -320,9 +379,9 @@ void insertCircle(SVGimage *tempList, xmlNode *cur_node){
     int i = 0;
     //printf("%s");
     xmlAttr *attr;
-    float cx = 0, cy, r;
-    char *units = NULL;
-    
+    float cx = 0, cy = 0, r = 0;
+    ParsedValue *parsedValue = NULL;
+
     for (attr = cur_node->properties; attr != NULL; attr = attr->next)
     {
          
