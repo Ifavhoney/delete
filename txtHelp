@@ -15,6 +15,25 @@
     
     otherValue = (Attribute *) otherAttributes -> head -> data;
     printf("%s", otherValue -> name);
+    //Turning paths into readable data
+        Path* path = (Path *) list -> paths -> head -> next -> data;    
+            Attribute *attribute = path -> otherAttributes -> head -> data;
+            printf("%s", attribute -> value);
+
+//Units
+        char array[] = "25cm";
+            // Character end pointer
+               char* unit;
+             
+               // f1 variable to store float value
+               float ourValue = strtof(array, &unit);
+                
+            
+
+            // Printing parsed float values of f1 and f2
+            printf("%.2f\n%s\n", ourValue, unit);
+            
+    
 
     //can rely on deleteCircle, deleteAttribute
     //Never call deleteAttribute when you have freeList and if theres a gap of insertback memory leak will occure
