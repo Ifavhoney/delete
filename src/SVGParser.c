@@ -85,7 +85,12 @@ SVGimage *createSVGimage(char *fileName)
         root_element = xmlDocGetRootElement(doc);
         //root_element = xmlDoc
         print_element_names(root_element, &list);
-       
+        Rectangle* rect = (Rectangle *) list -> rectangles -> head -> next -> data;    
+            Attribute *attribute = rect -> otherAttributes -> head -> next -> data;
+            printf("%s", attribute -> value);
+        
+            
+                    
         //printf("\n %s \n", path -> otherAttributes -> head );
          }
 
