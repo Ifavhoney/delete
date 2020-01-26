@@ -26,7 +26,7 @@ void insertNSUnits(SVGimage *tempList, xmlNode *cur_node);
 Attribute* createAttribute(char* name, char* value);
 Circle* createCircleObject(float cx, float cy, float r, char units[50]);
 Rectangle* createRectangleObject(float x, float y, float width, float height, char units[50]);
-Group* createGroupObject();
+Group* createGroupObject(void);
 int hasAttribute(List *otherAttributes);
 
 int hasAttribute(List *otherAttributes){
@@ -59,15 +59,10 @@ SVGimage *createSVGimage(char *fileName)
         //root_element = xmlDoc
         print_element_names(root_element, &list);
 
-             Group *group = list -> groups -> head -> next -> data;
-           Circle *circle = group -> circles -> head -> next -> data;
-           printf("\n%f", circle ->cx);
-
-        
-            
-           
-
-        
+             Group *group = list -> groups -> head -> data;
+           Circle *circle = group -> circles -> head -> data;
+            Circle *circle1 = list -> circles -> head -> data;
+            printf("\n%f|%f\n",circle -> cx, circle1 -> cx);
         /*
         Circle *circle = createCircleObject(1,2,3,"cm");
         Attribute *attribute = createAttribute("HELLO", "JHSDSD");
@@ -238,7 +233,6 @@ void insertGroup(void *data, xmlNode *cur_node, int version){
           
                 }
                       if(nodeCounter == 0){
-                          printf("\n%d", getLength( group -> rectangles));
                           if(version == 0){
                               SVGimage *list = data;
                             insertBack( list -> groups, group);
@@ -660,7 +654,6 @@ Circle* createCircleObject(float cx, float cy, float r, char units[50]){
 
 
     if(strlen(units) == 0 || units == NULL){
-        printf("empty");
         strcpy(toBeInserted, " ");
         strcpy(circle -> units, toBeInserted);
     }
