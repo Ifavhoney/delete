@@ -18,7 +18,7 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list);
 Path* createPathObject(char *data);
 
 void insertPath(SVGimage *tempList, xmlNode *cur_node);
-void insertRect(SVGimage *tempList, xmlNode *cur_node);
+void insertRect(void *data, xmlNode *cur_node, int version);
 void insertCircle(SVGimage *tempList, xmlNode *cur_node);
 void insertGroup(SVGimage *tempList, xmlNode *cur_node);
 
@@ -116,7 +116,23 @@ SVGimage *createSVGimage(char *fileName)
         root_element = xmlDocGetRootElement(doc);
         //root_element = xmlDoc
         print_element_names(root_element, &list);
-        
+            
+            /*
+
+             Group *group = list -> groups -> head -> data;
+             Rectangle *rect = group -> rectangles -> head -> data;
+             
+             printf("\n%f", rect ->x);
+
+             */
+           
+
+            /*
+            Group *group = list -> groups -> head -> data;
+            Rectangle *rect = group -> rectangles -> head -> data;
+            
+            printf("\n%f", rect ->x);
+*/
         
         /*
         Circle *circle = createCircleObject(1,2,3,"cm");
@@ -200,7 +216,7 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
         }
             if(strcmp((char *)cur_node -> name, "rect") == 0){
 
-                insertRect(tempList, cur_node);
+                insertRect(tempList, cur_node, 0);
             }
               if(strcmp((char *)cur_node -> name, "g") == 0){
 
@@ -239,35 +255,67 @@ void insertGroup(SVGimage *tempList, xmlNode *cur_node){
     ParsedValue *parsedValue = NULL;
       Group *group;
     if(i == 0){
-        printf("%d", i);
-        
+        group = createGroupObject();
                }
-       for (attr = cur_node->properties; attr != NULL; attr = attr->next)
-      {
-         
-          i++;
-        
+     
+      attr =  cur_node->properties;
         // printf("%d\n",i);
          xmlNode *snapshot = attr->children;
          char *getAttrValue = (char *)snapshot->content;
          char *getAttrName = (char *)attr->name;
                   if(getAttrValue != NULL && getAttrName != NULL  ){
+                    
+                    long nodeCounter = xmlChildElementCount(cur_node);
+                   xmlNode *temp_cur_children = cur_node -> children;
+                      xmlNode * temp_cur_node;
+                                     //Looks at the sibling of the current children
+                   printf("\n%ld\n", nodeCounter);
+                      const char *validateName;
 
-                  if(attr -> next == NULL){
-                      printf("\n%d", i);
-                      printf("\n %s",getAttrName);
+                    while(nodeCounter != 0){
+                    temp_cur_node = xmlNextElementSibling(temp_cur_children);
+                        if(temp_cur_node != NULL){
+                            validateName = (const char *) temp_cur_node -> name;
+                           // printf("%s\n", validateName);
+                            if(strcmp(validateName, "rect") == 0){
+                               
+                                insertRect(group, temp_cur_node, 1);
+                                //we'll be storing the other attributes here as well;xxw
+                            }
+                            
+                            if(strcmp(validateName, "circle") == 0){
+                                
+                            }
+                            if(strcmp(validateName, "path") == 0){
+                                
+                            }
+                            if(strcmp(validateName, "g") == 0){
+                                                           
+                                                       }
+                            
+                            
+                        }
+                    
+                        temp_cur_children = temp_cur_children -> next -> next;
+                    
+                        nodeCounter--;
+          
+                }
+                      if(nodeCounter == 0){
+                        insertBack(tempList -> groups, group);
 
-                  
-                      
-                      
-                  }
+                        // deleteGroup(group);
+                      }
 
                 }
 
-      }
-}
+               
 
-void insertRect(SVGimage *tempList, xmlNode *cur_node){
+
+      
+}
+///Version is so that we could reuse this with different types of list
+void insertRect(void* data, xmlNode *cur_node, int version){
  int i = 0;
     //printf("%s");
     xmlAttr *attr;
@@ -349,8 +397,15 @@ void insertRect(SVGimage *tempList, xmlNode *cur_node){
                      }
     
     }
-            
-            insertBack(tempList -> rectangles, rectangle);
+             if(version == 0){
+                 SVGimage *list = data;
+                 insertBack(list -> rectangles, rectangle);
+             }
+             if(version == 1){
+                 Group *list = data;
+
+                  insertBack(list -> rectangles, rectangle);
+             }
          
 
         }
