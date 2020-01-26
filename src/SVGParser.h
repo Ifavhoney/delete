@@ -38,6 +38,16 @@ if(otherAttributes->length == 0){
     }
 }
 
+char* SVGimageToString(SVGimage* img){
+        xmlDoc *doc = NULL;
+
+     doc = xmlReadFile(fileName, NULL, 0);
+      if(doc == NULL){
+            printf("error: could not parse file %s\n", fileName);
+
+        }
+}
+
 
 SVGimage *createSVGimage(char *fileName)
 {
