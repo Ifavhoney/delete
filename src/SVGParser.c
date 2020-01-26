@@ -37,28 +37,6 @@ if(otherAttributes->length == 0){
         return 1;
     }
 }
-Group* createGroupObject(){
-    Group *group = malloc(sizeof(Group));
-           
-group -> rectangles = initializeList(rectangleToString, deleteRectangle, compareRectangles);
-        group -> groups = initializeList(attributeToString, deleteAttribute, compareAttributes);
-                group -> circles = initializeList(circleToString, deleteCircle, compareCircles);
-                group -> paths = initializeList(pathToString, deletePath, comparePaths);
-
-    return group;
-}
-void deleteGroup(void *data){
-     if(data == NULL){
-        return;
-    }
-    Group *group = (Group *) data;
-    freeList(group -> rectangles);
-    freeList(group -> circles);
-    freeList(group -> paths);
-    freeList(group -> groups);
-    free(group);
-
-}
 
 Rectangle* createRectangleObject(float x, float y, float width, float height, char units[50]){
     Rectangle *rect = malloc(sizeof(Rectangle));
@@ -83,19 +61,34 @@ Rectangle* createRectangleObject(float x, float y, float width, float height, ch
 }
 
 
+Group* createGroupObject(){
+    Group *group = malloc(sizeof(Group));
+     
+    group -> otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
+      
+group -> groups = initializeList(attributeToString, deleteGroup, compareAttributes);
+    group -> rectangles = initializeList(rectangleToString, deleteRectangle, compareRectangles);
+        
+                group -> circles = initializeList(circleToString, deleteCircle, compareCircles);
+                group -> paths = initializeList(pathToString, deletePath, comparePaths);
 
-/*
-class Circle{
-    double cx = 0;
-    LinkedList
-
-    Circle(float cx ...){
-        this->cx = cx
-        this->LinkedList = new LinkedList<A>
-    }
+    return group;
 }
-*/
+void deleteGroup(void *data){
+     if(data == NULL){
+        return;
+    }
+    Group *group = (Group *) data;
+    
+   freeList(group -> otherAttributes);
+    freeList(group -> groups);
 
+    freeList(group -> rectangles);
+    freeList(group -> circles);
+    freeList(group -> paths);
+    free(group);
+
+}
 
 SVGimage *createSVGimage(char *fileName)
 {
@@ -115,24 +108,16 @@ SVGimage *createSVGimage(char *fileName)
          /*Get the root element node */
         root_element = xmlDocGetRootElement(doc);
         //root_element = xmlDoc
-        print_element_names(root_element, &list);
-            
-            /*
+        print_element_names(root_element, &list);            
 
-             Group *group = list -> groups -> head -> data;
+             Group *group = list -> groups -> head -> next -> data;
              Rectangle *rect = group -> rectangles -> head -> data;
-             
              printf("\n%f", rect ->x);
 
-             */
+        
+            
            
 
-            /*
-            Group *group = list -> groups -> head -> data;
-            Rectangle *rect = group -> rectangles -> head -> data;
-            
-            printf("\n%f", rect ->x);
-*/
         
         /*
         Circle *circle = createCircleObject(1,2,3,"cm");
@@ -269,7 +254,7 @@ void insertGroup(SVGimage *tempList, xmlNode *cur_node){
                    xmlNode *temp_cur_children = cur_node -> children;
                       xmlNode * temp_cur_node;
                                      //Looks at the sibling of the current children
-                   printf("\n%ld\n", nodeCounter);
+                  // printf("\n%ld\n", nodeCounter);
                       const char *validateName;
 
                     while(nodeCounter != 0){
@@ -302,9 +287,8 @@ void insertGroup(SVGimage *tempList, xmlNode *cur_node){
           
                 }
                       if(nodeCounter == 0){
+                          printf("\n%d", getLength( group -> rectangles));
                         insertBack(tempList -> groups, group);
-
-                        // deleteGroup(group);
                       }
 
                 }
@@ -371,7 +355,6 @@ void insertRect(void* data, xmlNode *cur_node, int version){
             }
             else{
             height = atof(getAttrValue);
-
             }
         }
          if(attr->next == NULL){
@@ -382,6 +365,8 @@ void insertRect(void* data, xmlNode *cur_node, int version){
                     deleteValue(parsedValue);
       //  printf("\n%s", rectangle -> units);
         xmlAttr* _attr;
+    Group *grpList = data;
+    SVGimage *list = data;
 
     for (_attr = cur_node->properties; _attr != NULL; _attr = _attr->next){
             xmlNode *snapshot = _attr->children;
@@ -391,20 +376,26 @@ void insertRect(void* data, xmlNode *cur_node, int version){
 
                 if(strcmp("x", getAttrName) != 0 && strcmp("y", getAttrName) != 0 && strcmp("width", getAttrName) != 0 && strcmp("height", getAttrName) != 0
                 ){
-                    Attribute *attribute = createAttribute(getAttrName, getAttrValue);
-                    insertBack(rectangle -> otherAttributes, attribute);
-                    
+                  if(version == 1){
+                        Attribute *attribute = createAttribute(getAttrName, getAttrValue);
+                        insertBack(grpList -> otherAttributes , attribute);
+                        }
+                    else{
+                        Attribute *attribute1 = createAttribute(getAttrName, getAttrValue);
+                        insertBack(rectangle -> otherAttributes, attribute1);       
+                    }
+                  
+                   
                      }
     
     }
-             if(version == 0){
-                 SVGimage *list = data;
-                 insertBack(list -> rectangles, rectangle);
-             }
-             if(version == 1){
-                 Group *list = data;
+            if(version == 1){
+                 insertBack(grpList -> rectangles, rectangle);
 
-                  insertBack(list -> rectangles, rectangle);
+             }
+             else{
+                insertBack(list -> rectangles, rectangle);
+
              }
          
 
