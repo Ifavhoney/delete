@@ -22,7 +22,7 @@ void insertPath(void *data, xmlNode *cur_node, int version);
 void insertRect(void *data, xmlNode *cur_node, int version);
 void insertCircle(void *data, xmlNode *cur_node, int version);
 void insertGroup(void *data, xmlNode *cur_node, int version);
-
+void insertOtherAttribute(void *data, xmlNode *cur_node);
 void insertNSUnits(SVGimage *tempList, xmlNode *cur_node);
 Attribute* createAttribute(char* name, char* value);
 Circle* createCircleObject(float cx, float cy, float r, char units[50]);
@@ -54,14 +54,17 @@ char* SVGimageToString(SVGimage* img){
     printf("Title: %s\n", img -> title  );
     printf("Description: %s\n", img -> description  );
     printf("\nCircle: \n");
-    while (circleList -> head != NULL) {
-        Circle *circle = circleList -> head -> data;
-        printf( "%s", circleToString(circle));
-        circleList -> head = circleList -> head -> next;
+    Circle *circle = circleList -> head -> data;
+    /*
+    char *value;
+    while(circleList != NULL){
+    value = circleToString(circleList -> head -> data);
+    //printf(value);
+        circleList = circleList -> head -> next;
+        free(value);
     }
-
-    
-
+    freeList(circleList);
+    */
     return NULL;
     
 }
@@ -186,7 +189,11 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
 
                 insertGroup(tempList, cur_node, 0);
             }
-
+            if(strcmp((char *)cur_node -> name, "g") != 0 && strcmp((char *)cur_node -> name, "circle") != 0 && strcmp((char *)cur_node -> name, "path") != 0 && strcmp((char *)cur_node -> name, "rect") != 0  && strcmp((char *)cur_node -> name, "text") != 0  && strcmp((char *)cur_node -> name, "comment") != 0 && strcmp((char *)cur_node -> name, "desc") != 0 && strcmp((char *)cur_node -> name, "title") != 0     ){
+                insertOtherAttribute(tempList, cur_node);
+                Attribute *attribute = tempList -> otherAttributes -> head -> data;
+                printf("%s", attribute ->name);
+            }
         /*Uncomment the code below if you want to see the content of every node.
         
         */
@@ -208,6 +215,37 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
     return tempList;
        
 }
+
+void insertOtherAttribute(void *data, xmlNode *cur_node){
+    SVGimage *list = data;
+
+    xmlAttr *attr;
+           // printf("%d\n",i);
+    
+    for (attr = cur_node->properties; attr != NULL; attr = attr->next)
+    {
+        xmlNode *snapshot = attr->children;
+        char *getAttrValue = (char *)snapshot->content;
+        char *getAttrName = (char *)attr->name;
+        char *name = calloc(1, strlen(getAttrName) + strlen((char *)cur_node -> name)  + 10);
+        strcat(name, (char *)cur_node -> name );
+        strcat(name, " >");
+        strcat(name, getAttrName);
+        Attribute *attribute = createAttribute(name, getAttrValue);
+        insertBack(list -> otherAttributes, attribute);
+      
+        free(name);
+    }
+            
+            
+    
+    
+    
+    printf("\n");
+    
+    
+}
+
 
 void insertGroup(void *data, xmlNode *cur_node, int version){
      int i = 0;
@@ -285,7 +323,6 @@ void insertGroup(void *data, xmlNode *cur_node, int version){
 
       
 }
-
 
 
 ///Version is so that we could reuse this with different types of list
@@ -763,6 +800,7 @@ void deleteCircle(void *data){
   freeList(this -> otherAttributes);
   free(this);
 }
+
 char *circleToString(void *data){
 
     if(data == NULL){
@@ -771,8 +809,9 @@ char *circleToString(void *data){
     
     
         Circle *this = data;
-        char *value = calloc(1, sizeof(data) *  2);
-    char *dummy = malloc(sizeof(data));
+        char * value = NULL;
+        value = calloc(1, strlen(this -> units) + 500);
+    char *dummy = calloc(1, strlen(this -> units) + sizeof(data));
 
     sprintf(dummy, "%.1f",  this -> cx);
     strcat(value, "cx:\t");
@@ -791,19 +830,7 @@ char *circleToString(void *data){
     strcat(value, "\notherAttributes:\t");
 
         strcat(value, dummy);
-            
-    if(this -> otherAttributes != NULL){
-        Attribute *cur_attribute = NULL;
-        while(this -> otherAttributes -> head != NULL){
-     cur_attribute = (Attribute *) this -> otherAttributes -> head ->  data;
-            strcat(value, "name: ");
-        strcat(value, cur_attribute -> name);
-        strcat(value, cur_attribute -> value);
-            this -> otherAttributes -> head = this -> otherAttributes -> head -> next;
-
-        }
-        
-    }
+   
     
 
     
