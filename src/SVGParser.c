@@ -9,6 +9,7 @@ typedef struct
 } ParsedValue;
 ParsedValue *createValue(char *data);
 void deleteValue(ParsedValue *data);
+
 char *printFunction(void *);
 void deleteFunction(void *);
 int compareFunction(const void *, const void *);
@@ -27,6 +28,10 @@ Attribute* createAttribute(char* name, char* value);
 Circle* createCircleObject(float cx, float cy, float r, char units[50]);
 Rectangle* createRectangleObject(float x, float y, float width, float height, char units[50]);
 Group* createGroupObject(void);
+void validateNameSpace(char *namespace, SVGimage **list);
+void validateTitle(char *title, SVGimage **list);
+void validateDescription(char *description, SVGimage **list);
+
 int hasAttribute(List *otherAttributes);
 
 int hasAttribute(List *otherAttributes){
@@ -38,6 +43,28 @@ if(otherAttributes->length == 0){
     }
 }
 
+char* SVGimageToString(SVGimage* img){
+    
+    List* circleList = img -> circles;
+    List* rectangleList = img -> rectangles;
+    List* pathList = img -> paths;
+    List* groupList = img -> groups;
+    List* otherList = img ->otherAttributes;
+    printf("Namespace: %s\n", img -> namespace  );
+    printf("Title: %s\n", img -> title  );
+    printf("Description: %s\n", img -> description  );
+    printf("\nCircle: \n");
+    while (circleList -> head != NULL) {
+        Circle *circle = circleList -> head -> data;
+        printf( "%s", circleToString(circle));
+        circleList -> head = circleList -> head -> next;
+    }
+
+    
+
+    return NULL;
+    
+}
 
 SVGimage *createSVGimage(char *fileName)
 {
@@ -56,13 +83,20 @@ SVGimage *createSVGimage(char *fileName)
         else{
          /*Get the root element node */
         root_element = xmlDocGetRootElement(doc);
-        //root_element = xmlDoc
         print_element_names(root_element, &list);
-
-             Group *group = list -> groups -> head -> data;
-           Circle *circle = group -> circles -> head -> data;
-            Circle *circle1 = list -> circles -> head -> data;
-            printf("\n%f|%f\n",circle -> cx, circle1 -> cx);
+            validateNameSpace((char *)root_element -> ns -> href, &list);
+            /*
+    if(strlen(list -> title) < 1){
+        strcpy(list -> title, " ");
+        }
+            if(strlen(list -> description) < 1){
+                  strcpy(list -> description, " ");
+                  }
+             */
+            
+    
+        
+        
         /*
         Circle *circle = createCircleObject(1,2,3,"cm");
         Attribute *attribute = createAttribute("HELLO", "JHSDSD");
@@ -110,11 +144,11 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
            // printf("i: %d node type: Element, name: %s\n", i, cur_node->name);
             if(strcmp((char *)cur_node -> name, "title") == 0){
             
-            strcpy(tempList -> title, (char *) cur_node -> children -> content );
-            }
+                validateTitle((char *)cur_node -> children -> content, &tempList);            }
              else if(strcmp((char *)cur_node -> name, "desc") == 0){
-           strcpy(tempList -> description,  (char *)cur_node -> children -> content );
-            }
+                 validateDescription((char *)cur_node -> children -> content , &tempList);
+                 
+             }
         }
         if(strcmp((char *)cur_node->name, "svg") == 0){
         }
@@ -128,17 +162,18 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
 
         
         if(parent != NULL){
-
         if(strcmp(parent, "g") != 0){
 
        
         if(strcmp((char *)cur_node->name, "circle") == 0){
+
             insertCircle(tempList, cur_node, 0);
 
                         
         }
          if (strcmp((char *)cur_node->name, "path") == 0)
         {
+
 
             insertPath(tempList, cur_node, 0);
 
@@ -154,8 +189,6 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
 
         /*Uncomment the code below if you want to see the content of every node.
         
-
-  
         */
 
       
@@ -221,8 +254,8 @@ void insertGroup(void *data, xmlNode *cur_node, int version){
 
                             }
                             if(strcmp(validateName, "g") == 0){
-                                                           
-                                                       }
+                               insertGroup(group, temp_cur_node, 1);
+                            }
                             
                             
                         }
@@ -238,6 +271,11 @@ void insertGroup(void *data, xmlNode *cur_node, int version){
                             insertBack( list -> groups, group);
 
                           }
+                          if(version == 1){
+                              Group *list = data;
+                            insertBack(list -> groups, group);
+
+                          }
                       }
 
                 }
@@ -247,6 +285,9 @@ void insertGroup(void *data, xmlNode *cur_node, int version){
 
       
 }
+
+
+
 ///Version is so that we could reuse this with different types of list
 void insertRect(void* data, xmlNode *cur_node, int version){
  int i = 0;
@@ -530,6 +571,7 @@ SVGimage* initializeObjects(){
 
 
 
+
 void deleteSVGimage(SVGimage *img){
   freeList(img -> paths);
     freeList(img -> circles);
@@ -697,16 +739,16 @@ void deleteAttribute(void *data){
 }
 char *attributeToString(void *data){
     
-    
+    /*
     Attribute *newData = (Attribute *)data;
     char *newBuffer = (char *)calloc(2,sizeof(Attribute) + 10);
     strcat(newBuffer, newData->name);
     strcat(newBuffer, "=");
     strcat(newBuffer, newData->value);
     strcat(newBuffer, "\0");
-    
+    */
 
-    return newBuffer;
+    return " ";
     
 }
 
@@ -727,26 +769,34 @@ char *circleToString(void *data){
         return " ";
     }
     
+    
         Circle *this = data;
-        char *value = calloc(6, sizeof(data) *  2);
+        char *value = calloc(1, sizeof(data) *  2);
     char *dummy = malloc(sizeof(data));
-    sprintf(dummy, "%.2f",  this -> cx);
-    
+
+    sprintf(dummy, "%.1f",  this -> cx);
+    strcat(value, "cx:\t");
+    strcat(value, dummy);
+   
+    sprintf(dummy, "%.1f",  this -> cy);
+    strcat(value, "\t\tcy:\t");
+    strcat(value, dummy);
+
+        sprintf(dummy, "%.1f",  this -> r);
+        strcat(value, "\t\tr:\t");
         strcat(value, dummy);
-    sprintf(dummy, "%.2f",  this -> cy);
+    strcat(value, "\t\tunit:\t");
+
+    strcpy(dummy, this -> units);
+    strcat(value, "\notherAttributes:\t");
+
         strcat(value, dummy);
-    
-        sprintf(dummy, "%.2f",  this -> r);
-        strcat(value, dummy);
-        
-        strcpy(dummy, this -> units);
-        strcat(value, dummy);
-            printf("%s", value);
             
     if(this -> otherAttributes != NULL){
         Attribute *cur_attribute = NULL;
         while(this -> otherAttributes -> head != NULL){
      cur_attribute = (Attribute *) this -> otherAttributes -> head ->  data;
+            strcat(value, "name: ");
         strcat(value, cur_attribute -> name);
         strcat(value, cur_attribute -> value);
             this -> otherAttributes -> head = this -> otherAttributes -> head -> next;
@@ -758,6 +808,7 @@ char *circleToString(void *data){
 
     
     free(dummy);
+     
     return value;
 }
 
@@ -802,6 +853,68 @@ char *groupToString(void *data){
 int compareGroups(const void *first, const void *second){
     return 0;
 };
+
+
+
+void validateNameSpace(char *namespace, SVGimage **list){
+    SVGimage *temp_list = *list;
+    if(namespace != NULL){
+               
+               if(strlen((char *)namespace) < 256){
+                   strcpy(temp_list -> namespace, (char *) namespace);
+               }
+               else{
+                   
+                   long length =  strlen ((char *)namespace) - 256;
+                   strncpy(temp_list -> namespace, (char *) namespace, 256 - length);
+               
+               }
+           }
+           else{
+               strcpy(temp_list -> namespace, " ");
+
+           }
+}
+
+void validateTitle(char *title, SVGimage **list){
+    SVGimage *temp_list = *list;
+    if(title != NULL){
+               
+               if(strlen((char *)title) < 256){
+                   strcpy(temp_list -> title, (char *) title);
+               }
+               else{
+                   
+                   long length =  strlen ((char *)title) - 256;
+                   strncpy(temp_list -> title, (char *) title, 256 - length);
+               
+               }
+           }
+           else{
+               strcpy(temp_list -> title, " ");
+
+           }
+}
+
+void validateDescription(char *description, SVGimage **list){
+    SVGimage *temp_list = *list;
+    if(description != NULL){
+               
+               if(strlen((char *)description) < 256){
+                   strcpy(temp_list -> description, (char *) description);
+               }
+               else{
+                   
+                   long length =  strlen ((char *)description) - 256;
+                   strncpy(temp_list -> description, (char *) description, 256 - length);
+               
+               }
+           }
+           else{
+               strcpy(temp_list -> description, " ");
+
+           }
+}
 
 int StartsWith(const char *a, const char *b)
 {
