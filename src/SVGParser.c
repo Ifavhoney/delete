@@ -61,18 +61,12 @@ int numRectsWithArea(SVGimage *img, float area){
     return 0;
     }
     else{
-        List *rects = getRects(img);
-        ListIterator iter = createIterator(rects);
         void* elem;
-        
+        ListIterator iter = createIterator(getRects(img));
         while((elem = nextElement(&iter)) != NULL){
-            Rectangle *rectangle = (Rectangle *)elem;
-            float calc = ceil(rectangle -> width * rectangle -> height);
-            if(calc == area){
-                num++;
-            }
-            
-            }
+        //Rectangle *rect = nu
+        }
+        
     }
     return num;
 }
@@ -149,6 +143,9 @@ char* SVGimageToString(SVGimage* img){
 }
 
 List *getGroups(SVGimage *img){
+     if(img == NULL){
+       return 0;
+   }
     
     List *list = initializeList(printFunction, deleteFunction, compareFunction);
         ListIterator iter = createIterator(img -> groups);
@@ -161,6 +158,9 @@ List *getGroups(SVGimage *img){
 }
 List *getPaths(SVGimage *img){
    
+   if(img == NULL){
+       return 0;
+   }
     List *list = initializeList(printFunction, deleteFunction, compareFunction);
        ListIterator iter = createIterator(img -> paths);
        ListIterator iter2 = createIterator(img -> groups);
@@ -211,6 +211,11 @@ List *getPaths(SVGimage *img){
        return list;
 }
 List *getCircles(SVGimage *img){
+
+     if(img == NULL){
+       return 0;
+   }
+
     List *list = initializeList(printFunction, deleteFunction, compareFunction);
       ListIterator iter = createIterator(img -> circles);
       ListIterator iter2 = createIterator(img -> groups);
@@ -366,9 +371,9 @@ SVGimage *createSVGimage(char *fileName)
         print_element_names(root_element, &list);
             validateNameSpace((char *)root_element -> ns -> href, &list);
           
-            printf("%d", numRectsWithArea(list, 10));
         List *listr = getRects(list);
-        
+        printf("%d\n", numRectsWithArea(list, 0));
+
             List *listc = getCircles(list);
             List *listp = getPaths(list);
             
@@ -565,14 +570,14 @@ void insertGroup(void *data, xmlNode *cur_node, int version){
          char *getAttrValue = (char *)snapshot->content;
          char *getAttrName = (char *)attr->name;
                   if(getAttrValue != NULL && getAttrName != NULL  ){
-                    
+                    //9
                     long nodeCounter = xmlChildElementCount(cur_node);
                    xmlNode *temp_cur_children = cur_node -> children;
                       xmlNode * temp_cur_node;
                                      //Looks at the sibling of the current children
                   // printf("\n%ld\n", nodeCounter);
                       const char *validateName;
-
+                 
                     while(nodeCounter != 0){
                     temp_cur_node = xmlNextElementSibling(temp_cur_children);
                         if(temp_cur_node != NULL){
