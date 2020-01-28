@@ -64,23 +64,57 @@ int numRectsWithArea(SVGimage *img, float area){
         void* elem;
         ListIterator iter = createIterator(getRects(img));
         while((elem = nextElement(&iter)) != NULL){
-        //Rectangle *rect = nu
+            Rectangle *rectangle = (Rectangle *) elem;
+            float calc = rectangle -> height * rectangle -> width;
+            if(ceil(calc) == ceil(area)){
+                num++;
+            }
         }
         
     }
     return num;
 }
 int numCirclesWithArea(SVGimage *img, float area){
+   int num = 0;
     if(img == NULL){
     return 0;
     }
-    return 0;
+    else{
+        void* elem;
+        ListIterator iter = createIterator(getCircles(img));
+        while((elem = nextElement(&iter)) != NULL){
+            Circle *circle = (Circle *) elem;
+            float calc = 3.14159265358979323846 * (circle -> r * circle -> r);
+            if(ceil(calc) == ceil(area)){
+                num++;
+            }
+        }
+        
+    }
+    return num;
 }
 int numPathsWithdata(SVGimage *img, char *data){
-    if(img == NULL){
-    return 0;
-    }
-    return 0;
+    char *str;
+    str = malloc(strlen(data) * 4);
+    int num = 0;
+       if(img == NULL){
+       return 0;
+       }
+       else{
+        
+           void* elem;
+           ListIterator iter = createIterator(getPaths(img));
+           while((elem = nextElement(&iter)) != NULL){
+               Path *path = (Path *) elem;
+               strcpy(str,  path ->data);
+               if(strcmp(str, data) == 0){
+                   num++;
+               }
+           }
+           
+       }
+    free(str);
+       return num;
 }
 int numGroupsWithLen(SVGimage *img, int len){
     if(img == NULL){
