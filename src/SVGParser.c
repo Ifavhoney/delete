@@ -18,7 +18,10 @@ int StartsWith(const char *a, const char *b);
 SVGimage* initializeObjects(void);
 SVGimage *print_element_names(xmlNode *a_node, SVGimage **list);
 Path* createPathObject(char *data);
-
+List* recursiveRect(List *list, Group *group);
+List* recursiveCircle(List *list, Group *group);
+List* recursivePaths(List *list, Group *group);
+List* recursiveGroups(List *list, Group *group);
 void insertPath(void *data, xmlNode *cur_node, int version);
 void insertRect(void *data, xmlNode *cur_node, int version);
 void insertCircle(void *data, xmlNode *cur_node, int version);
@@ -52,7 +55,84 @@ int compareFunction(const void *first, const void *second){
     return 0;
 }
 
+int numAttr(SVGimage *img){
+    int i = 0;
+     List *list;
+    if(img == NULL){
+        return 0;
+    }
+    else{
+    void *elem;
+    list = getGroups(img);
+      ListIterator iter = createIterator(list);
+        while((elem = nextElement(&iter)) != NULL){
+            Group *group = (Group *) elem;
+            i+= group -> otherAttributes -> length;
+        }
+        freeList(list);
+    
+        list =  getRects(img);
+         iter = createIterator(list);
+              while((elem = nextElement(&iter)) != NULL){
+                  Rectangle *rect = (Rectangle *) elem;
+                i+= rect -> otherAttributes -> length;
+              }
+        freeList(list);
+        
+        list = getCircles(img);
 
+        iter = createIterator(list);
+                     while((elem = nextElement(&iter)) != NULL){
+                         Circle *circle = (Circle *) elem;
+                       i+= circle -> otherAttributes -> length;
+                     }
+        freeList(list);
+
+
+        list = getPaths(img);
+
+        iter = createIterator(list);
+                                  while((elem = nextElement(&iter)) != NULL){
+                                      Path *path = (Path *) elem;
+                                    i+= path -> otherAttributes -> length;
+                                  }
+        freeList(list);
+
+        
+        
+        i+= img -> otherAttributes -> length;
+    }
+    printf("%d", getLength(img -> otherAttributes));
+    printf("Attrb %d", i);
+    return i;
+    
+        
+}
+//gets num of groups with length
+int numGroupsWithLen(SVGimage *img, int len){
+    if(img == NULL){
+        return 0;
+    }
+    int counter = 0;
+    void *elem;
+    ListIterator iter = createIterator(getGroups(img));
+      while((elem = nextElement(&iter)) != NULL){
+          int i = 0;
+        Group *group = (Group *) elem;
+          i+= group -> circles -> length;
+          i+= group -> rectangles -> length;
+          i+= group -> paths -> length;
+          i+= group -> groups -> length;
+          i+= group -> otherAttributes -> length;
+          
+          if(i == len){
+              counter++;
+          }
+      }
+
+    
+    return counter;
+}
 
 
 int numRectsWithArea(SVGimage *img, float area){
@@ -113,20 +193,8 @@ int numPathsWithdata(SVGimage *img, char *data){
            }
            
        }
-    free(str);
+
        return num;
-}
-int numGroupsWithLen(SVGimage *img, int len){
-    if(img == NULL){
-        return 0;
-    }
-    return 0;
-}
-int numAttr(SVGimage *img){
-    if(img == NULL){
-    return 0;
-    }
-    return 0;
 }
 
 
@@ -180,16 +248,42 @@ List *getGroups(SVGimage *img){
      if(img == NULL){
        return 0;
    }
-    
-    List *list = initializeList(printFunction, deleteFunction, compareFunction);
-        ListIterator iter = createIterator(img -> groups);
 
-    if(img == NULL){
-        return 0;
-    }
+    List *list = initializeList(printFunction, deleteFunction, compareFunction);
+    ListIterator iter2 = createIterator(img -> groups);
+    void *elem2;
+    while((elem2 = nextElement(&iter2)) != NULL){
+        Group *group = (Group *) elem2;
+                   
+        //looks for groups that have rectangles
+        insertBack(list, group);
+        recursiveGroups(list, group);
+        }
+
+    return list;
     
-    return NULL;
 }
+
+List* recursiveGroups(List *list, Group *group){
+    
+  void * elem3;
+
+    if(group -> groups != NULL){
+           
+           ListIterator iter3 = createIterator(group -> groups);
+           //Our incrementer
+           while((elem3 = nextElement(&iter3)) != NULL){
+               Group *grp = (Group *) elem3;
+               //Calls function & restarts
+               insertBack(list, grp);
+               list = recursiveGroups(list, grp);
+           }
+       }
+    
+    return list;
+}
+
+
 List *getPaths(SVGimage *img){
    
    if(img == NULL){
@@ -227,79 +321,116 @@ List *getPaths(SVGimage *img){
                }
            }
        
-           /* Inner inner loop not done
-           if(group -> groups -> head != NULL){
-               ListIterator iter3 = createIterator(group -> groups);
-               while((elem3 = nextElement(&iter3)) != NULL){
-                   printf("hi");
-                   
-                         }
-               
-           }
-            */
+          while((elem2 = nextElement(&iter2)) != NULL){
+                        Group *group = (Group *) elem2;
+                        
+                        //looks for groups that have rectangles
+                       recursivePaths(list, group );
+                    }
            
        }
       
      // printf("%s", )'
-    printf("\nGetPaths length: %d\n", getLength(list));
+  //  printf("\nGetPaths length: %d\n", getLength(list));
        return list;
 }
+
+List* recursivePaths(List *list, Group *group){
+    void * elem3;
+    
+    
+    if(group -> rectangles != NULL){
+          
+        ListIterator iter3 = createIterator(group -> paths);
+        
+              while((elem3 = nextElement(&iter3)) != NULL){
+              Path *rect = (Path *) elem3;
+                  insertBack(list, rect);
+
+          }
+        }
+    
+    if(group -> groups != NULL){
+        
+        ListIterator iter3 = createIterator(group -> groups);
+        //Our incrementer
+        while((elem3 = nextElement(&iter3)) != NULL){
+            Group *grp = (Group *) elem3;
+            //Calls function & restarts
+            list = recursivePaths(list, grp);
+        }
+    }
+    
+    return list;
+  
+}
+
 List *getCircles(SVGimage *img){
 
-     if(img == NULL){
-       return 0;
-   }
+        if(img == NULL){
+               return 0 ;
+           }
+           List *list = initializeList(printFunction, deleteFunction, compareFunction);
+           ListIterator iter = createIterator(img -> circles);
+           ListIterator iter2 = createIterator(img -> groups);
 
-    List *list = initializeList(printFunction, deleteFunction, compareFunction);
-      ListIterator iter = createIterator(img -> circles);
-      ListIterator iter2 = createIterator(img -> groups);
+           
+           void* elem;
+           void* elem2;
+    
+    
+           //outside
+           while((elem = nextElement(&iter)) != NULL){
+               Circle *circle = (Circle *) elem;
+               insertBack(list, circle);
+           }
+           //inner group
+           
+           while((elem2 = nextElement(&iter2)) != NULL){
+               Group *group = (Group *) elem2;
+               
+               //looks for groups that have rectangles
+              recursiveCircle(list, group );
+           }
+           
+           
+          // printf("\nGetCircle length: %d\n", getLength(list));
+           return list;
+    }
 
-      
-      void* elem;
-      void* elem2;
-      void* elem3;
+    
 
-
-      
-      while((elem = nextElement(&iter)) != NULL){
-          Circle *circle = (Circle *) elem;
-          insertBack(list, circle);
-      }
-       
-      
-      while((elem2 = nextElement(&iter2)) != NULL){
-          Group *group = (Group *) elem2;
-      
-          //if when we loop that group -> rectangles -> head != null
-          if(group -> circles -> head != NULL){
-              ListIterator iter3 = createIterator(group -> circles );
-              //loop through that whole inner loop
-              while((elem3 = nextElement(&iter3)) != NULL){
-                  Circle *circle = (Circle *) elem3;
-                  insertBack(list, circle);
-                  
-              
-              }
-          }
-      
-          /* Inner inner loop not done
-          if(group -> groups -> head != NULL){
-              ListIterator iter3 = createIterator(group -> groups);
-              while((elem3 = nextElement(&iter3)) != NULL){
-                  printf("hi");
-                  
-                        }
-              
-          }
-           */
+List* recursiveCircle(List *list, Group *group){
+    void * elem3;
+    
+    
+    if(group -> rectangles != NULL){
           
-      }
-     
-    // printf("%s", )'
-   printf("\nGetCircle length: %d\n", getLength(list));
-      return list;
+        ListIterator iter3 = createIterator(group -> circles);
+        
+              while((elem3 = nextElement(&iter3)) != NULL){
+              Circle *rect = (Circle *) elem3;
+                  insertBack(list, rect);
 
+          }
+        }
+    
+    if(group -> groups != NULL){
+        
+        ListIterator iter3 = createIterator(group -> groups);
+        //Our incrementer
+        while((elem3 = nextElement(&iter3)) != NULL){
+            Group *grp = (Group *) elem3;
+            //Calls function & restarts
+            list = recursiveCircle(list, grp);
+        }
+    }
+    
+    return list;
+  
 }
+ 
+ 
 
 
 List *getRects(SVGimage *img){
@@ -313,77 +444,54 @@ List *getRects(SVGimage *img){
     
     void* elem;
     void* elem2;
-    void* elem3;
-
 
     
+    //outside
     while((elem = nextElement(&iter)) != NULL){
         Rectangle *rect = (Rectangle *) elem;
         insertBack(list, rect);
     }
-     
+    //inner group
     
     while((elem2 = nextElement(&iter2)) != NULL){
         Group *group = (Group *) elem2;
-    
-        //if when we loop that group -> rectangles -> head != null
-        if(group -> rectangles -> head != NULL){
-            ListIterator iter3 = createIterator(group -> rectangles );
-            //loop through that whole inner loop
-            while((elem3 = nextElement(&iter3)) != NULL){
-                Rectangle *rect = (Rectangle *) elem3;
-               // printf("\n%f\n", rect ->x);
-                insertBack(list, rect);
-                
-            
-            }
-        }
-        
-        if(group -> groups -> head != NULL){
-            ListIterator iter3 = createIterator(group -> groups);
-            while((elem3 = nextElement(&iter3)) != NULL){
-                Rectangle *rect = (Rectangle *) elem3;
-                insertBack(list, rect);
-                
-                      }
-            
-        }
-    
-        /*
-         //inefficient way of getting rectangle
-             if(group -> groups -> head != NULL){
-                 ListIterator iter3 = createIterator(group -> groups);
-                 while((elem3 = nextElement(&iter3)) != NULL){
-                     if(group -> groups -> head != NULL){
-                         
-                         if(group -> rectangles -> head != NULL){
-                                    ListIterator iter3 = createIterator(group -> rectangles );
-                                    //loop through that whole inner loop
-                                    while((elem3 = nextElement(&iter3)) != NULL){
-                                        Rectangle *rect = (Rectangle *) elem3;
-                                       // printf("\n%f\n", rect ->x);
-                                        insertBack(list, rect);
-                                        
-                                    
-                                    }
-                                }
-                         
-                     }
-                     
-                           }
-                 
-             }
-         */
-        
-        
+        //looks for groups that have rectangles
+        recursiveRect(list, group );
     }
-   
-
-  // printf("%s", )'
-   printf("\nGetRects length: %d", getLength(list));
-
     return list;
 }
+
+List* recursiveRect(List *list, Group *group){
+    void * elem3;
+    
+    
+    if(group -> rectangles != NULL){
+          
+        ListIterator iter3 = createIterator(group -> rectangles);
+        
+              while((elem3 = nextElement(&iter3)) != NULL){
+              Rectangle *rect = (Rectangle *) elem3;
+                  insertBack(list, rect);
+                  printf("hi\t");
+
+          }
+        }
+    
+    if(group -> groups != NULL){
+        
+        ListIterator iter3 = createIterator(group -> groups);
+        //Our incrementer
+        while((elem3 = nextElement(&iter3)) != NULL){
+            Group *grp = (Group *) elem3;
+            //Calls function & restarts
+            list = recursiveRect(list, grp);
+        }
+    }
+    //Base case
+    return list;
+  
+}
+ 
 
 SVGimage *createSVGimage(char *fileName)
 {
@@ -400,20 +508,30 @@ SVGimage *createSVGimage(char *fileName)
             return NULL;
         }
         else{
+            
+            
          /*Get the root element node */
         root_element = xmlDocGetRootElement(doc);
         print_element_names(root_element, &list);
             validateNameSpace((char *)root_element -> ns -> href, &list);
-          
-        List *listr = getRects(list);
-        printf("%d\n", numRectsWithArea(list, 0));
+         
+  List *listc = getCircles(list);
+            freeList(listc);
+            /*
+        
+        printf("GetRects %d\n", getLength(listr));
 
             List *listc = getCircles(list);
-            List *listp = getPaths(list);
             
+            List *listp = getPaths(list);
+            List *listg = getGroups(list);
+            
+            printf("\n\n%d", numGroupsWithLen(list, 2));
         freeList(listr);
             freeList(listc);
             freeList(listp);
+            freeList(listg);
+             */
             
             /*
             
@@ -496,9 +614,10 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
              }
         }
         if(strcmp((char *)cur_node->name, "svg") == 0){
+            insertOtherAttribute(tempList, cur_node);
         }
 
-
+        
            if (cur_node->content != NULL)
            {
              // =printf("i:%d content: %s \n", i, cur_node -> content);
@@ -528,12 +647,14 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
                 insertRect(tempList, cur_node, 0);
             }
               if(strcmp((char *)cur_node -> name, "g") == 0){
-
+                
                 insertGroup(tempList, cur_node, 0);
             }
+            /*
             if(strcmp((char *)cur_node -> name, "g") != 0 && strcmp((char *)cur_node -> name, "circle") != 0 && strcmp((char *)cur_node -> name, "path") != 0 && strcmp((char *)cur_node -> name, "rect") != 0  && strcmp((char *)cur_node -> name, "text") != 0  && strcmp((char *)cur_node -> name, "comment") != 0 && strcmp((char *)cur_node -> name, "desc") != 0 && strcmp((char *)cur_node -> name, "title") != 0     ){
                 insertOtherAttribute(tempList, cur_node);               // printf("%s", attribute ->value);
             }
+             */
         /*Uncomment the code below if you want to see the content of every node.
         
         */
@@ -558,6 +679,27 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
 
 void insertOtherAttribute(void *data, xmlNode *cur_node){
     SVGimage *list = data;
+    
+    xmlAttr *attr;
+
+    for (attr = cur_node->properties; attr != NULL; attr = attr->next)
+      {
+          xmlNode *snapshot = attr->children;
+          char *getAttrValue = (char *)snapshot->content;
+          char *getAttrName = (char *)attr->name;
+
+          if(getAttrValue != NULL && getAttrName != NULL  ){
+
+              Attribute *attribute = createAttribute(getAttrName, getAttrValue);
+              //printf("attrn: %s", getAttrName);
+              insertBack(list -> otherAttributes , attribute);
+          }
+            
+      }
+}
+/*
+void insertOtherAttribute(void *data, xmlNode *cur_node){
+    SVGimage *list = data;
 
     xmlAttr *attr;
            // printf("%d\n",i);
@@ -576,23 +718,22 @@ void insertOtherAttribute(void *data, xmlNode *cur_node){
       
         free(name);
     }
+ }
+ */
             
             
     
     
     
-    printf("\n");
     
     
-}
+
 
 
 void insertGroup(void *data, xmlNode *cur_node, int version){
      int i = 0;
     //printf("%s");
     xmlAttr *attr;
-    float x = 0, y = 0, width = 0, height = 0;
-    ParsedValue *parsedValue = NULL;
       Group *group;
     if(i == 0){
         group = createGroupObject();
@@ -600,10 +741,30 @@ void insertGroup(void *data, xmlNode *cur_node, int version){
      
       attr =  cur_node->properties;
         // printf("%d\n",i);
+   
          xmlNode *snapshot = attr->children;
          char *getAttrValue = (char *)snapshot->content;
          char *getAttrName = (char *)attr->name;
                   if(getAttrValue != NULL && getAttrName != NULL  ){
+                    for (attr = cur_node->properties; attr != NULL; attr = attr->next)
+                    {
+                        if(version == 0){
+                          //  printf("comes here");
+                            SVGimage *list = (SVGimage *)data;
+                            Attribute *attribute = createAttribute(getAttrName, getAttrValue);
+                                insertBack(list -> otherAttributes , attribute);
+                        }
+                        if(version == 1){
+                            Group *list = (Group *)data;
+                            Attribute *attribute = createAttribute(getAttrName, getAttrValue);
+                            insertBack(list -> otherAttributes , attribute);
+                        }
+                    }
+                      
+
+                     
+                      
+                      
                     //9
                     long nodeCounter = xmlChildElementCount(cur_node);
                    xmlNode *temp_cur_children = cur_node -> children;
@@ -613,6 +774,8 @@ void insertGroup(void *data, xmlNode *cur_node, int version){
                       const char *validateName;
                  
                     while(nodeCounter != 0){
+                    
+                    
                     temp_cur_node = xmlNextElementSibling(temp_cur_children);
                         if(temp_cur_node != NULL){
                             validateName = (const char *) temp_cur_node -> name;
@@ -632,8 +795,8 @@ void insertGroup(void *data, xmlNode *cur_node, int version){
 
                             }
                             if(strcmp(validateName, "g") == 0){
+                                //Calls recursion - goes to the nexr group
                                insertGroup(group, temp_cur_node, 1);
-                            //inner loop? g under g
                             }
                             
                             
