@@ -110,12 +110,14 @@ int numAttr(SVGimage *img){
 }
 //gets num of groups with length
 int numGroupsWithLen(SVGimage *img, int len){
-    if(img == NULL){
+    if(img == NULL || getLength(img -> groups) == 0){
         return 0;
     }
     int counter = 0;
     void *elem;
-    ListIterator iter = createIterator(getGroups(img));
+    List *list = getGroups(img);
+    
+    ListIterator iter = createIterator(list);
       while((elem = nextElement(&iter)) != NULL){
           int i = 0;
         Group *group = (Group *) elem;
@@ -129,6 +131,8 @@ int numGroupsWithLen(SVGimage *img, int len){
               counter++;
           }
       }
+    freeList(list);
+
 
     
     return counter;
@@ -137,12 +141,14 @@ int numGroupsWithLen(SVGimage *img, int len){
 
 int numRectsWithArea(SVGimage *img, float area){
     int num = 0;
-    if(img == NULL){
+    if(img == NULL || img -> rectangles -> length == 0){
     return 0;
     }
     else{
         void* elem;
-        ListIterator iter = createIterator(getRects(img));
+        List *list;
+               list = getRects(img);
+        ListIterator iter = createIterator(list);
         while((elem = nextElement(&iter)) != NULL){
             Rectangle *rectangle = (Rectangle *) elem;
             float calc = rectangle -> height * rectangle -> width;
@@ -150,18 +156,21 @@ int numRectsWithArea(SVGimage *img, float area){
                 num++;
             }
         }
+        freeList(list);
         
     }
     return num;
 }
 int numCirclesWithArea(SVGimage *img, float area){
    int num = 0;
-    if(img == NULL){
+    if(img == NULL || img -> circles -> length == 0){
     return 0;
     }
     else{
+        List *list;
+        list = getCircles(img);
         void* elem;
-        ListIterator iter = createIterator(getCircles(img));
+        ListIterator iter = createIterator(list);
         while((elem = nextElement(&iter)) != NULL){
             Circle *circle = (Circle *) elem;
             float calc = 3.14159265358979323846 * (circle -> r * circle -> r);
@@ -169,28 +178,41 @@ int numCirclesWithArea(SVGimage *img, float area){
                 num++;
             }
         }
+        freeList(list);
+        
         
     }
     return num;
 }
 int numPathsWithdata(SVGimage *img, char *data){
     char *str;
-    str = malloc(strlen(data) * 4);
+    List *list;
+
     int num = 0;
-       if(img == NULL){
+    if(img == NULL || img -> paths -> length == 0){
+           printf("null");
        return 0;
        }
        else{
+           str = malloc(1000);
+
         
            void* elem;
-           ListIterator iter = createIterator(getPaths(img));
+           list = getPaths(img);
+      
+           ListIterator iter = createIterator(list);
            while((elem = nextElement(&iter)) != NULL){
+               
                Path *path = (Path *) elem;
+               printf("\n%s\n", path -> data);
                strcpy(str,  path ->data);
                if(strcmp(str, data) == 0){
                    num++;
                }
            }
+           free(str);
+            freeList(list);
+
            
        }
 
@@ -472,7 +494,7 @@ List* recursiveRect(List *list, Group *group){
               while((elem3 = nextElement(&iter3)) != NULL){
               Rectangle *rect = (Rectangle *) elem3;
                   insertBack(list, rect);
-                  printf("hi\t");
+                //  printf("hi\t");
 
           }
         }
@@ -504,7 +526,7 @@ SVGimage *createSVGimage(char *fileName)
         LIBXML_TEST_VERSION
         doc = xmlReadFile(fileName, NULL, 0);
         if(doc == NULL){
-            printf("error: could not parse file %s\n", fileName);
+         //   printf("error: could not parse file %s\n", fileName);
             return NULL;
         }
         else{
@@ -515,9 +537,16 @@ SVGimage *createSVGimage(char *fileName)
         print_element_names(root_element, &list);
             validateNameSpace((char *)root_element -> ns -> href, &list);
          
-  List *listc = getCircles(list);
+            List *listc = getCircles(list);
             freeList(listc);
+
+            numGroupsWithLen(list, 3);
+         // numCirclesWithArea(list, 2);
+        
+                //numPathsWithdata(list, "mem");
+
             /*
+        List *listr = getRects(list);
         
         printf("GetRects %d\n", getLength(listr));
 
