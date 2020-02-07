@@ -20,7 +20,7 @@ bin/libsvgparse.so: LinkedListAPI.o SVGParser.o
 LinkedListAPI.o: src/LinkedListAPI.c include/LinkedListAPI.h
 	$(CC) $(CFLAGS) -c -fpic src/LinkedListAPI.c
 
-SVGParser.o: src/SVGParser.c include/SVGParser.h
+SVGParser.o: src/SVGParser.c include/SVGParser_A2.h
 	$(CC) $(CFLAGS) -I$(INC_PATH) -c -fpic src/SVGParser.c  -lxml2 
 
 main: src/main.c
