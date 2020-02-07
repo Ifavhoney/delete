@@ -2,8 +2,8 @@
 //Creds to T.A for helping me to understand how to write c in an object oriented way
 //e.g began with initialize objects, andn therein set me off to complete objects
 #include "SVGParser_A2.h"
-#include <stdlib.h>
 #include <math.h>
+
 
 typedef struct
 {
@@ -526,10 +526,14 @@ List* recursiveRect(List *list, Group *group){
     return list;
   
 }
- 
+
+bool validateSVGimage(SVGimage* doc, char* schemaFile){
+    
+    return false;
+}
 
 //Got this from prof
-SVGimage *createSVGimage(char *fileName)
+SVGimage* createValidSVGimage(char* fileName, char* schemaFile)
 {
 
    //Initialize Our tempData - we'll be reusing this memory, modifying the data
@@ -540,103 +544,65 @@ SVGimage *createSVGimage(char *fileName)
         LIBXML_TEST_VERSION
         doc = xmlReadFile(fileName, NULL, 0);
         if(doc == NULL){
-         //   printf("error: could not parse file %s\n", fileName);
+            printf("error: could not parse file %s\n", fileName);
             return NULL;
         }
         else{
             
             
          /*Get the root element node */
-        root_element = xmlDocGetRootElement(doc);
-        print_element_names(root_element, &list);
+            root_element = xmlDocGetRootElement(doc);
+            print_element_names(root_element, &list);
             validateNameSpace((char *)root_element -> ns -> href, &list);
-         
-    
-
-
-/*
+            xmlSchemaPtr schema = NULL;
+            xmlSchemaParserCtxtPtr ctxt;
+            xmlLineNumbersDefault(1);
             
-numRectsWithArea(NULL, 3);
-            numGroupsWithLen(NULL, 3);
+            //Creates an XML Schemas parse context
+            ctxt = xmlSchemaNewParserCtxt(schemaFile);
+            
+            //Handles errors within the parser context (returns 0 if good)
+               xmlSchemaSetParserErrors(ctxt, (xmlSchemaValidityErrorFunc) fprintf, (xmlSchemaValidityWarningFunc) fprintf, stderr);
+            //returns an xml Structure for me to comapre with
+            schema = xmlSchemaParse(ctxt);
+            xmlSchemaFreeParserCtxt(ctxt);
+            int ret = -1;
+            xmlSchemaValidCtxtPtr validator;
+            validator = xmlSchemaNewValidCtxt(schema);
+            xmlSchemaSetValidErrors(validator, (xmlSchemaValidityErrorFunc) fprintf, (xmlSchemaValidityWarningFunc) fprintf, stderr);
+            
+            ret = xmlSchemaValidateDoc(validator, doc);
+            if(ret == 0){
 
-          numCirclesWithArea(NULL, 2);
+                if(schema != NULL){
+                    xmlSchemaFree(schema);
+                }
+                xmlSchemaFreeValidCtxt(validator);
+                xmlSchemaCleanupTypes();
+
+               // xmlMemoryDump();
+
+                //return true;
+            }
+            else{
+                 printf("ALL GOOD!!");
+
+                if(schema != NULL){
+                                  xmlSchemaFree(schema);
+                              }
+                xmlSchemaFreeValidCtxt(validator);
+                xmlSchemaCleanupTypes();
+
+             //   return false;
+            }
+            
+
+
+            
+            
         
-            numPathsWithdata(NULL, NULL);
 
-    deleteAttribute(NULL);
-  char *oy = attributeToString("NULL");
-  free(oy);
-compareAttributes(2, 2);
-
-deleteGroup(NULL);
-char *ho = groupToString("NULL");
-free(ho);
-compareGroups(NULL, NULL);
-
-deleteCircle(NULL);
-char *hi = circleToString(NULL);
-free(hi);
-*/
-            /*
-        List *listr = getRects(list);
         
-        printf("GetRects %d\n", getLength(listr));
-
-            List *listc = getCircles(list);
-            
-            List *listp = getPaths(list);
-            List *listg = getGroups(list);
-            
-            printf("\n\n%d", numGroupsWithLen(list, 2));
-        freeList(listr);
-            freeList(listc);
-            freeList(listp);
-            freeList(listg);
-             */
-            
-            /*
-            
-            Group *group = list -> groups -> head -> data;
-            Group *grp2 = group -> groups -> head -> data;
-            List *grp3 = grp2 -> groups;
-           printf("%d", getLength(grp3));
-        */
-          
-            /*
-            
-            Group *group = list -> groups -> head -> data;
-            Group *grp2 = group -> groups -> head -> data;
-            List *grp3 = grp2 -> groups;
-
-            printf("%d", getLength(grp3));
-
-          */
-            
-            /*
-    if(strlen(list -> title) < 1){
-        strcpy(list -> title, " ");
-        }
-            if(strlen(list -> description) < 1){
-                  strcpy(list -> description, " ");
-                  }
-             */
-            
-    
-        
-        
-        /*
-        Circle *circle = createCircleObject(1,2,3,"cm");
-        Attribute *attribute = createAttribute("HELLO", "JHSDSD");
-        insertBack(circle -> otherAttributes, attribute );
-        deleteCircle(circle);
-*/
-
-
-         //  printf("%s", attribute -> value);
-           
-            
-                    
-        //printf("\n %s \n", path -> otherAttributes -> head );
          }
 
     xmlFreeDoc(doc);

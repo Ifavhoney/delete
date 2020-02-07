@@ -6,13 +6,13 @@
 //  Copyright © 2020 Jason Eddy. All rights reserved.
 //
 
-#include "../include/SVGParser_A2.h"
+#include "SVGParser_A2.h"
 
 int main(int argc, const char *argv[])
 {
     // insert code here...
     SVGimage *image = NULL;
-   image = createSVGimage("quad01.svg");
+   image = createValidSVGimage("Emoji_poo.svg", "svg.xsd");
     if (image == NULL)
     {
         printf("NULL!!");
@@ -21,7 +21,11 @@ int main(int argc, const char *argv[])
     {
 
     }
-            deleteSVGimage(image);    
 
+            deleteSVGimage(image);
+    
+  
+
+            
     return 0;
 }
