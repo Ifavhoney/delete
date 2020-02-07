@@ -13,14 +13,6 @@ int main(int argc, const char *argv[])
     // insert code here...
     SVGimage *image = NULL;
    image = createValidSVGimage("Emoji_poo.svg", "svg.xsd");
-    if (image == NULL)
-    {
-        printf("NULL!!");
-    }
-    else
-    {
-
-    }
 
             deleteSVGimage(image);
     
