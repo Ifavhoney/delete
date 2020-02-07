@@ -38,6 +38,7 @@ void validateTitle(char *title, SVGimage **list);
 void validateDescription(char *description, SVGimage **list);
 int hasAttribute(List *otherAttributes);
 //Part 2
+bool isAboveZero(char *value);
 bool isValidXML(xmlDoc *doc, char *schemaFile);
 void cleanUp(xmlDoc *doc, SVGimage *list);
 int hasAttribute(List *otherAttributes)
@@ -547,6 +548,38 @@ List *recursiveRect(List *list, Group *group)
     return list;
 }
 
+SVGimage *createSVGimage(char *fileName)
+{
+
+   //Initialize Our tempData - we'll be reusing this memory, modifying the data
+    xmlDoc *doc = NULL;
+    xmlNode *root_element = NULL;
+      SVGimage* list = initializeObjects();
+
+        LIBXML_TEST_VERSION
+        doc = xmlReadFile(fileName, NULL, 0);
+        if(doc == NULL){
+         //   printf("error: could not parse file %s\n", fileName);
+            return NULL;
+        }
+        else{
+            
+            
+         /*Get the root element node */
+        root_element = xmlDocGetRootElement(doc);
+        print_element_names(root_element, &list);
+            validateNameSpace((char *)root_element -> ns -> href, &list);
+         
+
+         }
+
+    xmlFreeDoc(doc);
+    xmlCleanupParser();
+    return list;
+
+    //Returns the pointer of type SVGimage containing all data
+}
+
 //Got this from prof
 SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
 {
@@ -566,26 +599,28 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     else
     {
         //Checks if it's a valid XML
-        if(isValidXML(doc, schemaFile) == true){
+        if (isValidXML(doc, schemaFile) == true)
+        {
             /*Get the root element node */
             root_element = xmlDocGetRootElement(doc);
             print_element_names(root_element, &list);
             validateNameSpace((char *)root_element->ns->href, &list);
 
-            if( validateSVGimage(list, schemaFile) == true){
-                
+            if (validateSVGimage(list, schemaFile) == true)
+            {
             }
-            else{
+            else
+            {
 
                 printf("\nNot a valid SVG Image\n");
             }
         }
-        else{
-    
+        else
+        {
+
             cleanUp(doc, list);
             printf("\nNot a valid XML File\n");
             return NULL;
-
         }
     }
 
@@ -596,40 +631,94 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     //Returns the pointer of type SVGimage containing all data
 }
 //Cleans up failed attemp to create an SVG image
-void cleanUp(xmlDoc *doc, SVGimage *list){
+void cleanUp(xmlDoc *doc, SVGimage *list)
+{
     xmlFreeDoc(doc);
     xmlCleanupParser();
     deleteSVGimage(list);
 }
 bool validateSVGimage(SVGimage *doc, char *schemaFile)
-{   if(doc == NULL){
+{
+    if (doc == NULL)
+    {
         return false;
     }
-    else{
+    else
+    {
+        bool validFloat = true;
         void *elem;
-    List *tempDoc = doc -> otherAttributes;
+        List *tempDoc = doc->otherAttributes;
         ListIterator iter = createIterator(tempDoc);
 
-     
         while ((elem = nextElement(&iter)) != NULL)
         {
-            Attribute *rect = (Attribute *)elem;
+            Attribute *svg = (Attribute *)elem;
+            if(strcmp("version", svg ->name) == 0){
+                validFloat = isAboveZero(svg ->value);
+                if(!validFloat){
+                    return false;
+                    break;
+                }
+            }
+            if(strcmp("x", svg ->name) == 0){
+                           validFloat = isAboveZero(svg ->value);
+                           if(!validFloat){
+                               return false;
+                               break;
+                           }
+                       }
+            
+            if(strcmp("y", svg ->name) == 0){
+                           validFloat = isAboveZero(svg ->value);
+                           if(!validFloat){
+                               return false;
+                               break;
+                           }
+                       }
+            if(strcmp("height", svg ->name) == 0){
+                                 validFloat = isAboveZero(svg ->value);
+                                 if(!validFloat){
+                                     return false;
+                                     break;
+                                 }
+                             }
+            if(strcmp("width", svg ->name) == 0){
+                                         validFloat = isAboveZero(svg ->value);
+                                         if(!validFloat){
+                                             return false;
+                                             break;
+                                         }
+                                     }
+            if(strcmp("viewbox", svg ->name) == 0){
+                                         validFloat = isAboveZero(svg ->value);
+                                         if(!validFloat){
+                                             return false;
+                                             break;
+                                         }
+                                     }
+                  
+            
+            
         }
-         
-        
-        //freeList(<#List *list#>)
-        
+
     }
-    
-    
-    
+
     return true;
 }
-
+bool isAboveZero(char *value){
+    if(atof(value) >= 0){
+        return true;
+    }
+    else{
+        return false;
+    }
+    return false;
+}
 //http://knol2share.blogspot.com/2009/05/validate-xml-against-xsd-in-c.html
 //Link given by prof
-bool isValidXML(xmlDoc *doc, char *schemaFile){
-    
+bool isValidXML(xmlDoc *doc, char *schemaFile)
+{
+
     xmlSchemaPtr schema = NULL;
     xmlSchemaParserCtxtPtr xmlContxt;
     xmlLineNumbersDefault(1);
@@ -669,9 +758,8 @@ bool isValidXML(xmlDoc *doc, char *schemaFile){
         xmlSchemaFreeValidCtxt(validator);
         xmlSchemaCleanupTypes();
         xmlMemoryDump();
-         return false;
+        return false;
     }
-
 }
 
 SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
