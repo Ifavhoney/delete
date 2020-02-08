@@ -45,6 +45,10 @@ bool isValidSVGTag(SVGimage *image);
 void cleanUp(xmlDoc *doc, SVGimage *list);
 bool isValidPathTag(SVGimage *image);
 bool isProperlySpaced(char *value);
+bool isGoodLength(char *value);
+bool isValidCircleTag(SVGimage *image);
+
+
 int hasAttribute(List *otherAttributes)
 {
     if (otherAttributes->length == 0)
@@ -661,15 +665,79 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
         {
             return valid;
         }
+        valid = isValidCircleTag(image);
         return true;
     }
 }
 
-/*
+
 bool isValidCircleTag(SVGimage *image){
+    bool valid = true;
+       void *elem;
+       List *tempList = image->circles;
+       ListIterator iter = createIterator(tempList);
+    while ((elem = nextElement(&iter)) != NULL)
+       {
+           Circle *circle = (Circle *)elem;
+           if(circle -> r < 0 ){
+               return false;
+               break;
+           }
+           
+       }
+    
+    return valid;
     
 }
- */
+
+bool isAboveZero(char *value)
+{
+    int i;
+    char array[strlen(value)];
+    strcpy(array, value);
+    int unit = 0;
+    for (i = 0; i < strlen(value); i++)
+    {
+        //Sees if there is a negative
+        if (array[i] == '-')
+        {
+            return false;
+            break;
+        }
+        
+        //if there's no space, then it better be a type and it's not a digit and never been entered
+        if (isdigit(array[i]) == false && array[i] != ' ' && unit == 0)
+        {
+            unit++;
+            bool acceptableLength = isGoodLength(value);
+            if(acceptableLength == false){
+                return false;
+                break;
+            }
+               
+                   
+        }
+    }
+
+    return true;
+}
+ 
+//only use when the value has been throghoughly iterated
+bool isGoodLength(char *value){
+    if (strstr(value, "em") != NULL || strstr(value, "ex") != NULL ||
+        strstr(value, "px") != NULL || strstr(value, "in") != NULL || strstr(value, "cm") != NULL || strstr(value, "mm") != NULL || strstr(value, "pt") != NULL ||
+        strstr(value, "%") != NULL ||
+        strstr(value, "pc") != NULL
+        
+        )
+                  {
+                      printf("\n\n%s", value);
+                      return true;
+                  }
+    else{
+        return false;
+    }
+}
 
 bool isValidPathTag(SVGimage *image){
     bool valid = true;
@@ -703,7 +771,7 @@ bool isProperlySpaced(char *value){
            if(isdigit(array[i]) == false){
                                   asci = array[i];
                                  if(asci >= 65 && asci <= 122){
-                                     printf("\t%c\n", array[i]);
+                                   //  printf("\t%c\n", array[i]);
                                      //go to next int
                                      i++;
                                      while(true){
@@ -829,44 +897,7 @@ bool isValidSVGTag(SVGimage *image)
     }
     return valid;
 }
-bool isAboveZero(char *value)
-{
-    int i;
-    char array[strlen(value)];
-    strcpy(array, value);
-    int unit = 0;
-    for (i = 0; i < strlen(value); i++)
-    {
 
-        if (array[i] == '-')
-        {
-            return false;
-            break;
-        }
-
-        if (isdigit(array[i]) == false && array[i] != ' ' && unit == 0)
-        {
-                          //  strcpy(unit,);
-            unit++;
-                if (strstr(value, "em") != NULL || strstr(value, "ex") != NULL ||
-                    strstr(value, "px") != NULL || strstr(value, "in") != NULL || strstr(value, "cm") != NULL || strstr(value, "mm") != NULL || strstr(value, "pt") != NULL ||
-                    strstr(value, "%") != NULL ||
-                    strstr(value, "pc") != NULL
-                    
-                    )
-                              {
-                                  printf("\n\n%s", value);
-                              }
-                else{
-                    return false;
-                    break;
-                }
-                   
-        }
-    }
-
-    return true;
-}
 //http://knol2share.blogspot.com/2009/05/validate-xml-against-xsd-in-c.html
 //Link given by prof
 bool isValidXML(xmlDoc *doc, char *schemaFile)
