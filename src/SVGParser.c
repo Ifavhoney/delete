@@ -3,6 +3,7 @@
 //e.g began with initialize objects, andn therein set me off to complete objects
 #include "SVGParser_A2.h"
 #include <math.h>
+#include <ctype.h>
 
 typedef struct
 {
@@ -40,7 +41,10 @@ int hasAttribute(List *otherAttributes);
 //Part 2
 bool isAboveZero(char *value);
 bool isValidXML(xmlDoc *doc, char *schemaFile);
+bool isValidSVGTag(SVGimage *image);
 void cleanUp(xmlDoc *doc, SVGimage *list);
+bool isValidPathTag(SVGimage *image);
+bool isProperlySpaced(char *value);
 int hasAttribute(List *otherAttributes)
 {
     if (otherAttributes->length == 0)
@@ -638,85 +642,228 @@ void cleanUp(xmlDoc *doc, SVGimage *list)
 }
 bool validateSVGimage(SVGimage *doc, char *schemaFile)
 {
-    if (doc == NULL)
+    SVGimage *image = doc;
+    if (image == NULL)
     {
         return false;
     }
     else
     {
         bool valid = true;
-        void *elem;
-        List *tempDoc = doc->otherAttributes;
-        ListIterator iter = createIterator(tempDoc);
-
-        while ((elem = nextElement(&iter)) != NULL)
+        valid = isValidSVGTag(image);
+        if (valid == false)
         {
-            Attribute *svg = (Attribute *)elem;
-            if (strcmp("version", svg->name) == 0)
-            {
-                valid = isAboveZero(svg->value);
-                if (!valid)
-                {
-                    return false;
-                    break;
-                }
-            }
-            if (strcmp("x", svg->name) == 0)
-            {
-                valid = isAboveZero(svg->value);
-                if (!valid)
-                {
-                    return false;
-                    break;
-                }
-            }
-
-            if (strcmp("y", svg->name) == 0)
-            {
-                valid = isAboveZero(svg->value);
-                if (!valid)
-                {
-                    return false;
-                    break;
-                }
-            }
-            if (strcmp("height", svg->name) == 0)
-            {
-                valid = isAboveZero(svg->value);
-                if (!valid)
-                {
-                    return false;
-                    break;
-                }
-            }
-            if (strcmp("width", svg->name) == 0)
-            {
-                valid = isAboveZero(svg->value);
-            }
-            if (strcmp("viewBox", svg->name) == 0)
-            {
-              valid = isAboveZero(svg->value);
-       
-               // free(parseBySpace);
-                
-                
-            }
+            printf("invalid");
+            return valid;
         }
+        valid = isValidPathTag( image);
+        if (valid == false)
+        {
+            return valid;
+        }
+        return true;
     }
+}
 
+/*
+bool isValidCircleTag(SVGimage *image){
+    
+}
+ */
+
+bool isValidPathTag(SVGimage *image){
+    bool valid = true;
+    void *elem;
+    List *tempList = image->paths;
+    ListIterator iter = createIterator(tempList);
+    
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+        Path *path = (Path *)elem;
+       valid = isProperlySpaced(path -> data);
+        if(valid == false){
+            return valid;
+            break;
+        }
+        
+        
+    }
+    return valid;
+}
+//Checks if path is probably spaced
+bool isProperlySpaced(char *value){
+    
+    int i;
+       char array[strlen(value)];
+       strcpy(array, value);
+        int digit = 1;
+    int asci;
+       for (i = 0; i < strlen(value); i++)
+       {
+           if(isdigit(array[i]) == false){
+                                  asci = array[i];
+                                 if(asci >= 65 && asci <= 122){
+                                     printf("\t%c\n", array[i]);
+                                     //go to next int
+                                     i++;
+                                     while(true){
+                                         if(i == strlen(value)){
+                                             break;
+                                         }
+                                         asci = array[i];
+                                         //checks if the next asci is a space
+                                        
+                                         int nextAsci = array[i+1];
+                                         //comma or dash (-)
+                                         if(asci == 44 || asci == 45){
+                                             digit++;
+                                         }
+                                         //if it's a space
+                                         if(nextAsci == 32){
+                                          
+                                             
+                                             //check untill the next Alphabetical
+                                             nextAsci = array[i + 2];
+                                             if(nextAsci >= 65 && nextAsci <= 122 && array[i + 3] != '-'){
+                                                 break;
+                                             }
+                                             //If not alphabetic, increment digit
+                                             nextAsci = array[i + 1];
+                                             
+                                             
+                                             if(nextAsci == 32 && isdigit(array[i+2])){
+                                                 digit++;
+                                                 
+                                             }
+                                         }
+                                         //increment array inside;
+                                         i++;
+                                     }
+                                     /*
+                                     printf("\nRESETTED %d @ I %d && max is %d\n", digit, i, strlen(value));
+                                      */
+                                     if(digit % 2 != 0){
+                                                                             return false;
+                                                                         }
+                                     digit = 1;
+                                 }
+                    
+                                                    
+           }
+
+       }
+    
+    printf("\nComplete cycle %d\n", digit );
     return true;
 }
 
+
+ 
+bool isValidSVGTag(SVGimage *image)
+{
+    bool valid = true;
+    void *elem;
+    List *tempList = image->otherAttributes;
+    ListIterator iter = createIterator(tempList);
+
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+        Attribute *svg = (Attribute *)elem;
+        if (strcmp("version", svg->name) == 0)
+        {
+            valid = isAboveZero(svg->value);
+            if (!valid)
+            {
+                return false;
+                break;
+            }
+        }
+        if (strcmp("x", svg->name) == 0)
+        {
+            valid = isAboveZero(svg->value);
+            if (!valid)
+            {
+                return false;
+                break;
+            }
+        }
+
+        if (strcmp("y", svg->name) == 0)
+        {
+            valid = isAboveZero(svg->value);
+            if (!valid)
+            {
+                return false;
+                break;
+            }
+        }
+        if (strcmp("height", svg->name) == 0)
+        {
+            valid = isAboveZero(svg->value);
+            if (!valid)
+            {
+                return false;
+                break;
+            }
+        }
+        if (strcmp("width", svg->name) == 0)
+        {
+            valid = isAboveZero(svg->value);
+            if (!valid)
+            {
+
+                return false;
+                break;
+            }
+        }
+        if (strcmp("viewBox", svg->name) == 0)
+        {
+
+            valid = isAboveZero(svg->value);
+            if (!valid)
+            {
+                return false;
+                break;
+            }
+        }
+    }
+    return valid;
+}
 bool isAboveZero(char *value)
 {
+    int i;
     char array[strlen(value)];
-               strcpy(array, value);
-               for (int i = 0; i < strlen(value); i++) {
-                   if(array[i] == '-'){
-                       break;
-                       return false;
-                   }
-               }
+    strcpy(array, value);
+    int unit = 0;
+    for (i = 0; i < strlen(value); i++)
+    {
+
+        if (array[i] == '-')
+        {
+            return false;
+            break;
+        }
+
+        if (isdigit(array[i]) == false && array[i] != ' ' && unit == 0)
+        {
+                          //  strcpy(unit,);
+            unit++;
+                if (strstr(value, "em") != NULL || strstr(value, "ex") != NULL ||
+                    strstr(value, "px") != NULL || strstr(value, "in") != NULL || strstr(value, "cm") != NULL || strstr(value, "mm") != NULL || strstr(value, "pt") != NULL ||
+                    strstr(value, "%") != NULL ||
+                    strstr(value, "pc") != NULL
+                    
+                    )
+                              {
+                                  printf("\n\n%s", value);
+                              }
+                else{
+                    return false;
+                    break;
+                }
+                   
+        }
+    }
 
     return true;
 }
