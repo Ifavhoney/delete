@@ -551,27 +551,26 @@ List *recursiveRect(List *list, Group *group)
 SVGimage *createSVGimage(char *fileName)
 {
 
-   //Initialize Our tempData - we'll be reusing this memory, modifying the data
+    //Initialize Our tempData - we'll be reusing this memory, modifying the data
     xmlDoc *doc = NULL;
     xmlNode *root_element = NULL;
-      SVGimage* list = initializeObjects();
+    SVGimage *list = initializeObjects();
 
-        LIBXML_TEST_VERSION
-        doc = xmlReadFile(fileName, NULL, 0);
-        if(doc == NULL){
-         //   printf("error: could not parse file %s\n", fileName);
-            return NULL;
-        }
-        else{
-            
-            
-         /*Get the root element node */
+    LIBXML_TEST_VERSION
+    doc = xmlReadFile(fileName, NULL, 0);
+    if (doc == NULL)
+    {
+        //   printf("error: could not parse file %s\n", fileName);
+        return NULL;
+    }
+    else
+    {
+
+        /*Get the root element node */
         root_element = xmlDocGetRootElement(doc);
         print_element_names(root_element, &list);
-            validateNameSpace((char *)root_element -> ns -> href, &list);
-         
-
-         }
+        validateNameSpace((char *)root_element->ns->href, &list);
+    }
 
     xmlFreeDoc(doc);
     xmlCleanupParser();
@@ -645,7 +644,7 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
     }
     else
     {
-        bool validFloat = true;
+        bool valid = true;
         void *elem;
         List *tempDoc = doc->otherAttributes;
         ListIterator iter = createIterator(tempDoc);
@@ -653,66 +652,73 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
         while ((elem = nextElement(&iter)) != NULL)
         {
             Attribute *svg = (Attribute *)elem;
-            if(strcmp("version", svg ->name) == 0){
-                validFloat = isAboveZero(svg ->value);
-                if(!validFloat){
+            if (strcmp("version", svg->name) == 0)
+            {
+                valid = isAboveZero(svg->value);
+                if (!valid)
+                {
                     return false;
                     break;
                 }
             }
-            if(strcmp("x", svg ->name) == 0){
-                           validFloat = isAboveZero(svg ->value);
-                           if(!validFloat){
-                               return false;
-                               break;
-                           }
-                       }
-            
-            if(strcmp("y", svg ->name) == 0){
-                           validFloat = isAboveZero(svg ->value);
-                           if(!validFloat){
-                               return false;
-                               break;
-                           }
-                       }
-            if(strcmp("height", svg ->name) == 0){
-                                 validFloat = isAboveZero(svg ->value);
-                                 if(!validFloat){
-                                     return false;
-                                     break;
-                                 }
-                             }
-            if(strcmp("width", svg ->name) == 0){
-                                         validFloat = isAboveZero(svg ->value);
-                                         if(!validFloat){
-                                             return false;
-                                             break;
-                                         }
-                                     }
-            if(strcmp("viewbox", svg ->name) == 0){
-                                         validFloat = isAboveZero(svg ->value);
-                                         if(!validFloat){
-                                             return false;
-                                             break;
-                                         }
-                                     }
-                  
-            
-            
-        }
+            if (strcmp("x", svg->name) == 0)
+            {
+                valid = isAboveZero(svg->value);
+                if (!valid)
+                {
+                    return false;
+                    break;
+                }
+            }
 
+            if (strcmp("y", svg->name) == 0)
+            {
+                valid = isAboveZero(svg->value);
+                if (!valid)
+                {
+                    return false;
+                    break;
+                }
+            }
+            if (strcmp("height", svg->name) == 0)
+            {
+                valid = isAboveZero(svg->value);
+                if (!valid)
+                {
+                    return false;
+                    break;
+                }
+            }
+            if (strcmp("width", svg->name) == 0)
+            {
+                valid = isAboveZero(svg->value);
+            }
+            if (strcmp("viewBox", svg->name) == 0)
+            {
+              valid = isAboveZero(svg->value);
+       
+               // free(parseBySpace);
+                
+                
+            }
+        }
     }
 
     return true;
 }
-bool isAboveZero(char *value){
-    if(atof(value) >= 0){
-        return true;
-    }
-    else{
-        return false;
-    }
-    return false;
+
+bool isAboveZero(char *value)
+{
+    char array[strlen(value)];
+               strcpy(array, value);
+               for (int i = 0; i < strlen(value); i++) {
+                   if(array[i] == '-'){
+                       break;
+                       return false;
+                   }
+               }
+
+    return true;
 }
 //http://knol2share.blogspot.com/2009/05/validate-xml-against-xsd-in-c.html
 //Link given by prof
