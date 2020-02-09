@@ -42,7 +42,11 @@ int hasAttribute(List *otherAttributes);
 bool isAboveZero(char *value);
 bool isValidXML(xmlDoc *doc, char *schemaFile);
 bool isValidSVGTag(SVGimage *image);
+bool isValidRectTag(SVGimage *image);
+bool isGoodRectangle(Rectangle *rect);
 void cleanUp(xmlDoc *doc, SVGimage *list);
+bool isGoodRectAttribute(Attribute *attribute, Rectangle *rect);
+bool isHalfGreater(Attribute *attribute, Rectangle *rect);
 bool isValidPathTag(SVGimage *image);
 bool isProperlySpaced(char *value);
 bool isGoodLength(char *value);
@@ -644,33 +648,128 @@ void cleanUp(xmlDoc *doc, SVGimage *list)
     xmlCleanupParser();
     deleteSVGimage(list);
 }
+
 bool validateSVGimage(SVGimage *doc, char *schemaFile)
 {
     SVGimage *image = doc;
-    if (image == NULL)
+    if (image == NULL || image -> circles == NULL || image -> rectangles == NULL || image ->paths == NULL || image ->groups == NULL || image ->otherAttributes == NULL)
     {
+        printf("no good");
         return false;
     }
+    
     else
     {
         bool valid = true;
         valid = isValidSVGTag(image);
         if (valid == false)
         {
-            printf("invalid");
+            printf("invalid @ svg");
             return valid;
         }
         valid = isValidPathTag( image);
         if (valid == false)
         {
+            printf("invalid @ Path");
+
             return valid;
         }
         valid = isValidCircleTag(image);
+        if(valid == false){
+            printf("invalid @ Circle");
+
+            return valid;
+        }
+        valid = isValidRectTag(image);
+             if(valid == false){
+                 printf("invalid @ Rect");
+                 return valid;
+             }
+        
+        
         return true;
     }
 }
 
 
+bool isValidRectTag(SVGimage *image){
+    bool valid = true;
+       void *elem;
+       List *tempList = image->rectangles;
+       ListIterator iter = createIterator(tempList);
+    while ((elem = nextElement(&iter)) != NULL)
+       {
+           Rectangle *rect = (Rectangle *)elem;
+           valid = isGoodRectangle(rect);
+
+       }
+    return valid;
+}
+bool isGoodRectangle(Rectangle *rect){
+
+    if(rect ->width < 0 || rect ->height < 0){
+        return false;
+    }
+    if(rect ->otherAttributes == NULL){
+        return false;
+    }
+    else{
+        bool valid = true;
+           void *elem;
+           List *tempList = rect->otherAttributes;
+           ListIterator iter = createIterator(tempList);
+        while ((elem = nextElement(&iter)) != NULL)
+           {
+               Attribute *attribute = (Attribute *)elem;
+               valid = isGoodRectAttribute(attribute, rect);
+               if(valid == false){
+                   return false;
+                   break;
+               }
+
+           }
+
+    }
+    return true;
+}
+/*
+ If rx is greater than half of ‘width’, then set rx to half of ‘width’.
+ If ry is greater than half of ‘height’, then set ry to half of ‘height’.
+ */
+
+bool isGoodRectAttribute(Attribute *attribute, Rectangle *rect){
+    bool valid = true;
+    if(strcmp(attribute -> name, "rx") == 0 || strcmp(attribute -> name, "ry") == 0 ){
+      valid =  isAboveZero(attribute -> value);
+        if(valid == false){
+            return false;
+        }
+        valid = isHalfGreater( attribute, rect);
+        if(valid == false){
+                   return false;
+               }
+    }
+    return true;
+}
+bool isHalfGreater(Attribute *attribute, Rectangle *rect){
+    ParsedValue *rxry = NULL;
+    rxry = createValue(attribute -> value);
+    if(strcmp(attribute -> name, "rx") == 0){
+        if((rxry -> value) > (rect -> width/2) ){
+            return false;
+        }
+    }
+    //then it has to be ry
+    else{
+        if((rxry -> value) > (rect -> height/2) ){
+                 return false;
+             }
+    }
+    
+
+    
+    return true;
+}
 bool isValidCircleTag(SVGimage *image){
     bool valid = true;
        void *elem;
@@ -706,7 +805,7 @@ bool isAboveZero(char *value)
         }
         
         //if there's no space, then it better be a type and it's not a digit and never been entered
-        if (isdigit(array[i]) == false && array[i] != ' ' && unit == 0)
+        if (isdigit(array[i]) == false && array[i] != ' ' && array[i] != '.' && array[i] != ',' && unit == 0)
         {
             unit++;
             bool acceptableLength = isGoodLength(value);
@@ -731,10 +830,10 @@ bool isGoodLength(char *value){
         
         )
                   {
-                      printf("\n\n%s", value);
                       return true;
                   }
     else{
+      printf("invalid Length\n");
         return false;
     }
 }
@@ -1530,7 +1629,7 @@ void deleteGroup(void *data)
     freeList(group->paths);
     free(group);
 }
-
+//Parses objects with values aside the common integer e.g 14px
 ParsedValue *createValue(char *data)
 {
     ParsedValue *value = malloc(sizeof(ParsedValue));
