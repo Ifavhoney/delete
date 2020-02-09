@@ -52,6 +52,9 @@ bool isProperlySpaced(char *value);
 bool isGoodLength(char *value);
 bool isValidGroupTag(List *tempList, SVGimage *image);
 bool isValidCircleTag(List *tempList);
+xmlDocPtr buildTree(SVGimage* image);
+void createPath(xmlNodePtr root_element, List *tempList);
+void writeAttribute(List *tempList, xmlNodePtr cur_child, elementType elementType);
 
 
 int hasAttribute(List *otherAttributes)
@@ -600,14 +603,18 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
             root_element = xmlDocGetRootElement(doc);
             print_element_names(root_element, &list);
             validateNameSpace((char *)root_element->ns->href, &list);
-
+            
+            //VALIDATING SVG
             if (validateSVGimage(list, schemaFile) == true)
             {
+                writeSVGimage(list, fileName);
             }
             else
             {
-
+                //JUST ADDED
+                cleanUp(doc, list);
                 printf("\nNot a valid SVG Image\n");
+                return NULL;
             }
         }
         else
@@ -624,6 +631,125 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     return list;
 
     //Returns the pointer of type SVGimage containing all data
+}
+
+/*
+ 
+ */
+
+//make sure to validate for lengths are too long
+//TEST FOR EMPTY TAGS
+//XMLDocPtr for writing docs
+xmlDocPtr buildTree(SVGimage* image){
+    xmlDocPtr doc = NULL;
+    xmlNodePtr root_element = NULL;
+    xmlNsPtr nameSpace;
+    doc = xmlNewDoc(BAD_CAST "1.0");
+    //creates a pointer to new root_node
+    root_element = xmlNewNode(NULL , BAD_CAST "svg");
+    nameSpace = xmlNewNs(root_element, BAD_CAST image -> namespace, NULL);
+    xmlSetNs(root_element, nameSpace);
+    xmlDocSetRootElement(doc, root_element);
+    //e.g title
+    xmlNewChild(root_element, NULL, BAD_CAST "title", BAD_CAST image -> title);
+    //description
+      xmlNewChild(root_element, NULL, BAD_CAST "desc", BAD_CAST image -> description);
+    
+    createPath(root_element, image -> paths);
+
+
+
+   // xmlNewChild(root_element, BAD_CAST image -> title);
+   // xmlNewProp(root_element, BAD_CAST "title", BAD_CAST image -> title);
+    return doc;
+}
+void createPath(xmlNodePtr root_element, List *tempList){
+    void *elem;
+       ListIterator iter = createIterator(tempList);
+       
+       while ((elem = nextElement(&iter)) != NULL)
+       {
+           Path *path = (Path *)elem;
+           if(path ->data != NULL){
+               //RETURNS AN XML NODE PTR
+             
+               xmlNodePtr cur_child = xmlNewChild(root_element, NULL,  BAD_CAST "path", BAD_CAST "");
+             xmlNewProp(cur_child, BAD_CAST "d", BAD_CAST path -> data);
+               
+               if(path -> otherAttributes  != NULL){
+//                   List* path_list = (List*)path->otherAttributes;
+//                   ListIterator iter = createIterator(path_list);
+//
+//                   while ((elem = nextElement(&iter)) != NULL)
+//                   {
+//                       Attribute *attribute = (Attribute *)elem;
+//                       printf("%s\n",  attribute -> name);
+//                       xmlNewProp(cur_child, BAD_CAST attribute -> name, BAD_CAST attribute -> value);
+//
+//                   }
+                //  writeAttribute(path, cur_child, PATH);
+                }
+                         
+           }
+           
+         
+           
+       }
+}
+/*
+ typedef enum COMP{
+     SVG_IMAGE, CIRC, RECT, PATH, GROUP
+ } elementType;
+
+ */
+
+void writeAttribute(List *tempList, xmlNodePtr cur_child, elementType elementType){
+    if(elementType == PATH){
+        void *elem;
+        
+        ListIterator iter = createIterator(tempList);
+        
+        while ((elem = nextElement(&iter)) != NULL)
+        {
+            Attribute *attribute = (Attribute *)elem;
+            printf("%s\n",  attribute -> name);
+            xmlNewProp(cur_child, BAD_CAST attribute -> name, BAD_CAST attribute -> value);
+
+        }
+    }
+    
+}
+//create function for circle, rect, etc
+bool writeSVGimage(SVGimage* image, char* fileName){
+    //Create an xml file: validSVG == true ? return true : return false
+    bool valid = true;
+    if (image == NULL || image -> circles == NULL
+        || image -> rectangles == NULL
+        || image ->paths == NULL || image ->groups == NULL || image ->otherAttributes == NULL || fileName == NULL){
+        return false;
+    }
+    
+         
+               /*
+               //searches for last occurence of period
+               char *extension = strrchr(fileName, '.');
+               if(extension != NULL){
+                   if(strcmp(extension + 1, "svg") == 0){
+                       printf("FOUND!!!");
+                   }
+               }
+                return false;
+                */
+
+    xmlDocPtr tree = buildTree(image);
+    int result = xmlSaveFormatFileEnc("my.svg", tree, "UTF-8", 1);
+    if(result < 0){
+        return false;
+    }
+    xmlFreeDoc(tree);
+         
+    
+    return true;
 }
 //Cleans up failed attemp to create an SVG image
 void cleanUp(xmlDoc *doc, SVGimage *list)
@@ -884,7 +1010,6 @@ bool isValidPathTag(List *tempList){
        valid = isProperlySpaced(path -> data);
         if(valid == false){
             return valid;
-            break;
         }
         
         
