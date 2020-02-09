@@ -41,16 +41,17 @@ int hasAttribute(List *otherAttributes);
 //Part 2
 bool isAboveZero(char *value);
 bool isValidXML(xmlDoc *doc, char *schemaFile);
-bool isValidSVGTag(SVGimage *image);
-bool isValidRectTag(SVGimage *image);
+bool isValidSVGTag(List *tempList);
+bool isValidRectTag(List *tempList);
 bool isGoodRectangle(Rectangle *rect);
 void cleanUp(xmlDoc *doc, SVGimage *list);
 bool isGoodRectAttribute(Attribute *attribute, Rectangle *rect);
 bool isHalfGreater(Attribute *attribute, Rectangle *rect);
-bool isValidPathTag(SVGimage *image);
+bool isValidPathTag(List *tempList);
 bool isProperlySpaced(char *value);
 bool isGoodLength(char *value);
-bool isValidCircleTag(SVGimage *image);
+bool isValidGroupTag(List *tempList);
+bool isValidCircleTag(List *tempList);
 
 
 int hasAttribute(List *otherAttributes)
@@ -661,41 +662,58 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
     else
     {
         bool valid = true;
-        valid = isValidSVGTag(image);
+        valid = isValidSVGTag(image -> otherAttributes);
         if (valid == false)
         {
             printf("invalid @ svg");
             return valid;
         }
-        valid = isValidPathTag( image);
+        valid = isValidPathTag( image ->paths);
         if (valid == false)
         {
             printf("invalid @ Path");
 
             return valid;
         }
-        valid = isValidCircleTag(image);
+        valid = isValidCircleTag(image ->circles);
         if(valid == false){
             printf("invalid @ Circle");
 
             return valid;
         }
-        valid = isValidRectTag(image);
+        valid = isValidRectTag(image -> rectangles);
              if(valid == false){
                  printf("invalid @ Rect");
                  return valid;
              }
+        valid = isValidGroupTag(image -> groups);
+                   if(valid == false){
+                       printf("invalid @ Rect");
+                       return valid;
+                   }
         
         
         return true;
     }
 }
 
+bool isValidGroupTag(List *tempList){
+   bool valid = true;
+       void *elem;
+       ListIterator iter = createIterator(tempList);
+    while ((elem = nextElement(&iter)) != NULL)
+       {
+           Group *group = (Group *)elem;
+           if(group -> paths){
+             //  valid = isValidPathTag(image);
+           }
 
-bool isValidRectTag(SVGimage *image){
+       }
+    return valid;
+}
+bool isValidRectTag(List *tempList){
     bool valid = true;
        void *elem;
-       List *tempList = image->rectangles;
        ListIterator iter = createIterator(tempList);
     while ((elem = nextElement(&iter)) != NULL)
        {
@@ -749,7 +767,7 @@ bool isGoodRectAttribute(Attribute *attribute, Rectangle *rect){
     return true;
 }
 /*
- W3C schools 
+ W3C schools
  If rx is greater than half of ‘width’, then set rx to half of ‘width’.
  If ry is greater than half of ‘height’, then set ry to half of ‘height’.
  */
@@ -774,10 +792,9 @@ bool isHalfGreater(Attribute *attribute, Rectangle *rect){
     
     return valid;
 }
-bool isValidCircleTag(SVGimage *image){
+bool isValidCircleTag(List *tempList){
     bool valid = true;
        void *elem;
-       List *tempList = image->circles;
        ListIterator iter = createIterator(tempList);
     while ((elem = nextElement(&iter)) != NULL)
        {
@@ -842,10 +859,9 @@ bool isGoodLength(char *value){
     }
 }
 
-bool isValidPathTag(SVGimage *image){
+bool isValidPathTag(List *tempList){
     bool valid = true;
     void *elem;
-    List *tempList = image->paths;
     ListIterator iter = createIterator(tempList);
     
     while ((elem = nextElement(&iter)) != NULL)
@@ -875,7 +891,7 @@ bool isProperlySpaced(char *value){
                                   asci = array[i];
                                  if(asci >= 65 && asci <= 122){
                                  //Z means end of path
-                                 if(array[i] == 'z'){
+                                 if(array[i] == 'z' && i == strlen(value) - 1){
                                      break;
                                  }
                                      //go to next int
@@ -915,7 +931,7 @@ bool isProperlySpaced(char *value){
                                              }
                                          }
                                          //increment array inside;
-                                         i++;   
+                                         i++;
                                      }
                                        
                                      //printf("\nRESETTED %d @ I %d && max is %d\n", digit, i, strlen(value));
@@ -938,11 +954,10 @@ bool isProperlySpaced(char *value){
 
 
  
-bool isValidSVGTag(SVGimage *image)
+bool isValidSVGTag(List *tempList)
 {
     bool valid = true;
     void *elem;
-    List *tempList = image->otherAttributes;
     ListIterator iter = createIterator(tempList);
 
     while ((elem = nextElement(&iter)) != NULL)
