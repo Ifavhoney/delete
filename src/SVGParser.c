@@ -715,7 +715,12 @@ bool isValidGroupTag(List *tempList, SVGimage *image){
           if(valid == false){
               return false;
           }
-     
+     list = getRects(image);
+       valid = isValidRectTag(list);
+       freeList(list);
+          if(valid == false){
+              return false;
+          }
     return valid;
 }
 
