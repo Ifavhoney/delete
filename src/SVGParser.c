@@ -702,16 +702,20 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
 
 bool isValidGroupTag(List *tempList, SVGimage *image){
    bool valid = true;
-   void *elem;
     
-   if(tempList != NULL){
-       List *list = getPaths(image);
-       valid = isValidPathTag(list);
+    List *list = getPaths(image);
+    valid = isValidPathTag(list);
+    freeList(list);
+       if(valid == false){
+           return false;
+       }
+    list = getCircles(image);
+       valid = isValidCircleTag(list);
        freeList(list);
-      }
-    
-   
-    
+          if(valid == false){
+              return false;
+          }
+     
     return valid;
 }
 
