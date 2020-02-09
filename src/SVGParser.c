@@ -732,10 +732,7 @@ bool isGoodRectangle(Rectangle *rect){
     }
     return true;
 }
-/*
- If rx is greater than half of ‘width’, then set rx to half of ‘width’.
- If ry is greater than half of ‘height’, then set ry to half of ‘height’.
- */
+
 
 bool isGoodRectAttribute(Attribute *attribute, Rectangle *rect){
     bool valid = true;
@@ -751,24 +748,31 @@ bool isGoodRectAttribute(Attribute *attribute, Rectangle *rect){
     }
     return true;
 }
+/*
+ W3C schools 
+ If rx is greater than half of ‘width’, then set rx to half of ‘width’.
+ If ry is greater than half of ‘height’, then set ry to half of ‘height’.
+ */
 bool isHalfGreater(Attribute *attribute, Rectangle *rect){
+    bool valid = true;
     ParsedValue *rxry = NULL;
     rxry = createValue(attribute -> value);
     if(strcmp(attribute -> name, "rx") == 0){
         if((rxry -> value) > (rect -> width/2) ){
-            return false;
+            valid = false;
         }
     }
     //then it has to be ry
     else{
         if((rxry -> value) > (rect -> height/2) ){
-                 return false;
+                valid = false;
              }
+             
     }
+    deleteValue(rxry);
     
-
     
-    return true;
+    return valid;
 }
 bool isValidCircleTag(SVGimage *image){
     bool valid = true;
@@ -870,45 +874,53 @@ bool isProperlySpaced(char *value){
            if(isdigit(array[i]) == false){
                                   asci = array[i];
                                  if(asci >= 65 && asci <= 122){
-                                   //  printf("\t%c\n", array[i]);
+                                 //Z means end of path
+                                 if(array[i] == 'z'){
+                                     break;
+                                 }
                                      //go to next int
                                      i++;
                                      while(true){
+                                         asci = array[i];
                                          if(i == strlen(value)){
                                              break;
                                          }
-                                         asci = array[i];
                                          //checks if the next asci is a space
                                         
                                          int nextAsci = array[i+1];
                                          //comma or dash (-)
+                                         
                                          if(asci == 44 || asci == 45){
                                              digit++;
                                          }
                                          //if it's a space
                                          if(nextAsci == 32){
                                           
-                                             
+                                            
                                              //check untill the next Alphabetical
                                              nextAsci = array[i + 2];
                                              if(nextAsci >= 65 && nextAsci <= 122 && array[i + 3] != '-'){
+                                            //end of path data
+                                        
                                                  break;
                                              }
-                                             //If not alphabetic, increment digit
+                                             //If is a space, not alphabetic, and the next two is a digit - increment
+                                            
                                              nextAsci = array[i + 1];
-                                             
-                                             
+                                            
                                              if(nextAsci == 32 && isdigit(array[i+2])){
+                                          
                                                  digit++;
                                                  
                                              }
                                          }
                                          //increment array inside;
-                                         i++;
+                                         i++;   
                                      }
-                                     /*
-                                     printf("\nRESETTED %d @ I %d && max is %d\n", digit, i, strlen(value));
-                                      */
+                                       
+                                     //printf("\nRESETTED %d @ I %d && max is %d\n", digit, i, strlen(value));
+                                      
+
                                      if(digit % 2 != 0){
                                                                              return false;
                                                                          }
