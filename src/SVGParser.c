@@ -54,8 +54,7 @@ bool isValidGroupTag(List *tempList, SVGimage *image);
 bool isValidCircleTag(List *tempList);
 xmlDocPtr buildTree(SVGimage* image);
 void createPath(xmlNodePtr root_element, List *tempList);
-void writeAttribute(List *tempList, xmlNodePtr cur_child, elementType elementType);
-
+void writeAttribute(void *list, xmlNodePtr cur_child);
 
 int hasAttribute(List *otherAttributes)
 {
@@ -656,9 +655,6 @@ xmlDocPtr buildTree(SVGimage* image){
       xmlNewChild(root_element, NULL, BAD_CAST "desc", BAD_CAST image -> description);
     
     createPath(root_element, image -> paths);
-
-
-
    // xmlNewChild(root_element, BAD_CAST image -> title);
    // xmlNewProp(root_element, BAD_CAST "title", BAD_CAST image -> title);
     return doc;
@@ -677,17 +673,8 @@ void createPath(xmlNodePtr root_element, List *tempList){
              xmlNewProp(cur_child, BAD_CAST "d", BAD_CAST path -> data);
                
                if(path -> otherAttributes  != NULL){
-//                   List* path_list = (List*)path->otherAttributes;
-//                   ListIterator iter = createIterator(path_list);
-//
-//                   while ((elem = nextElement(&iter)) != NULL)
-//                   {
-//                       Attribute *attribute = (Attribute *)elem;
-//                       printf("%s\n",  attribute -> name);
-//                       xmlNewProp(cur_child, BAD_CAST attribute -> name, BAD_CAST attribute -> value);
-//
-//                   }
-                //  writeAttribute(path, cur_child, PATH);
+                   
+                 writeAttribute(path -> otherAttributes, cur_child);
                 }
                          
            }
@@ -703,20 +690,19 @@ void createPath(xmlNodePtr root_element, List *tempList){
 
  */
 
-void writeAttribute(List *tempList, xmlNodePtr cur_child, elementType elementType){
-    if(elementType == PATH){
+void writeAttribute(void *list, xmlNodePtr cur_child){
         void *elem;
-        
-        ListIterator iter = createIterator(tempList);
-        
-        while ((elem = nextElement(&iter)) != NULL)
-        {
-            Attribute *attribute = (Attribute *)elem;
-            printf("%s\n",  attribute -> name);
-            xmlNewProp(cur_child, BAD_CAST attribute -> name, BAD_CAST attribute -> value);
 
-        }
-    }
+        List *tempList = (void *)list;
+                         ListIterator iter = createIterator(tempList);
+
+                          while ((elem = nextElement(&iter)) != NULL)
+                          {
+                             Attribute *attribute = (Attribute *)elem;
+                             printf("%s\n",  attribute -> name);
+                              xmlNewProp(cur_child, BAD_CAST attribute -> name, BAD_CAST attribute -> value);
+                         }
+    
     
 }
 //create function for circle, rect, etc
@@ -746,7 +732,7 @@ bool writeSVGimage(SVGimage* image, char* fileName){
     if(result < 0){
         return false;
     }
-    xmlFreeDoc(tree);
+    
          
     
     return true;
