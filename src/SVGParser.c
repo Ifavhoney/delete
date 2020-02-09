@@ -56,6 +56,7 @@ xmlDocPtr buildTree(SVGimage* image);
 void createPath(xmlNodePtr root_element, List *tempList);
 void writeAttribute(void *list, xmlNodePtr cur_child);
 
+
 int hasAttribute(List *otherAttributes)
 {
     if (otherAttributes->length == 0)
@@ -655,6 +656,9 @@ xmlDocPtr buildTree(SVGimage* image){
       xmlNewChild(root_element, NULL, BAD_CAST "desc", BAD_CAST image -> description);
     
     createPath(root_element, image -> paths);
+
+
+
    // xmlNewChild(root_element, BAD_CAST image -> title);
    // xmlNewProp(root_element, BAD_CAST "title", BAD_CAST image -> title);
     return doc;
@@ -673,7 +677,16 @@ void createPath(xmlNodePtr root_element, List *tempList){
              xmlNewProp(cur_child, BAD_CAST "d", BAD_CAST path -> data);
                
                if(path -> otherAttributes  != NULL){
-                   
+//                   List* path_list = (List*)path->otherAttributes;
+//                   ListIterator iter = createIterator(path_list);
+//
+//                   while ((elem = nextElement(&iter)) != NULL)
+//                   {
+//                       Attribute *attribute = (Attribute *)elem;
+//                       printf("%s\n",  attribute -> name);
+//                       xmlNewProp(cur_child, BAD_CAST attribute -> name, BAD_CAST attribute -> value);
+//
+//                   }
                  writeAttribute(path -> otherAttributes, cur_child);
                 }
                          
@@ -705,6 +718,7 @@ void writeAttribute(void *list, xmlNodePtr cur_child){
     
     
 }
+
 //create function for circle, rect, etc
 bool writeSVGimage(SVGimage* image, char* fileName){
     //Create an xml file: validSVG == true ? return true : return false
@@ -728,11 +742,12 @@ bool writeSVGimage(SVGimage* image, char* fileName){
                 */
 
     xmlDocPtr tree = buildTree(image);
+    
     int result = xmlSaveFormatFileEnc("my.svg", tree, "UTF-8", 1);
+    xmlFreeDoc(tree);
     if(result < 0){
         return false;
     }
-    
          
     
     return true;
@@ -1354,7 +1369,7 @@ void insertGroup(void *data, xmlNode *cur_node, int version)
             if (version == 0)
             {
                 //  printf("comes here");
-                SVGimage *list = (SVGimage *)data;
+                Group *list = (Group *)data;
                 Attribute *attribute = createAttribute(getAttrName, getAttrValue);
                 insertBack(list->otherAttributes, attribute);
             }
