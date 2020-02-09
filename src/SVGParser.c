@@ -50,7 +50,7 @@ bool isHalfGreater(Attribute *attribute, Rectangle *rect);
 bool isValidPathTag(List *tempList);
 bool isProperlySpaced(char *value);
 bool isGoodLength(char *value);
-bool isValidGroupTag(List *tempList);
+bool isValidGroupTag(List *tempList, SVGimage *image);
 bool isValidCircleTag(List *tempList);
 
 
@@ -352,51 +352,34 @@ List *recursiveGroups(List *list, Group *group)
 List *getPaths(SVGimage *img)
 {
 
-    if (img == NULL)
-    {
-        return 0;
-    }
-    List *list = initializeList(printFunction, deleteFunction, compareFunction);
-    ListIterator iter = createIterator(img->paths);
-    ListIterator iter2 = createIterator(img->groups);
+     if (img == NULL)
+       {
+           return 0;
+       }
+       List *list = initializeList(printFunction, deleteFunction, compareFunction);
+       ListIterator iter = createIterator(img->paths);
+       ListIterator iter2 = createIterator(img->groups);
 
-    void *elem;
-    void *elem2;
-    void *elem3;
+       void *elem;
+       void *elem2;
 
-    while ((elem = nextElement(&iter)) != NULL)
-    {
-        Path *paths = (Path *)elem;
-        insertBack(list, paths);
-    }
+       //outside
+       while ((elem = nextElement(&iter)) != NULL)
+       {
+           Path *circle = (Path *)elem;
+           insertBack(list, circle);
+       }
+       //inner group
 
-    while ((elem2 = nextElement(&iter2)) != NULL)
-    {
-        Group *group = (Group *)elem2;
+       while ((elem2 = nextElement(&iter2)) != NULL)
+       {
+           Group *group = (Group *)elem2;
 
-        //if when we loop that group -> rectangles -> head != null
-        if (group->paths->head != NULL)
-        {
-            ListIterator iter3 = createIterator(group->paths);
-            //loop through that whole inner loop
-            while ((elem3 = nextElement(&iter3)) != NULL)
-            {
-                Path *path = (Path *)elem3;
-                insertBack(list, path);
-            }
-        }
+           //looks for groups that have rectangles
+           recursivePaths(list, group);
+       }
 
-        while ((elem2 = nextElement(&iter2)) != NULL)
-        {
-            Group *group = (Group *)elem2;
-
-            //looks for groups that have rectangles
-            recursivePaths(list, group);
-        }
-    }
-
-    // printf("%s", )'
-    //  printf("\nGetPaths length: %d\n", getLength(list));
+       // printf("\nGetCircle length: %d\n", getLength(list));
     return list;
 }
 
@@ -404,7 +387,7 @@ List *recursivePaths(List *list, Group *group)
 {
     void *elem3;
 
-    if (group->rectangles != NULL)
+    if (group->paths != NULL)
     {
 
         ListIterator iter3 = createIterator(group->paths);
@@ -686,9 +669,9 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
                  printf("invalid @ Rect");
                  return valid;
              }
-        valid = isValidGroupTag(image -> groups);
+        valid = isValidGroupTag(image -> groups, image);
                    if(valid == false){
-                       printf("invalid @ Rect");
+                       printf("invalid @ Group");
                        return valid;
                    }
         
@@ -696,21 +679,43 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
         return true;
     }
 }
+/*
+ bool isValidPathTag(List *tempList){
+     bool valid = true;
+     void *elem;
+     ListIterator iter = createIterator(tempList);
+     
+     while ((elem = nextElement(&iter)) != NULL)
+     {
+         Path *path = (Path *)elem;
+        valid = isProperlySpaced(path -> data);
+         if(valid == false){
+             return valid;
+             break;
+         }
+         
+         
+     }
+     return valid;
+ }
+ */
 
-bool isValidGroupTag(List *tempList){
+bool isValidGroupTag(List *tempList, SVGimage *image){
    bool valid = true;
-       void *elem;
-       ListIterator iter = createIterator(tempList);
-    while ((elem = nextElement(&iter)) != NULL)
-       {
-           Group *group = (Group *)elem;
-           if(group -> paths){
-             //  valid = isValidPathTag(image);
-           }
-
-       }
+   void *elem;
+    
+   if(tempList != NULL){
+       List *list = getPaths(image);
+       valid = isValidPathTag(list);
+       freeList(list);
+      }
+    
+   
+    
     return valid;
 }
+
+
 bool isValidRectTag(List *tempList){
     bool valid = true;
        void *elem;
