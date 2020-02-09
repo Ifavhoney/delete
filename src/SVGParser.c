@@ -55,7 +55,7 @@ bool isValidCircleTag(List *tempList);
 xmlDocPtr buildTree(SVGimage* image);
 void createPath(xmlNodePtr root_element, List *tempList);
 void writeAttribute(void *list, xmlNodePtr cur_child);
-
+void createSVG(xmlNodePtr root_element, SVGimage *image);
 
 int hasAttribute(List *otherAttributes)
 {
@@ -650,12 +650,8 @@ xmlDocPtr buildTree(SVGimage* image){
     nameSpace = xmlNewNs(root_element, BAD_CAST image -> namespace, NULL);
     xmlSetNs(root_element, nameSpace);
     xmlDocSetRootElement(doc, root_element);
-    //e.g title
-    xmlNewChild(root_element, NULL, BAD_CAST "title", BAD_CAST image -> title);
-    //description
-      xmlNewChild(root_element, NULL, BAD_CAST "desc", BAD_CAST image -> description);
-    
-    createPath(root_element, image -> paths);
+    createSVG(root_element, image);
+   // createPath(root_element, image -> paths);
 
 
 
@@ -664,8 +660,9 @@ xmlDocPtr buildTree(SVGimage* image){
     return doc;
 }
 void createPath(xmlNodePtr root_element, List *tempList){
+    
     void *elem;
-       ListIterator iter = createIterator(tempList);
+    ListIterator iter = createIterator(tempList);
        
        while ((elem = nextElement(&iter)) != NULL)
        {
@@ -702,7 +699,18 @@ void createPath(xmlNodePtr root_element, List *tempList){
  } elementType;
 
  */
-
+void createSVG(xmlNodePtr root_element, SVGimage *image){
+    
+    //e.g title
+       xmlNewChild(root_element, NULL, BAD_CAST "title", BAD_CAST image -> title);
+       //description
+         xmlNewChild(root_element, NULL, BAD_CAST "desc", BAD_CAST image -> description);
+        
+    
+    writeAttribute(image -> otherAttributes, root_element);
+    
+    
+}
 void writeAttribute(void *list, xmlNodePtr cur_child){
         void *elem;
 
@@ -712,9 +720,10 @@ void writeAttribute(void *list, xmlNodePtr cur_child){
                           while ((elem = nextElement(&iter)) != NULL)
                           {
                              Attribute *attribute = (Attribute *)elem;
-                             printf("%s\n",  attribute -> name);
+                              printf("%s\n", attribute ->value );
                               xmlNewProp(cur_child, BAD_CAST attribute -> name, BAD_CAST attribute -> value);
                          }
+    printf("done");
     
     
 }
