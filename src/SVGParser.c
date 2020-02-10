@@ -52,7 +52,7 @@ bool isProperlySpaced(char *value);
 bool isGoodLength(char *value);
 bool isValidGroupTag(List *tempList, SVGimage *image);
 bool isValidCircleTag(List *tempList);
-xmlDocPtr buildTree(SVGimage* image);
+xmlDocPtr buildTree(SVGimage *image);
 void createPath(xmlNodePtr root_element, List *tempList);
 void writeAttribute(void *list, xmlNodePtr cur_child);
 void createSVG(xmlNodePtr root_element, SVGimage *image);
@@ -323,7 +323,7 @@ List *getGroups(SVGimage *img)
     while ((elem2 = nextElement(&iter2)) != NULL)
     {
         Group *group = (Group *)elem2;
-       
+      
         insertBack(list, group);
         recursiveGroups(list, group);
     }
@@ -345,9 +345,10 @@ List *recursiveGroups(List *list, Group *group)
         {
             Group *grp = (Group *)elem3;
             //Calls function & restarts
-            //Attribute *attribute =  grp -> otherAttributes -> head -> data;
+
+           
             insertBack(list, grp);
-          
+
             list = recursiveGroups(list, grp);
         }
     }
@@ -358,34 +359,34 @@ List *recursiveGroups(List *list, Group *group)
 List *getPaths(SVGimage *img)
 {
 
-     if (img == NULL)
-       {
-           return 0;
-       }
-       List *list = initializeList(printFunction, deleteFunction, compareFunction);
-       ListIterator iter = createIterator(img->paths);
-       ListIterator iter2 = createIterator(img->groups);
+    if (img == NULL)
+    {
+        return 0;
+    }
+    List *list = initializeList(printFunction, deleteFunction, compareFunction);
+    ListIterator iter = createIterator(img->paths);
+    ListIterator iter2 = createIterator(img->groups);
 
-       void *elem;
-       void *elem2;
+    void *elem;
+    void *elem2;
 
-       //outside
-       while ((elem = nextElement(&iter)) != NULL)
-       {
-           Path *circle = (Path *)elem;
-           insertBack(list, circle);
-       }
-       //inner group
+    //outside
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+        Path *circle = (Path *)elem;
+        insertBack(list, circle);
+    }
+    //inner group
 
-       while ((elem2 = nextElement(&iter2)) != NULL)
-       {
-           Group *group = (Group *)elem2;
+    while ((elem2 = nextElement(&iter2)) != NULL)
+    {
+        Group *group = (Group *)elem2;
 
-           //looks for groups that have rectangles
-           recursivePaths(list, group);
-       }
+        //looks for groups that have rectangles
+        recursivePaths(list, group);
+    }
 
-       // printf("\nGetCircle length: %d\n", getLength(list));
+    // printf("\nGetCircle length: %d\n", getLength(list));
     return list;
 }
 
@@ -606,7 +607,7 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
             root_element = xmlDocGetRootElement(doc);
             print_element_names(root_element, &list);
             validateNameSpace((char *)root_element->ns->href, &list);
-          
+
             //VALIDATING SVG
             if (validateSVGimage(list, schemaFile) == true)
             {
@@ -644,208 +645,210 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
 //TEST FOR EMPTY TAGS
 //do we need to validate the write?
 //XMLDocPtr for writing docs
-xmlDocPtr buildTree(SVGimage* image){
+xmlDocPtr buildTree(SVGimage *image)
+{
     xmlDocPtr doc = NULL;
     xmlNodePtr root_element = NULL;
     xmlNsPtr nameSpace;
     doc = xmlNewDoc(BAD_CAST "1.0");
     //creates a pointer to new root_node
-    root_element = xmlNewNode(NULL , BAD_CAST "svg");
-    nameSpace = xmlNewNs(root_element, BAD_CAST image -> namespace, NULL);
+    root_element = xmlNewNode(NULL, BAD_CAST "svg");
+    nameSpace = xmlNewNs(root_element, BAD_CAST image->namespace, NULL);
     xmlSetNs(root_element, nameSpace);
     xmlDocSetRootElement(doc, root_element);
     createSVG(root_element, image);
-    createRect( root_element, image ->rectangles);
-    createCircle(root_element, image -> circles);
-    createPath(root_element, image -> paths);
-    createGroup(root_element, getGroups(image));
+    createRect(root_element, image->rectangles);
+    createCircle(root_element, image->circles);
+    createPath(root_element, image->paths);
+    List *_getGroups = getGroups(image);
+    createGroup(root_element, _getGroups);
+    freeList(_getGroups);
 
-   // xmlNewChild(root_element, BAD_CAST image -> title);
-   // xmlNewProp(root_element, BAD_CAST "title", BAD_CAST image -> title);
+    // xmlNewChild(root_element, BAD_CAST image -> title);
+    // xmlNewProp(root_element, BAD_CAST "title", BAD_CAST image -> title);
     return doc;
 }
-void createGroup(xmlNodePtr root_element, List *tempList){
-    
+void createGroup(xmlNodePtr root_element, List *tempList)
+{
+
     ListIterator iter2 = createIterator(tempList);
     void *elem;
     while ((elem = nextElement(&iter2)) != NULL)
     {
         Group *group = (Group *)elem;
-        Attribute *attribute = group -> otherAttributes -> head -> data;
-       printf("\nValue %s\n", attribute ->value );
-        
-
+        xmlNodePtr cur_child = xmlNewChild(root_element, NULL, BAD_CAST "g", BAD_CAST "HH");
+                                    
+        if (group -> otherAttributes != NULL)
+        {
+            writeAttribute(group->otherAttributes, cur_child);
+        }
     }
- 
+}
+void writeAttribute(void *list, xmlNodePtr cur_child)
+{
+    void *elem;
+
+    List *tempList = (void *)list;
+    ListIterator iter = createIterator(tempList);
+
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+
+        Attribute *attribute = (Attribute *)elem;
+                printf("%s\t", attribute ->value);
+        xmlNewProp(cur_child, BAD_CAST attribute->name, BAD_CAST attribute->value);
+    
+    }
+    printf("\n");
+
 }
 
+void createRect(xmlNodePtr root_element, List *tempList)
+{
 
-
-void createRect(xmlNodePtr root_element, List *tempList){
-    
     void *elem;
     char toFloat[100];
     ListIterator iter = createIterator(tempList);
-       
-       while ((elem = nextElement(&iter)) != NULL)
-       {
-           Rectangle *rect = (Rectangle *)elem;
-           if(rect != NULL){
-               xmlNodePtr cur_child = xmlNewChild(root_element, NULL,  BAD_CAST "rect", BAD_CAST "");
-               if(strlen(rect ->units) > 1){
-                   //RETURNS AN XML NODE PTR
-                   
-                       //two decimal points
-                       
-                    snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> x);
-                              xmlNewProp(cur_child, BAD_CAST "x", BAD_CAST strcat(toFloat,rect ->units));
-                       
-                       snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> y);
-                                            xmlNewProp(cur_child, BAD_CAST "y", BAD_CAST strcat(toFloat,rect ->units));
-                   
-                       snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> width);
-                                            xmlNewProp(cur_child, BAD_CAST "width", BAD_CAST strcat(toFloat,rect ->units));
-                   
-                       snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> height);
-                                            xmlNewProp(cur_child, BAD_CAST "height", BAD_CAST strcat(toFloat,rect ->units));
-               }
-               else{
-                   snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> x);
-                                                xmlNewProp(cur_child, BAD_CAST "x", BAD_CAST toFloat);
-                                         
-                                         snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> y);
-                                                              xmlNewProp(cur_child, BAD_CAST "y", BAD_CAST toFloat);
-                                     
-                                         snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> width);
-                                                              xmlNewProp(cur_child, BAD_CAST "width", BAD_CAST toFloat);
-                                     
-                                         snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> height);
-                                                              xmlNewProp(cur_child, BAD_CAST "height", BAD_CAST toFloat);
-               }
-               
 
-               if(rect -> otherAttributes  != NULL){
-                 writeAttribute(rect -> otherAttributes, cur_child);
-                }
-                         
-           }
-           
-         
-           
-       }
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+        Rectangle *rect = (Rectangle *)elem;
+        if (rect != NULL)
+        {
+            xmlNodePtr cur_child = xmlNewChild(root_element, NULL, BAD_CAST "rect", BAD_CAST "");
+            if (strlen(rect->units) > 1)
+            {
+                //RETURNS AN XML NODE PTR
+
+                //two decimal points
+
+                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->x);
+                xmlNewProp(cur_child, BAD_CAST "x", BAD_CAST strcat(toFloat, rect->units));
+
+                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->y);
+                xmlNewProp(cur_child, BAD_CAST "y", BAD_CAST strcat(toFloat, rect->units));
+
+                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->width);
+                xmlNewProp(cur_child, BAD_CAST "width", BAD_CAST strcat(toFloat, rect->units));
+
+                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->height);
+                xmlNewProp(cur_child, BAD_CAST "height", BAD_CAST strcat(toFloat, rect->units));
+            }
+            else
+            {
+                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->x);
+                xmlNewProp(cur_child, BAD_CAST "x", BAD_CAST toFloat);
+
+                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->y);
+                xmlNewProp(cur_child, BAD_CAST "y", BAD_CAST toFloat);
+
+                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->width);
+                xmlNewProp(cur_child, BAD_CAST "width", BAD_CAST toFloat);
+
+                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->height);
+                xmlNewProp(cur_child, BAD_CAST "height", BAD_CAST toFloat);
+            }
+
+            if (rect->otherAttributes != NULL)
+            {
+                writeAttribute(rect->otherAttributes, cur_child);
+            }
+        }
+    }
 }
-void createCircle(xmlNodePtr root_element, List *tempList){
-    
+void createCircle(xmlNodePtr root_element, List *tempList)
+{
+
     void *elem;
-       char toFloat[100];
-       ListIterator iter = createIterator(tempList);
-          
-          while ((elem = nextElement(&iter)) != NULL)
-          {
-              Circle *circle = (Circle *)elem;
-              if(circle != NULL){
-                  xmlNodePtr cur_child = xmlNewChild(root_element, NULL,  BAD_CAST "circle", BAD_CAST "");
-                  if(strlen(circle ->units) > 1){
-                      //RETURNS AN XML NODE PTR
-                      
-                          //two decimal points
-                          
-                       snprintf(toFloat, sizeof(toFloat), "%.1f", circle -> cx);
-                                 xmlNewProp(cur_child, BAD_CAST "cx", BAD_CAST strcat(toFloat,circle ->units));
-                          
-                          snprintf(toFloat, sizeof(toFloat), "%.1f", circle -> cy);
-                                               xmlNewProp(cur_child, BAD_CAST "cy", BAD_CAST strcat(toFloat,circle ->units));
-                      
-                          snprintf(toFloat, sizeof(toFloat), "%.1f", circle -> r);
-                                               xmlNewProp(cur_child, BAD_CAST "r", BAD_CAST strcat(toFloat,circle ->units));
-                      
-                  }
-                  else{
-                    snprintf(toFloat, sizeof(toFloat), "%.1f", circle -> cx);
-                                 xmlNewProp(cur_child, BAD_CAST "cx", BAD_CAST toFloat);
-                          
-                          snprintf(toFloat, sizeof(toFloat), "%.1f", circle -> cy);
-                                               xmlNewProp(cur_child, BAD_CAST "cy", BAD_CAST toFloat);
-                      
-                          snprintf(toFloat, sizeof(toFloat), "%.1f", circle -> r);
-                                               xmlNewProp(cur_child, BAD_CAST "r", BAD_CAST toFloat);
-                  }
-                  
+    char toFloat[100];
+    ListIterator iter = createIterator(tempList);
 
-                  if(circle -> otherAttributes  != NULL){
-                    writeAttribute(circle -> otherAttributes, cur_child);
-                   }
-                            
-              }
-              
-            
-              
-          }
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+        Circle *circle = (Circle *)elem;
+        if (circle != NULL)
+        {
+            xmlNodePtr cur_child = xmlNewChild(root_element, NULL, BAD_CAST "circle", BAD_CAST "");
+            if (strlen(circle->units) > 1)
+            {
+                //RETURNS AN XML NODE PTR
+
+                //two decimal points
+
+                snprintf(toFloat, sizeof(toFloat), "%.1f", circle->cx);
+                xmlNewProp(cur_child, BAD_CAST "cx", BAD_CAST strcat(toFloat, circle->units));
+
+                snprintf(toFloat, sizeof(toFloat), "%.1f", circle->cy);
+                xmlNewProp(cur_child, BAD_CAST "cy", BAD_CAST strcat(toFloat, circle->units));
+
+                snprintf(toFloat, sizeof(toFloat), "%.1f", circle->r);
+                xmlNewProp(cur_child, BAD_CAST "r", BAD_CAST strcat(toFloat, circle->units));
+            }
+            else
+            {
+                snprintf(toFloat, sizeof(toFloat), "%.1f", circle->cx);
+                xmlNewProp(cur_child, BAD_CAST "cx", BAD_CAST toFloat);
+
+                snprintf(toFloat, sizeof(toFloat), "%.1f", circle->cy);
+                xmlNewProp(cur_child, BAD_CAST "cy", BAD_CAST toFloat);
+
+                snprintf(toFloat, sizeof(toFloat), "%.1f", circle->r);
+                xmlNewProp(cur_child, BAD_CAST "r", BAD_CAST toFloat);
+            }
+
+            if (circle->otherAttributes != NULL)
+            {
+                writeAttribute(circle->otherAttributes, cur_child);
+            }
+        }
+    }
 }
-void createPath(xmlNodePtr root_element, List *tempList){
-    
+void createPath(xmlNodePtr root_element, List *tempList)
+{
+
     void *elem;
     ListIterator iter = createIterator(tempList);
-       
-       while ((elem = nextElement(&iter)) != NULL)
-       {
-           Path *path = (Path *)elem;
-           if(path ->data != NULL){
-               //RETURNS AN XML NODE PTR
-             
-               xmlNodePtr cur_child = xmlNewChild(root_element, NULL,  BAD_CAST "path", BAD_CAST "");
-             xmlNewProp(cur_child, BAD_CAST "d", BAD_CAST path -> data);
-               
-               if(path -> otherAttributes  != NULL){
-                 writeAttribute(path -> otherAttributes, cur_child);
-                }
-                         
-           }
-           
-         
-           
-       }
+
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+        Path *path = (Path *)elem;
+        if (path->data != NULL)
+        {
+            //RETURNS AN XML NODE PTR
+
+            xmlNodePtr cur_child = xmlNewChild(root_element, NULL, BAD_CAST "path", BAD_CAST "");
+            xmlNewProp(cur_child, BAD_CAST "d", BAD_CAST path->data);
+
+            if (path->otherAttributes != NULL)
+            {
+                writeAttribute(path->otherAttributes, cur_child);
+            }
+        }
+    }
 }
 
-void createSVG(xmlNodePtr root_element, SVGimage *image){
-    
+void createSVG(xmlNodePtr root_element, SVGimage *image)
+{
+
     //e.g title
-       xmlNewChild(root_element, NULL, BAD_CAST "title", BAD_CAST image -> title);
-       //description
-         xmlNewChild(root_element, NULL, BAD_CAST "desc", BAD_CAST image -> description);
-        
-    
-    writeAttribute(image -> otherAttributes, root_element);
-    
-    
-}
-void writeAttribute(void *list, xmlNodePtr cur_child){
-        void *elem;
+    xmlNewChild(root_element, NULL, BAD_CAST "title", BAD_CAST image->title);
+    //description
+    xmlNewChild(root_element, NULL, BAD_CAST "desc", BAD_CAST image->description);
 
-        List *tempList = (void *)list;
-                         ListIterator iter = createIterator(tempList);
-
-                          while ((elem = nextElement(&iter)) != NULL)
-                          {
-                             Attribute *attribute = (Attribute *)elem;
-                              xmlNewProp(cur_child, BAD_CAST attribute -> name, BAD_CAST attribute -> value);
-                         }
-    
-    
+    writeAttribute(image->otherAttributes, root_element);
 }
 
 //create function for circle, rect, etc
-bool writeSVGimage(SVGimage* image, char* fileName){
+bool writeSVGimage(SVGimage *image, char *fileName)
+{
     //Create an xml file: validSVG == true ? return true : return false
     bool valid = true;
-    if (image == NULL || image -> circles == NULL
-        || image -> rectangles == NULL
-        || image ->paths == NULL || image ->groups == NULL || image ->otherAttributes == NULL || fileName == NULL){
+    if (image == NULL || image->circles == NULL || image->rectangles == NULL || image->paths == NULL || image->groups == NULL || image->otherAttributes == NULL || fileName == NULL)
+    {
         return false;
     }
-    
-         
-               /*
+
+    /*
                //searches for last occurence of period
                char *extension = strrchr(fileName, '.');
                if(extension != NULL){
@@ -857,14 +860,14 @@ bool writeSVGimage(SVGimage* image, char* fileName){
                 */
 
     xmlDocPtr tree = buildTree(image);
-    
+
     int result = xmlSaveFormatFileEnc("my.svg", tree, "UTF-8", 1);
     xmlFreeDoc(tree);
-    if(result < 0){
+    if (result < 0)
+    {
         return false;
     }
-         
-    
+
     return true;
 }
 //Cleans up failed attemp to create an SVG image
@@ -878,46 +881,48 @@ void cleanUp(xmlDoc *doc, SVGimage *list)
 bool validateSVGimage(SVGimage *doc, char *schemaFile)
 {
     SVGimage *image = doc;
-    if (image == NULL || image -> circles == NULL || image -> rectangles == NULL || image ->paths == NULL || image ->groups == NULL || image ->otherAttributes == NULL)
+    if (image == NULL || image->circles == NULL || image->rectangles == NULL || image->paths == NULL || image->groups == NULL || image->otherAttributes == NULL)
     {
         printf("no good");
         return false;
     }
-    
+
     else
     {
         bool valid = true;
-        valid = isValidSVGTag(image -> otherAttributes);
+        valid = isValidSVGTag(image->otherAttributes);
         if (valid == false)
         {
             printf("invalid @ svg");
             return valid;
         }
-        valid = isValidPathTag( image ->paths);
+        valid = isValidPathTag(image->paths);
         if (valid == false)
         {
             printf("invalid @ Path");
 
             return valid;
         }
-        valid = isValidCircleTag(image ->circles);
-        if(valid == false){
+        valid = isValidCircleTag(image->circles);
+        if (valid == false)
+        {
             printf("invalid @ Circle");
 
             return valid;
         }
-        valid = isValidRectTag(image -> rectangles);
-             if(valid == false){
-                 printf("invalid @ Rect");
-                 return valid;
-             }
-        valid = isValidGroupTag(image -> groups, image);
-                   if(valid == false){
-                       printf("invalid @ Group");
-                       return valid;
-                   }
-        
-        
+        valid = isValidRectTag(image->rectangles);
+        if (valid == false)
+        {
+            printf("invalid @ Rect");
+            return valid;
+        }
+        valid = isValidGroupTag(image->groups, image);
+        if (valid == false)
+        {
+            printf("invalid @ Group");
+            return valid;
+        }
+
         return true;
     }
 }
@@ -942,83 +947,92 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
  }
  */
 
-bool isValidGroupTag(List *tempList, SVGimage *image){
-   bool valid = true;
-    
+bool isValidGroupTag(List *tempList, SVGimage *image)
+{
+    bool valid = true;
+
     List *list = getPaths(image);
     valid = isValidPathTag(list);
     freeList(list);
-       if(valid == false){
-           return false;
-       }
+    if (valid == false)
+    {
+        return false;
+    }
     list = getCircles(image);
-       valid = isValidCircleTag(list);
-       freeList(list);
-          if(valid == false){
-              return false;
-          }
-     list = getRects(image);
-       valid = isValidRectTag(list);
-       freeList(list);
-          if(valid == false){
-              return false;
-          }
+    valid = isValidCircleTag(list);
+    freeList(list);
+    if (valid == false)
+    {
+        return false;
+    }
+    list = getRects(image);
+    valid = isValidRectTag(list);
+    freeList(list);
+    if (valid == false)
+    {
+        return false;
+    }
     return valid;
 }
 
-
-bool isValidRectTag(List *tempList){
+bool isValidRectTag(List *tempList)
+{
     bool valid = true;
-       void *elem;
-       ListIterator iter = createIterator(tempList);
+    void *elem;
+    ListIterator iter = createIterator(tempList);
     while ((elem = nextElement(&iter)) != NULL)
-       {
-           Rectangle *rect = (Rectangle *)elem;
-           valid = isGoodRectangle(rect);
-
-       }
+    {
+        Rectangle *rect = (Rectangle *)elem;
+        valid = isGoodRectangle(rect);
+    }
     return valid;
 }
-bool isGoodRectangle(Rectangle *rect){
+bool isGoodRectangle(Rectangle *rect)
+{
 
-    if(rect ->width < 0 || rect ->height < 0){
+    if (rect->width < 0 || rect->height < 0)
+    {
         return false;
     }
-    if(rect ->otherAttributes == NULL){
+    if (rect->otherAttributes == NULL)
+    {
         return false;
     }
-    else{
+    else
+    {
         bool valid = true;
-           void *elem;
-           List *tempList = rect->otherAttributes;
-           ListIterator iter = createIterator(tempList);
+        void *elem;
+        List *tempList = rect->otherAttributes;
+        ListIterator iter = createIterator(tempList);
         while ((elem = nextElement(&iter)) != NULL)
-           {
-               Attribute *attribute = (Attribute *)elem;
-               valid = isGoodRectAttribute(attribute, rect);
-               if(valid == false){
-                   return false;
-                   break;
-               }
-
-           }
-
+        {
+            Attribute *attribute = (Attribute *)elem;
+            valid = isGoodRectAttribute(attribute, rect);
+            if (valid == false)
+            {
+                return false;
+                break;
+            }
+        }
     }
     return true;
 }
 
-
-bool isGoodRectAttribute(Attribute *attribute, Rectangle *rect){
+bool isGoodRectAttribute(Attribute *attribute, Rectangle *rect)
+{
     bool valid = true;
-    if(strcmp(attribute -> name, "rx") == 0 || strcmp(attribute -> name, "ry") == 0 ){
-      valid =  isAboveZero(attribute -> value);
-        if(valid == false){
+    if (strcmp(attribute->name, "rx") == 0 || strcmp(attribute->name, "ry") == 0)
+    {
+        valid = isAboveZero(attribute->value);
+        if (valid == false)
+        {
             return false;
         }
-        valid = isHalfGreater( attribute, rect);
-        if(valid == false){
-                   return false;
-               }
+        valid = isHalfGreater(attribute, rect);
+        if (valid == false)
+        {
+            return false;
+        }
     }
     return true;
 }
@@ -1027,43 +1041,46 @@ bool isGoodRectAttribute(Attribute *attribute, Rectangle *rect){
  If rx is greater than half of ‘width’, then set rx to half of ‘width’.
  If ry is greater than half of ‘height’, then set ry to half of ‘height’.
  */
-bool isHalfGreater(Attribute *attribute, Rectangle *rect){
+bool isHalfGreater(Attribute *attribute, Rectangle *rect)
+{
     bool valid = true;
     ParsedValue *rxry = NULL;
-    rxry = createValue(attribute -> value);
-    if(strcmp(attribute -> name, "rx") == 0){
-        if((rxry -> value) > (rect -> width/2) ){
+    rxry = createValue(attribute->value);
+    if (strcmp(attribute->name, "rx") == 0)
+    {
+        if ((rxry->value) > (rect->width / 2))
+        {
             valid = false;
         }
     }
     //then it has to be ry
-    else{
-        if((rxry -> value) > (rect -> height/2) ){
-                valid = false;
-             }
-             
+    else
+    {
+        if ((rxry->value) > (rect->height / 2))
+        {
+            valid = false;
+        }
     }
     deleteValue(rxry);
-    
-    
+
     return valid;
 }
-bool isValidCircleTag(List *tempList){
+bool isValidCircleTag(List *tempList)
+{
     bool valid = true;
-       void *elem;
-       ListIterator iter = createIterator(tempList);
+    void *elem;
+    ListIterator iter = createIterator(tempList);
     while ((elem = nextElement(&iter)) != NULL)
-       {
-           Circle *circle = (Circle *)elem;
-           if(circle -> r < 0 ){
-               return false;
-               break;
-           }
-           
-       }
-    
+    {
+        Circle *circle = (Circle *)elem;
+        if (circle->r < 0)
+        {
+            return false;
+            break;
+        }
+    }
+
     return valid;
-    
 }
 
 bool isAboveZero(char *value)
@@ -1080,135 +1097,139 @@ bool isAboveZero(char *value)
             return false;
             break;
         }
-        
+
         //if there's no space, then it better be a type and it's not a digit and never been entered
         if (isdigit(array[i]) == false && array[i] != ' ' && array[i] != '.' && array[i] != ',' && unit == 0)
         {
             unit++;
             bool acceptableLength = isGoodLength(value);
-            if(acceptableLength == false){
+            if (acceptableLength == false)
+            {
                 return false;
                 break;
             }
-               
-                   
         }
     }
 
     return true;
 }
- 
+
 //only use when the value has been throghoughly iterated
-bool isGoodLength(char *value){
+bool isGoodLength(char *value)
+{
     if (strstr(value, "em") != NULL || strstr(value, "ex") != NULL ||
         strstr(value, "px") != NULL || strstr(value, "in") != NULL || strstr(value, "cm") != NULL || strstr(value, "mm") != NULL || strstr(value, "pt") != NULL ||
         strstr(value, "%") != NULL ||
         strstr(value, "pc") != NULL
-        
-        )
-                  {
-                      return true;
-                  }
-    else{
-      printf("invalid Length\n");
+
+    )
+    {
+        return true;
+    }
+    else
+    {
+        printf("invalid Length\n");
         return false;
     }
 }
 
-bool isValidPathTag(List *tempList){
+bool isValidPathTag(List *tempList)
+{
     bool valid = true;
     void *elem;
     ListIterator iter = createIterator(tempList);
-    
+
     while ((elem = nextElement(&iter)) != NULL)
     {
         Path *path = (Path *)elem;
-       valid = isProperlySpaced(path -> data);
-        if(valid == false){
+        valid = isProperlySpaced(path->data);
+        if (valid == false)
+        {
             return valid;
         }
-        
-        
     }
     return valid;
 }
 //Checks if path is probably spaced
-bool isProperlySpaced(char *value){
-    
+bool isProperlySpaced(char *value)
+{
+
     int i;
-       char array[strlen(value)];
-       strcpy(array, value);
-        int digit = 1;
+    char array[strlen(value)];
+    strcpy(array, value);
+    int digit = 1;
     int asci;
-       for (i = 0; i < strlen(value); i++)
-       {
-           if(isdigit(array[i]) == false){
-                                  asci = array[i];
-                                 if(asci >= 65 && asci <= 122){
-                                 //Z means end of path
-                                 if(array[i] == 'z' && i == strlen(value) - 1){
-                                     break;
-                                 }
-                                     //go to next int
-                                     i++;
-                                     while(true){
-                                         asci = array[i];
-                                         if(i == strlen(value)){
-                                             break;
-                                         }
-                                         //checks if the next asci is a space
-                                        
-                                         int nextAsci = array[i+1];
-                                         //comma or dash (-)
-                                         
-                                         if(asci == 44 || asci == 45){
-                                             digit++;
-                                         }
-                                         //if it's a space
-                                         if(nextAsci == 32){
-                                          
-                                            
-                                             //check untill the next Alphabetical
-                                             nextAsci = array[i + 2];
-                                             if(nextAsci >= 65 && nextAsci <= 122 && array[i + 3] != '-'){
-                                            //end of path data
-                                        
-                                                 break;
-                                             }
-                                             //If is a space, not alphabetic, and the next two is a digit - increment
-                                            
-                                             nextAsci = array[i + 1];
-                                            
-                                             if(nextAsci == 32 && isdigit(array[i+2])){
-                                          
-                                                 digit++;
-                                                 
-                                             }
-                                         }
-                                         //increment array inside;
-                                         i++;
-                                     }
-                                       
-                                     //printf("\nRESETTED %d @ I %d && max is %d\n", digit, i, strlen(value));
-                                      
+    for (i = 0; i < strlen(value); i++)
+    {
+        if (isdigit(array[i]) == false)
+        {
+            asci = array[i];
+            if (asci >= 65 && asci <= 122)
+            {
+                //Z means end of path
+                if (array[i] == 'z' && i == strlen(value) - 1)
+                {
+                    break;
+                }
+                //go to next int
+                i++;
+                while (true)
+                {
+                    asci = array[i];
+                    if (i == strlen(value))
+                    {
+                        break;
+                    }
+                    //checks if the next asci is a space
 
-                                     if(digit % 2 != 0){
-                                                                             return false;
-                                                                         }
-                                     digit = 1;
-                                 }
-                    
-                                                    
-           }
+                    int nextAsci = array[i + 1];
+                    //comma or dash (-)
 
-       }
-    
-    printf("\nComplete cycle %d\n", digit );
+                    if (asci == 44 || asci == 45)
+                    {
+                        digit++;
+                    }
+                    //if it's a space
+                    if (nextAsci == 32)
+                    {
+
+                        //check untill the next Alphabetical
+                        nextAsci = array[i + 2];
+                        if (nextAsci >= 65 && nextAsci <= 122 && array[i + 3] != '-')
+                        {
+                            //end of path data
+
+                            break;
+                        }
+                        //If is a space, not alphabetic, and the next two is a digit - increment
+
+                        nextAsci = array[i + 1];
+
+                        if (nextAsci == 32 && isdigit(array[i + 2]))
+                        {
+
+                            digit++;
+                        }
+                    }
+                    //increment array inside;
+                    i++;
+                }
+
+                //printf("\nRESETTED %d @ I %d && max is %d\n", digit, i, strlen(value));
+
+                if (digit % 2 != 0)
+                {
+                    return false;
+                }
+                digit = 1;
+            }
+        }
+    }
+
+    printf("\nComplete cycle %d\n", digit);
     return true;
 }
 
-
- 
 bool isValidSVGTag(List *tempList)
 {
     bool valid = true;
@@ -1483,17 +1504,16 @@ void insertGroup(void *data, xmlNode *cur_node, int version)
         {
             if (version == 0)
             {
-                   
-                Attribute *attribute = createAttribute(getAttrName, getAttrValue);
-                    insertBack(group -> otherAttributes  , attribute);
 
+                Attribute *attribute = createAttribute(getAttrName, getAttrValue);
+                insertBack(group->otherAttributes, attribute);
 
             }
             if (version == 1)
             {
                 Attribute *attribute = createAttribute(getAttrName, getAttrValue);
-                                  insertBack(group -> otherAttributes  , attribute);
 
+                insertBack(group->otherAttributes, attribute);
             }
         }
 
@@ -1647,8 +1667,8 @@ void insertRect(void *data, xmlNode *cur_node, int version)
                     {
                         if (version == 1)
                         {
-                            Attribute *attribute = createAttribute(getAttrName, getAttrValue);
-                            insertBack(grpList->otherAttributes, attribute);
+                          Attribute *attribute1 = createAttribute(getAttrName, getAttrValue);
+                            insertBack(rectangle->otherAttributes, attribute1);
                         }
                         else
                         {
