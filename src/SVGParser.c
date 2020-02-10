@@ -58,6 +58,7 @@ void writeAttribute(void *list, xmlNodePtr cur_child);
 void createSVG(xmlNodePtr root_element, SVGimage *image);
 void createRect(xmlNodePtr root_element, List *tempList);
 void createCircle(xmlNodePtr root_element, List *tempList);
+void createGroup(xmlNodePtr root_element, List *tempList);
 int hasAttribute(List *otherAttributes)
 {
     if (otherAttributes->length == 0)
@@ -344,8 +345,7 @@ List *recursiveGroups(List *list, Group *group)
         {
             Group *grp = (Group *)elem3;
             //Calls function & restarts
-            Attribute *attribute =  grp -> otherAttributes -> head -> data;
-                             printf("%s", attribute ->value);
+            //Attribute *attribute =  grp -> otherAttributes -> head -> data;
             insertBack(list, grp);
           
             list = recursiveGroups(list, grp);
@@ -654,11 +654,11 @@ xmlDocPtr buildTree(SVGimage* image){
     nameSpace = xmlNewNs(root_element, BAD_CAST image -> namespace, NULL);
     xmlSetNs(root_element, nameSpace);
     xmlDocSetRootElement(doc, root_element);
- //   createSVG(root_element, image);
-    //createRect( root_element, image ->rectangles);
-   // createPath(root_element, image -> paths);
-   // createCircle(root_element, image -> circles);
-
+    createSVG(root_element, image);
+    createRect( root_element, image ->rectangles);
+    createCircle(root_element, image -> circles);
+    createPath(root_element, image -> paths);
+    createGroup(root_element, getGroups(image));
 
    // xmlNewChild(root_element, BAD_CAST image -> title);
    // xmlNewProp(root_element, BAD_CAST "title", BAD_CAST image -> title);
@@ -666,29 +666,17 @@ xmlDocPtr buildTree(SVGimage* image){
 }
 void createGroup(xmlNodePtr root_element, List *tempList){
     
-    /*
+    ListIterator iter2 = createIterator(tempList);
     void *elem;
-    ListIterator iter = createIterator(tempList);
-       
-       while ((elem = nextElement(&iter)) != NULL)
-       {
-           Path *path = (Path *)elem;
-           if(path ->data != NULL){
-               //RETURNS AN XML NODE PTR
-             
-               xmlNodePtr cur_child = xmlNewChild(root_element, NULL,  BAD_CAST "path", BAD_CAST "");
-             xmlNewProp(cur_child, BAD_CAST "d", BAD_CAST path -> data);
-               
-               if(path -> otherAttributes  != NULL){
-                 writeAttribute(path -> otherAttributes, cur_child);
-                }
-                         
-           }
-           
-         
-           
-       }
-     */
+    while ((elem = nextElement(&iter2)) != NULL)
+    {
+        Group *group = (Group *)elem;
+        Attribute *attribute = group -> otherAttributes -> head -> data;
+       printf("\nValue %s\n", attribute ->value );
+        
+
+    }
+ 
 }
 
 
