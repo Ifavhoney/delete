@@ -56,7 +56,8 @@ xmlDocPtr buildTree(SVGimage* image);
 void createPath(xmlNodePtr root_element, List *tempList);
 void writeAttribute(void *list, xmlNodePtr cur_child);
 void createSVG(xmlNodePtr root_element, SVGimage *image);
-
+void createRect(xmlNodePtr root_element, List *tempList);
+void createCircle(xmlNodePtr root_element, List *tempList);
 int hasAttribute(List *otherAttributes)
 {
     if (otherAttributes->length == 0)
@@ -321,8 +322,7 @@ List *getGroups(SVGimage *img)
     while ((elem2 = nextElement(&iter2)) != NULL)
     {
         Group *group = (Group *)elem2;
-
-        //looks for groups that have rectangles
+       
         insertBack(list, group);
         recursiveGroups(list, group);
     }
@@ -344,7 +344,10 @@ List *recursiveGroups(List *list, Group *group)
         {
             Group *grp = (Group *)elem3;
             //Calls function & restarts
+            Attribute *attribute =  grp -> otherAttributes -> head -> data;
+                             printf("%s", attribute ->value);
             insertBack(list, grp);
+          
             list = recursiveGroups(list, grp);
         }
     }
@@ -603,7 +606,7 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
             root_element = xmlDocGetRootElement(doc);
             print_element_names(root_element, &list);
             validateNameSpace((char *)root_element->ns->href, &list);
-            
+          
             //VALIDATING SVG
             if (validateSVGimage(list, schemaFile) == true)
             {
@@ -639,6 +642,7 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
 
 //make sure to validate for lengths are too long
 //TEST FOR EMPTY TAGS
+//do we need to validate the write?
 //XMLDocPtr for writing docs
 xmlDocPtr buildTree(SVGimage* image){
     xmlDocPtr doc = NULL;
@@ -650,14 +654,145 @@ xmlDocPtr buildTree(SVGimage* image){
     nameSpace = xmlNewNs(root_element, BAD_CAST image -> namespace, NULL);
     xmlSetNs(root_element, nameSpace);
     xmlDocSetRootElement(doc, root_element);
-    createSVG(root_element, image);
+ //   createSVG(root_element, image);
+    //createRect( root_element, image ->rectangles);
    // createPath(root_element, image -> paths);
-
+   // createCircle(root_element, image -> circles);
 
 
    // xmlNewChild(root_element, BAD_CAST image -> title);
    // xmlNewProp(root_element, BAD_CAST "title", BAD_CAST image -> title);
     return doc;
+}
+void createGroup(xmlNodePtr root_element, List *tempList){
+    
+    /*
+    void *elem;
+    ListIterator iter = createIterator(tempList);
+       
+       while ((elem = nextElement(&iter)) != NULL)
+       {
+           Path *path = (Path *)elem;
+           if(path ->data != NULL){
+               //RETURNS AN XML NODE PTR
+             
+               xmlNodePtr cur_child = xmlNewChild(root_element, NULL,  BAD_CAST "path", BAD_CAST "");
+             xmlNewProp(cur_child, BAD_CAST "d", BAD_CAST path -> data);
+               
+               if(path -> otherAttributes  != NULL){
+                 writeAttribute(path -> otherAttributes, cur_child);
+                }
+                         
+           }
+           
+         
+           
+       }
+     */
+}
+
+
+
+void createRect(xmlNodePtr root_element, List *tempList){
+    
+    void *elem;
+    char toFloat[100];
+    ListIterator iter = createIterator(tempList);
+       
+       while ((elem = nextElement(&iter)) != NULL)
+       {
+           Rectangle *rect = (Rectangle *)elem;
+           if(rect != NULL){
+               xmlNodePtr cur_child = xmlNewChild(root_element, NULL,  BAD_CAST "rect", BAD_CAST "");
+               if(strlen(rect ->units) > 1){
+                   //RETURNS AN XML NODE PTR
+                   
+                       //two decimal points
+                       
+                    snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> x);
+                              xmlNewProp(cur_child, BAD_CAST "x", BAD_CAST strcat(toFloat,rect ->units));
+                       
+                       snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> y);
+                                            xmlNewProp(cur_child, BAD_CAST "y", BAD_CAST strcat(toFloat,rect ->units));
+                   
+                       snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> width);
+                                            xmlNewProp(cur_child, BAD_CAST "width", BAD_CAST strcat(toFloat,rect ->units));
+                   
+                       snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> height);
+                                            xmlNewProp(cur_child, BAD_CAST "height", BAD_CAST strcat(toFloat,rect ->units));
+               }
+               else{
+                   snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> x);
+                                                xmlNewProp(cur_child, BAD_CAST "x", BAD_CAST toFloat);
+                                         
+                                         snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> y);
+                                                              xmlNewProp(cur_child, BAD_CAST "y", BAD_CAST toFloat);
+                                     
+                                         snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> width);
+                                                              xmlNewProp(cur_child, BAD_CAST "width", BAD_CAST toFloat);
+                                     
+                                         snprintf(toFloat, sizeof(toFloat), "%.1f", rect -> height);
+                                                              xmlNewProp(cur_child, BAD_CAST "height", BAD_CAST toFloat);
+               }
+               
+
+               if(rect -> otherAttributes  != NULL){
+                 writeAttribute(rect -> otherAttributes, cur_child);
+                }
+                         
+           }
+           
+         
+           
+       }
+}
+void createCircle(xmlNodePtr root_element, List *tempList){
+    
+    void *elem;
+       char toFloat[100];
+       ListIterator iter = createIterator(tempList);
+          
+          while ((elem = nextElement(&iter)) != NULL)
+          {
+              Circle *circle = (Circle *)elem;
+              if(circle != NULL){
+                  xmlNodePtr cur_child = xmlNewChild(root_element, NULL,  BAD_CAST "circle", BAD_CAST "");
+                  if(strlen(circle ->units) > 1){
+                      //RETURNS AN XML NODE PTR
+                      
+                          //two decimal points
+                          
+                       snprintf(toFloat, sizeof(toFloat), "%.1f", circle -> cx);
+                                 xmlNewProp(cur_child, BAD_CAST "cx", BAD_CAST strcat(toFloat,circle ->units));
+                          
+                          snprintf(toFloat, sizeof(toFloat), "%.1f", circle -> cy);
+                                               xmlNewProp(cur_child, BAD_CAST "cy", BAD_CAST strcat(toFloat,circle ->units));
+                      
+                          snprintf(toFloat, sizeof(toFloat), "%.1f", circle -> r);
+                                               xmlNewProp(cur_child, BAD_CAST "r", BAD_CAST strcat(toFloat,circle ->units));
+                      
+                  }
+                  else{
+                    snprintf(toFloat, sizeof(toFloat), "%.1f", circle -> cx);
+                                 xmlNewProp(cur_child, BAD_CAST "cx", BAD_CAST toFloat);
+                          
+                          snprintf(toFloat, sizeof(toFloat), "%.1f", circle -> cy);
+                                               xmlNewProp(cur_child, BAD_CAST "cy", BAD_CAST toFloat);
+                      
+                          snprintf(toFloat, sizeof(toFloat), "%.1f", circle -> r);
+                                               xmlNewProp(cur_child, BAD_CAST "r", BAD_CAST toFloat);
+                  }
+                  
+
+                  if(circle -> otherAttributes  != NULL){
+                    writeAttribute(circle -> otherAttributes, cur_child);
+                   }
+                            
+              }
+              
+            
+              
+          }
 }
 void createPath(xmlNodePtr root_element, List *tempList){
     
@@ -674,16 +809,6 @@ void createPath(xmlNodePtr root_element, List *tempList){
              xmlNewProp(cur_child, BAD_CAST "d", BAD_CAST path -> data);
                
                if(path -> otherAttributes  != NULL){
-//                   List* path_list = (List*)path->otherAttributes;
-//                   ListIterator iter = createIterator(path_list);
-//
-//                   while ((elem = nextElement(&iter)) != NULL)
-//                   {
-//                       Attribute *attribute = (Attribute *)elem;
-//                       printf("%s\n",  attribute -> name);
-//                       xmlNewProp(cur_child, BAD_CAST attribute -> name, BAD_CAST attribute -> value);
-//
-//                   }
                  writeAttribute(path -> otherAttributes, cur_child);
                 }
                          
@@ -693,12 +818,7 @@ void createPath(xmlNodePtr root_element, List *tempList){
            
        }
 }
-/*
- typedef enum COMP{
-     SVG_IMAGE, CIRC, RECT, PATH, GROUP
- } elementType;
 
- */
 void createSVG(xmlNodePtr root_element, SVGimage *image){
     
     //e.g title
@@ -720,10 +840,8 @@ void writeAttribute(void *list, xmlNodePtr cur_child){
                           while ((elem = nextElement(&iter)) != NULL)
                           {
                              Attribute *attribute = (Attribute *)elem;
-                              printf("%s\n", attribute ->value );
                               xmlNewProp(cur_child, BAD_CAST attribute -> name, BAD_CAST attribute -> value);
                          }
-    printf("done");
     
     
 }
@@ -1359,7 +1477,7 @@ void insertGroup(void *data, xmlNode *cur_node, int version)
     int i = 0;
     //printf("%s");
     xmlAttr *attr;
-    Group *group;
+    Group *group = NULL;
     if (i == 0)
     {
         group = createGroupObject();
@@ -1377,16 +1495,17 @@ void insertGroup(void *data, xmlNode *cur_node, int version)
         {
             if (version == 0)
             {
-                //  printf("comes here");
-                Group *list = (Group *)data;
+                   
                 Attribute *attribute = createAttribute(getAttrName, getAttrValue);
-                insertBack(list->otherAttributes, attribute);
+                    insertBack(group -> otherAttributes  , attribute);
+
+
             }
             if (version == 1)
             {
-                Group *list = (Group *)data;
                 Attribute *attribute = createAttribute(getAttrName, getAttrValue);
-                insertBack(list->otherAttributes, attribute);
+                                  insertBack(group -> otherAttributes  , attribute);
+
             }
         }
 
