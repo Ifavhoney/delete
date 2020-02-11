@@ -1590,7 +1590,9 @@ void insertGroup(void *data, xmlNode *cur_node, int version)
                 }
             }
             
-            
+            if(temp_cur_children -> next -> next != NULL){
+                 temp_cur_children = temp_cur_children->next->next;
+            }
           
             
 
