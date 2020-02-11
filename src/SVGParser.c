@@ -58,7 +58,8 @@ void writeAttribute(void *list, xmlNodePtr cur_child);
 void createSVG(xmlNodePtr root_element, SVGimage *image);
 void createRect(xmlNodePtr root_element, List *tempList);
 void createCircle(xmlNodePtr root_element, List *tempList);
-void createGroup(xmlNodePtr root_element, List *tempList);
+void createGroup(xmlNodePtr root_element, List *image);
+List *recursiveCreateGroup(List *list, Group *group, xmlNodePtr root_element);
 int hasAttribute(List *otherAttributes)
 {
     if (otherAttributes->length == 0)
@@ -323,7 +324,7 @@ List *getGroups(SVGimage *img)
     while ((elem2 = nextElement(&iter2)) != NULL)
     {
         Group *group = (Group *)elem2;
-      
+
         insertBack(list, group);
         recursiveGroups(list, group);
     }
@@ -346,7 +347,6 @@ List *recursiveGroups(List *list, Group *group)
             Group *grp = (Group *)elem3;
             //Calls function & restarts
 
-           
             insertBack(list, grp);
 
             list = recursiveGroups(list, grp);
@@ -573,6 +573,7 @@ SVGimage *createSVGimage(char *fileName)
         root_element = xmlDocGetRootElement(doc);
         print_element_names(root_element, &list);
         validateNameSpace((char *)root_element->ns->href, &list);
+        int test = numRectsWithArea(list, 2);
     }
 
     xmlFreeDoc(doc);
@@ -649,6 +650,7 @@ xmlDocPtr buildTree(SVGimage *image)
 {
     xmlDocPtr doc = NULL;
     xmlNodePtr root_element = NULL;
+
     xmlNsPtr nameSpace;
     doc = xmlNewDoc(BAD_CAST "1.0");
     //creates a pointer to new root_node
@@ -656,34 +658,95 @@ xmlDocPtr buildTree(SVGimage *image)
     nameSpace = xmlNewNs(root_element, BAD_CAST image->namespace, NULL);
     xmlSetNs(root_element, nameSpace);
     xmlDocSetRootElement(doc, root_element);
+
     createSVG(root_element, image);
-    createRect(root_element, image->rectangles);
-    createCircle(root_element, image->circles);
-    createPath(root_element, image->paths);
-    List *_getGroups = getGroups(image);
-    createGroup(root_element, _getGroups);
-    freeList(_getGroups);
+    if(image -> rectangles -> length > 0){
+        createRect(root_element, image->rectangles);
+
+    }
+    if(image -> circles -> length > 0){
+        createCircle(root_element, image->circles);
+
+    }
+    if(image -> paths -> length > 0){
+        createPath(root_element, image->paths);
+
+    }
+    if(image -> groups -> length > 0){
+        createGroup(root_element, image -> groups);
+
+    }
 
     // xmlNewChild(root_element, BAD_CAST image -> title);
     // xmlNewProp(root_element, BAD_CAST "title", BAD_CAST image -> title);
     return doc;
 }
-void createGroup(xmlNodePtr root_element, List *tempList)
+void createGroup(xmlNodePtr root_element, List *image)
 {
-
-    ListIterator iter2 = createIterator(tempList);
+    ListIterator iter2 = createIterator(image);
     void *elem;
-    while ((elem = nextElement(&iter2)) != NULL)
-    {
-        Group *group = (Group *)elem;
-        xmlNodePtr cur_child = xmlNewChild(root_element, NULL, BAD_CAST "g", BAD_CAST "HH");
-                                    
-        if (group -> otherAttributes != NULL)
+    
+        while (( elem = nextElement(&iter2)) != NULL)
         {
-            writeAttribute(group->otherAttributes, cur_child);
+            xmlNodePtr  cur_child   = xmlNewChild(root_element, NULL, BAD_CAST "g", NULL);
+
+            Group *group = (Group *)elem;
+            if(group -> groups){
+                createGroup(cur_child, group -> groups);
+
+            }
+            if(group -> rectangles){
+                createRect(cur_child, group -> rectangles);
+            }
+            if(group -> circles){
+                          createCircle(cur_child, group -> circles);
+                      }
+                if(group -> paths){
+                              createPath(cur_child, group -> paths);
+                }
+            
+            if(group -> otherAttributes != NULL){
+             writeAttribute(group -> otherAttributes, cur_child);
+
+            }
         }
-    }
+    
+   
 }
+
+
+//create function for circle, rect, etc
+bool writeSVGimage(SVGimage *image, char *fileName)
+{
+    //Create an xml file: validSVG == true ? return true : return false
+    if (image == NULL || image->circles == NULL || image->rectangles == NULL || image->paths == NULL || image->groups == NULL || image->otherAttributes == NULL || fileName == NULL)
+    {
+        return false;
+    }
+
+    /*
+               //searches for last occurence of period
+               char *extension = strrchr(fileName, '.');
+               if(extension != NULL){
+                   if(strcmp(extension + 1, "svg") == 0){
+                       printf("FOUND!!!");
+                   }
+               }
+                return false;
+                */
+
+    xmlDocPtr tree = buildTree(image);
+
+    int result = xmlSaveFormatFileEnc("my.svg", tree, "UTF-8", 1);
+    xmlFreeDoc(tree);
+    if (result < 0)
+    {
+        return false;
+    }
+
+    return true;
+}
+
 void writeAttribute(void *list, xmlNodePtr cur_child)
 {
     void *elem;
@@ -695,12 +758,9 @@ void writeAttribute(void *list, xmlNodePtr cur_child)
     {
 
         Attribute *attribute = (Attribute *)elem;
-                printf("%s\t", attribute ->value);
         xmlNewProp(cur_child, BAD_CAST attribute->name, BAD_CAST attribute->value);
-    
     }
     printf("\n");
-
 }
 
 void createRect(xmlNodePtr root_element, List *tempList)
@@ -715,7 +775,7 @@ void createRect(xmlNodePtr root_element, List *tempList)
         Rectangle *rect = (Rectangle *)elem;
         if (rect != NULL)
         {
-            xmlNodePtr cur_child = xmlNewChild(root_element, NULL, BAD_CAST "rect", BAD_CAST "");
+            xmlNodePtr cur_child = xmlNewChild(root_element, NULL, BAD_CAST "rect", NULL);
             if (strlen(rect->units) > 1)
             {
                 //RETURNS AN XML NODE PTR
@@ -768,7 +828,7 @@ void createCircle(xmlNodePtr root_element, List *tempList)
         Circle *circle = (Circle *)elem;
         if (circle != NULL)
         {
-            xmlNodePtr cur_child = xmlNewChild(root_element, NULL, BAD_CAST "circle", BAD_CAST "");
+            xmlNodePtr cur_child = xmlNewChild(root_element, NULL, BAD_CAST "circle", NULL);
             if (strlen(circle->units) > 1)
             {
                 //RETURNS AN XML NODE PTR
@@ -816,7 +876,7 @@ void createPath(xmlNodePtr root_element, List *tempList)
         {
             //RETURNS AN XML NODE PTR
 
-            xmlNodePtr cur_child = xmlNewChild(root_element, NULL, BAD_CAST "path", BAD_CAST "");
+            xmlNodePtr cur_child = xmlNewChild(root_element, NULL, BAD_CAST "path", NULL);
             xmlNewProp(cur_child, BAD_CAST "d", BAD_CAST path->data);
 
             if (path->otherAttributes != NULL)
@@ -838,38 +898,6 @@ void createSVG(xmlNodePtr root_element, SVGimage *image)
     writeAttribute(image->otherAttributes, root_element);
 }
 
-//create function for circle, rect, etc
-bool writeSVGimage(SVGimage *image, char *fileName)
-{
-    //Create an xml file: validSVG == true ? return true : return false
-    bool valid = true;
-    if (image == NULL || image->circles == NULL || image->rectangles == NULL || image->paths == NULL || image->groups == NULL || image->otherAttributes == NULL || fileName == NULL)
-    {
-        return false;
-    }
-
-    /*
-               //searches for last occurence of period
-               char *extension = strrchr(fileName, '.');
-               if(extension != NULL){
-                   if(strcmp(extension + 1, "svg") == 0){
-                       printf("FOUND!!!");
-                   }
-               }
-                return false;
-                */
-
-    xmlDocPtr tree = buildTree(image);
-
-    int result = xmlSaveFormatFileEnc("my.svg", tree, "UTF-8", 1);
-    xmlFreeDoc(tree);
-    if (result < 0)
-    {
-        return false;
-    }
-
-    return true;
-}
 //Cleans up failed attemp to create an SVG image
 void cleanUp(xmlDoc *doc, SVGimage *list)
 {
@@ -956,6 +984,7 @@ bool isValidGroupTag(List *tempList, SVGimage *image)
     freeList(list);
     if (valid == false)
     {
+        printf("Invalid @ path");
         return false;
     }
     list = getCircles(image);
@@ -1219,6 +1248,7 @@ bool isProperlySpaced(char *value)
 
                 if (digit % 2 != 0)
                 {
+                    printf("%d", digit);
                     return false;
                 }
                 digit = 1;
@@ -1485,21 +1515,27 @@ void insertGroup(void *data, xmlNode *cur_node, int version)
 {
     int i = 0;
     //printf("%s");
-    xmlAttr *attr;
+    xmlAttr *attr = NULL;
+    char *getAttrValue = NULL;
+    char *getAttrName = NULL;
     Group *group = NULL;
+    
+    xmlNode *snapshot = NULL;
     if (i == 0)
     {
         group = createGroupObject();
     }
-
+    
     attr = cur_node->properties;
-    // printf("%d\n",i);
-
-    xmlNode *snapshot = attr->children;
-    char *getAttrValue = (char *)snapshot->content;
-    char *getAttrName = (char *)attr->name;
-    if (getAttrValue != NULL && getAttrName != NULL)
-    {
+    if(attr != NULL){
+        printf("not null");
+        snapshot = attr->children;
+        getAttrValue = (char *)snapshot->content;
+        getAttrName = (char *)attr->name;
+    }
+    
+    
+    
         for (attr = cur_node->properties; attr != NULL; attr = attr->next)
         {
             if (version == 0)
@@ -1507,7 +1543,6 @@ void insertGroup(void *data, xmlNode *cur_node, int version)
 
                 Attribute *attribute = createAttribute(getAttrName, getAttrValue);
                 insertBack(group->otherAttributes, attribute);
-
             }
             if (version == 1)
             {
@@ -1554,8 +1589,10 @@ void insertGroup(void *data, xmlNode *cur_node, int version)
                     insertGroup(group, temp_cur_node, 1);
                 }
             }
-
-            temp_cur_children = temp_cur_children->next->next;
+            
+            
+          
+            
 
             nodeCounter--;
         }
@@ -1572,7 +1609,7 @@ void insertGroup(void *data, xmlNode *cur_node, int version)
                 insertBack(list->groups, group);
             }
         }
-    }
+    
 }
 
 ///Version is so that we could reuse this with different types of list
@@ -1667,7 +1704,7 @@ void insertRect(void *data, xmlNode *cur_node, int version)
                     {
                         if (version == 1)
                         {
-                          Attribute *attribute1 = createAttribute(getAttrName, getAttrValue);
+                            Attribute *attribute1 = createAttribute(getAttrName, getAttrValue);
                             insertBack(rectangle->otherAttributes, attribute1);
                         }
                         else

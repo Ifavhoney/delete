@@ -8,9 +8,21 @@
   <circle cx="800.0" cy="550.0" r="10.0"/>
   <path d="M200,300 Q400,50 600,300 T1000,300" stroke="red" stroke-width="5"/>
   <path d="M200,300 L400,50 L600,300 L800,550 L1000,300 L100,299" fill="none" stroke="#888888" stroke-width="2"/>
-  <g fill="none">HH</g>
-  <g fill="none">HH</g>
-  <g fill="none">HH</g>
-  <g fill="black">HH</g>
-  <g fill="#888888">HH</g>
+  <g fill="none">
+    <g fill="none">
+      <rect x="1.0" y="1.0" width="1198.0" height="598.0" stroke="blue" stroke-width="1"/>
+    </g>
+    <g fill="none">
+      <rect x="1.0" y="1.0" width="1198.0" height="598.0" stroke="blue" stroke-width="1"/>
+    </g>
+    <rect x="1.0" y="1.0" width="1198.0" height="598.0" stroke="blue" stroke-width="1"/>
+  </g>
+  <g fill="black">
+    <circle cx="200.0" cy="300.0" r="10.0"/>
+    <circle cx="600.0" cy="300.0" r="10.0"/>
+    <circle cx="1000.0" cy="300.0" r="10.0"/>
+  </g>
+  <g fill="#888888">
+    <circle cx="400.0" cy="50.0" r="10.0"/>
+  </g>
 </svg>
