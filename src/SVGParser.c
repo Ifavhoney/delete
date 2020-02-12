@@ -148,7 +148,7 @@ int numGroupsWithLen(SVGimage *img, int len)
     int counter = 0;
     void *elem;
     List *list = getGroups(img);
-
+//
     ListIterator iter = createIterator(list);
     while ((elem = nextElement(&iter)) != NULL)
     {
@@ -159,7 +159,7 @@ int numGroupsWithLen(SVGimage *img, int len)
         i += group->paths->length;
         i += group->groups->length;
         i += group->otherAttributes->length;
-
+        
         if (i == len)
         {
             counter++;
@@ -173,7 +173,7 @@ int numGroupsWithLen(SVGimage *img, int len)
 int numRectsWithArea(SVGimage *img, float area)
 {
     int num = 0;
-    if (img == NULL || img->rectangles->length == 0)
+    if (img == NULL)
     {
         return 0;
     }
@@ -199,7 +199,7 @@ int numRectsWithArea(SVGimage *img, float area)
 int numCirclesWithArea(SVGimage *img, float area)
 {
     int num = 0;
-    if (img == NULL || img->circles->length == 0)
+    if (img == NULL)
     {
         return 0;
     }
@@ -229,9 +229,10 @@ int numPathsWithdata(SVGimage *img, char *data)
     List *list;
 
     int num = 0;
-    if (img == NULL || img->paths->length == 0 || data == NULL)
+    if (img == NULL || data == NULL)
     {
-        //  printf("null");
+        
+         printf("null");
         return 0;
     }
     else
@@ -564,15 +565,25 @@ SVGimage *createSVGimage(char *fileName)
     if (doc == NULL)
     {
         //   printf("error: could not parse file %s\n", fileName);
+                cleanUp(doc, list);
+
         return NULL;
     }
     else
     {
+        if(root_element -> ns != NULL){
+            validateNameSpace((char *)root_element->ns->href, &list);
+                         }
+            else{
+                return NULL;
+                         }
 
         /*Get the root element node */
         root_element = xmlDocGetRootElement(doc);
         print_element_names(root_element, &list);
-        validateNameSpace((char *)root_element->ns->href, &list);
+       
+        
+     
     }
 
     xmlFreeDoc(doc);
@@ -596,6 +607,7 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     if (doc == NULL)
     {
         printf("error: could not parse file %s\n", fileName);
+        cleanUp(doc, list);
         return NULL;
     }
     else
@@ -606,16 +618,25 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
             /*Get the root element node */
             root_element = xmlDocGetRootElement(doc);
             print_element_names(root_element, &list);
-            validateNameSpace((char *)root_element->ns->href, &list);
-
             //VALIDATING SVG
+            
+         if(root_element -> ns != NULL){
+            validateNameSpace((char *)root_element->ns->href, &list);
+                         }
+            else{
+                return NULL;
+                         }
+            
             if (validateSVGimage(list, schemaFile) == true)
             {
-              bool result = NULL;
-              result =   writeSVGimage(list, fileName);
+                writeSVGimage(list, fileName);
             }
             else
             {
+                
+                
+             
+  
                 //JUST ADDED
                 cleanUp(doc, list);
                 printf("\nNot a valid SVG Image\n");
@@ -648,9 +669,6 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
 //XMLDocPtr for writing docs
 xmlDocPtr buildTree(SVGimage *image)
 {
-    if(image ==  NULL){
-        return NULL;
-    }
     xmlDocPtr doc = NULL;
     xmlNodePtr root_element = NULL;
 
@@ -661,10 +679,9 @@ xmlDocPtr buildTree(SVGimage *image)
     nameSpace = xmlNewNs(root_element, BAD_CAST image->namespace, NULL);
     xmlSetNs(root_element, nameSpace);
     xmlDocSetRootElement(doc, root_element);
-    
+
     createSVG(root_element, image);
-    
-    if(image -> rectangles != NULL){
+    if(image -> rectangles -> length > 0){
         createRect(root_element, image->rectangles);
 
     }
@@ -676,7 +693,7 @@ xmlDocPtr buildTree(SVGimage *image)
         createPath(root_element, image->paths);
 
     }
-    if(image -> groups != NULL){
+    if(image -> groups -> length > 0){
         createGroup(root_element, image -> groups);
 
     }
@@ -739,8 +756,7 @@ bool writeSVGimage(SVGimage *image, char *fileName)
                 return false;
                 */
 
-    xmlDocPtr tree = NULL;
-    tree =  buildTree(image);
+    xmlDocPtr tree = buildTree(image);
 
     int result = xmlSaveFormatFileEnc("my.svg", tree, "UTF-8", 1);
     xmlFreeDoc(tree);
@@ -787,30 +803,30 @@ void createRect(xmlNodePtr root_element, List *tempList)
 
                 //two decimal points
 
-                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->x);
+                snprintf(toFloat, sizeof(toFloat), "%f", rect->x);
                 xmlNewProp(cur_child, BAD_CAST "x", BAD_CAST strcat(toFloat, rect->units));
 
-                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->y);
+                snprintf(toFloat, sizeof(toFloat), "%f", rect->y);
                 xmlNewProp(cur_child, BAD_CAST "y", BAD_CAST strcat(toFloat, rect->units));
 
-                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->width);
+                snprintf(toFloat, sizeof(toFloat), "%f", rect->width);
                 xmlNewProp(cur_child, BAD_CAST "width", BAD_CAST strcat(toFloat, rect->units));
 
-                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->height);
+                snprintf(toFloat, sizeof(toFloat), "%f", rect->height);
                 xmlNewProp(cur_child, BAD_CAST "height", BAD_CAST strcat(toFloat, rect->units));
             }
             else
             {
-                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->x);
+                snprintf(toFloat, sizeof(toFloat), "%f", rect->x);
                 xmlNewProp(cur_child, BAD_CAST "x", BAD_CAST toFloat);
 
-                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->y);
+                snprintf(toFloat, sizeof(toFloat), "%f", rect->y);
                 xmlNewProp(cur_child, BAD_CAST "y", BAD_CAST toFloat);
 
-                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->width);
+                snprintf(toFloat, sizeof(toFloat), "%f", rect->width);
                 xmlNewProp(cur_child, BAD_CAST "width", BAD_CAST toFloat);
 
-                snprintf(toFloat, sizeof(toFloat), "%.1f", rect->height);
+                snprintf(toFloat, sizeof(toFloat), "%f", rect->height);
                 xmlNewProp(cur_child, BAD_CAST "height", BAD_CAST toFloat);
             }
 
@@ -840,24 +856,24 @@ void createCircle(xmlNodePtr root_element, List *tempList)
 
                 //two decimal points
 
-                snprintf(toFloat, sizeof(toFloat), "%.1f", circle->cx);
+                snprintf(toFloat, sizeof(toFloat), "%f", circle->cx);
                 xmlNewProp(cur_child, BAD_CAST "cx", BAD_CAST strcat(toFloat, circle->units));
 
-                snprintf(toFloat, sizeof(toFloat), "%.1f", circle->cy);
+                snprintf(toFloat, sizeof(toFloat), "%f", circle->cy);
                 xmlNewProp(cur_child, BAD_CAST "cy", BAD_CAST strcat(toFloat, circle->units));
 
-                snprintf(toFloat, sizeof(toFloat), "%.1f", circle->r);
+                snprintf(toFloat, sizeof(toFloat), "%f", circle->r);
                 xmlNewProp(cur_child, BAD_CAST "r", BAD_CAST strcat(toFloat, circle->units));
             }
             else
             {
-                snprintf(toFloat, sizeof(toFloat), "%.1f", circle->cx);
+                snprintf(toFloat, sizeof(toFloat), "%f", circle->cx);
                 xmlNewProp(cur_child, BAD_CAST "cx", BAD_CAST toFloat);
 
-                snprintf(toFloat, sizeof(toFloat), "%.1f", circle->cy);
+                snprintf(toFloat, sizeof(toFloat), "%f", circle->cy);
                 xmlNewProp(cur_child, BAD_CAST "cy", BAD_CAST toFloat);
 
-                snprintf(toFloat, sizeof(toFloat), "%.1f", circle->r);
+                snprintf(toFloat, sizeof(toFloat), "%f", circle->r);
                 xmlNewProp(cur_child, BAD_CAST "r", BAD_CAST toFloat);
             }
 
@@ -894,15 +910,10 @@ void createPath(xmlNodePtr root_element, List *tempList)
 
 void createSVG(xmlNodePtr root_element, SVGimage *image)
 {
-
-    if(strlen(image -> title) == 0 ){
-        printf("null!");
-    }
-    //e.g title
-    xmlNewChild(root_element, NULL, BAD_CAST "title", BAD_CAST image->title);
-    //description
-    xmlNewChild(root_element, NULL, BAD_CAST "desc", BAD_CAST image->description);
-
+    
+   
+  
+   
     writeAttribute(image->otherAttributes, root_element);
 }
 
@@ -1048,7 +1059,6 @@ bool isGoodRectangle(Rectangle *rect)
             if (valid == false)
             {
                 return false;
-                break;
             }
         }
     }
@@ -1058,6 +1068,7 @@ bool isGoodRectangle(Rectangle *rect)
 bool isGoodRectAttribute(Attribute *attribute, Rectangle *rect)
 {
     bool valid = true;
+    
     if (strcmp(attribute->name, "rx") == 0 || strcmp(attribute->name, "ry") == 0)
     {
         valid = isAboveZero(attribute->value);
@@ -1178,15 +1189,19 @@ bool isValidPathTag(List *tempList)
 
     while ((elem = nextElement(&iter)) != NULL)
     {
+    
         Path *path = (Path *)elem;
         if(path -> data == NULL){
             valid = false;
             return valid;
         }
+      
     }
     return valid;
 }
 //Checks if path is probably spaced
+
+/*
 bool isProperlySpaced(char *value)
 {
 
@@ -1266,6 +1281,7 @@ bool isProperlySpaced(char *value)
     printf("\nComplete cycle %d\n", digit);
     return true;
 }
+ */
 
 bool isValidSVGTag(List *tempList)
 {
@@ -1535,7 +1551,7 @@ void insertGroup(void *data, xmlNode *cur_node, int version)
     
     attr = cur_node->properties;
     if(attr != NULL){
-        printf("not null");
+      //  printf("not null");
         snapshot = attr->children;
         getAttrValue = (char *)snapshot->content;
         getAttrName = (char *)attr->name;
@@ -1904,9 +1920,9 @@ SVGimage *initializeObjects()
     ;
     list->groups = initializeList(groupToString, deleteGroup, compareGroups);
     list->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
-    strcpy(list -> description, " ");
-        strcpy(list -> title, " ");
 
+    strcpy(list -> description, " ");
+           strcpy(list -> title, " ");
     //initialize
     return list;
 }
@@ -2316,8 +2332,7 @@ void validateTitle(char *title, SVGimage **list)
         else
         {
 
-            long length = strlen((char *)title) - 256;
-            strncpy(temp_list->title, (char *)title, 256 - length);
+            strncpy(temp_list->title, (char *)title,256);
         }
     }
     else
@@ -2339,8 +2354,7 @@ void validateDescription(char *description, SVGimage **list)
         else
         {
 
-            long length = strlen((char *)description) - 256;
-            strncpy(temp_list->description, (char *)description, 256 - length);
+            strncpy(temp_list->description, (char *)description, 256);
         }
     }
     else

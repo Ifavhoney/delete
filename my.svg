@@ -1,18 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="5cm" height="4cm" version="1.1">
   <title> </title>
-  <desc> </desc>
-  <rect x="2.0" y="2.0" width="2.0" height="1.0"/>
-  <g>
-    <g>
-      <g>
-        <g>
-          <rect x="0.0cm" y="0.0cm" width="5.0cm" height="4.0cm" fill="none" stroke="blue" stroke-width=".02cm"/>
-        </g>
-        <rect x="3.5cm" y="3.0cm" width="1.0cm" height="0.5cm"/>
-      </g>
-      <rect x="3.0cm" y="0.5cm" width="1.5cm" height="2.0cm"/>
-    </g>
-    <rect x="0.5cm" y="2.0cm" width="1.0cm" height="1.5cm"/>
-  </g>
+  <desc>Four separate rectangles</desc>
+  <rect x="0.500000cm" y="0.500000cm" width="2.000000cm" height="1.000000cm"/>
+  <rect x="0.500000cm" y="2.000000cm" width="1.000000cm" height="1.500000cm"/>
+  <rect x="3.000000cm" y="0.500000cm" width="1.500000cm" height="2.000000cm"/>
+  <rect x="3.500000cm" y="3.000000cm" width="1.000000cm" height="0.500000cm"/>
+  <rect x="0.010000cm" y="0.010000cm" width="4.980000cm" height="3.980000cm" fill="none" stroke="blue" stroke-width=".02cm"/>
 </svg>
