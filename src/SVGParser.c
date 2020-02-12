@@ -910,9 +910,14 @@ void createPath(xmlNodePtr root_element, List *tempList)
 
 void createSVG(xmlNodePtr root_element, SVGimage *image)
 {
-    
+     if(!strcmp(image -> title, " ") == 0 ){
+             xmlNewChild(root_element, NULL, BAD_CAST "title", BAD_CAST image->title);
+
+    }
    
-  
+    if(!strcmp(image -> description, " ") == 0){
+    xmlNewChild(root_element, NULL, BAD_CAST "desc", BAD_CAST image -> description);
+    }
    
     writeAttribute(image->otherAttributes, root_element);
 }
