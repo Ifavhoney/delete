@@ -559,10 +559,11 @@ SVGimage *createSVGimage(char *fileName)
     xmlDoc *doc = NULL;
     xmlNode *root_element = NULL;
     SVGimage *list = initializeObjects();
+    char *extension2 = strrchr(fileName, '.');
 
     LIBXML_TEST_VERSION
     doc = xmlReadFile(fileName, NULL, 0);
-    if (doc == NULL)
+    if (doc == NULL || strcmp(extension2, ".svg") != 0)
     {
         //   printf("error: could not parse file %s\n", fileName);
                 cleanUp(doc, list);
@@ -601,10 +602,15 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     xmlDoc *doc = NULL;
     xmlNode *root_element = NULL;
     SVGimage *list = initializeObjects();
+    char *extension = strrchr(schemaFile, '.');
+    char *extension2 = strrchr(fileName, '.');
 
+    printf("\n%s", extension2);
+    
     LIBXML_TEST_VERSION
     doc = xmlReadFile(fileName, NULL, 0);
-    if (doc == NULL)
+    
+    if (doc == NULL || strcmp(extension, ".xsd") != 0 || strcmp(extension2, ".svg") != 0)
     {
         printf("error: could not parse file %s\n", fileName);
         cleanUp(doc, list);
@@ -627,16 +633,8 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
                 return NULL;
                          }
             
-            if (validateSVGimage(list, schemaFile) == true)
+            if (validateSVGimage(list, schemaFile) == false)
             {
-                writeSVGimage(list, fileName);
-            }
-            else
-            {
-                
-                
-             
-  
                 //JUST ADDED
                 cleanUp(doc, list);
                 printf("\nNot a valid SVG Image\n");
@@ -658,6 +656,58 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
 
     //Returns the pointer of type SVGimage containing all data
 }
+bool validateSVGimage(SVGimage *doc, char *schemaFile)
+{
+
+    SVGimage *image = doc;
+    char *extension = strrchr(schemaFile, '.');
+
+    if (image == NULL || strcmp(extension, ".xsd") != 0 )
+    {
+        printf("no good");
+        return false;
+    }
+
+    else
+    {
+        bool valid = true;
+        valid = isValidSVGTag(image->otherAttributes);
+        if (valid == false)
+        {
+            printf("invalid @ svg");
+            return valid;
+        }
+        valid = isValidPathTag(image->paths);
+        if (valid == false)
+        {
+            printf("invalid @ Path");
+
+            return valid;
+        }
+        valid = isValidCircleTag(image->circles);
+        if (valid == false)
+        {
+            printf("invalid @ Circle");
+
+            return valid;
+        }
+        valid = isValidRectTag(image->rectangles);
+        if (valid == false)
+        {
+            printf("invalid @ Rect");
+            return valid;
+        }
+        valid = isValidGroupTag(image->groups, image);
+        if (valid == false)
+        {
+            printf("invalid @ Group");
+            return valid;
+        }
+
+        return true;
+    }
+}
+
 
 /*
  
@@ -740,25 +790,15 @@ void createGroup(xmlNodePtr root_element, List *image)
 bool writeSVGimage(SVGimage *image, char *fileName)
 {
     //Create an xml file: validSVG == true ? return true : return false
-    if (image == NULL || image->circles == NULL || image->rectangles == NULL || image->paths == NULL || image->groups == NULL || image->otherAttributes == NULL || fileName == NULL)
+    char *extension = strrchr(fileName, '.');
+    if (image == NULL || fileName == NULL || extension == NULL || strcmp(extension + 1, "svg") != 0 )
     {
         return false;
     }
-
-    /*
-               //searches for last occurence of period
-               char *extension = strrchr(fileName, '.');
-               if(extension != NULL){
-                   if(strcmp(extension + 1, "svg") == 0){
-                       printf("FOUND!!!");
-                   }
-               }
-                return false;
-                */
-
+            
     xmlDocPtr tree = buildTree(image);
 
-    int result = xmlSaveFormatFileEnc("my.svg", tree, "UTF-8", 1);
+    int result = xmlSaveFormatFileEnc(fileName, tree, "UTF-8", 1);
     xmlFreeDoc(tree);
     if (result < 0)
     {
@@ -910,12 +950,13 @@ void createPath(xmlNodePtr root_element, List *tempList)
 
 void createSVG(xmlNodePtr root_element, SVGimage *image)
 {
-     if(!strcmp(image -> title, " ") == 0 ){
+    //changed from ! to ==
+     if(strcmp(image -> title, " ") != 0 ){
              xmlNewChild(root_element, NULL, BAD_CAST "title", BAD_CAST image->title);
 
     }
    
-    if(!strcmp(image -> description, " ") == 0){
+    if(strcmp(image -> description, " ") != 0){
     xmlNewChild(root_element, NULL, BAD_CAST "desc", BAD_CAST image -> description);
     }
    
@@ -930,54 +971,6 @@ void cleanUp(xmlDoc *doc, SVGimage *list)
     deleteSVGimage(list);
 }
 
-bool validateSVGimage(SVGimage *doc, char *schemaFile)
-{
-    SVGimage *image = doc;
-    if (image == NULL || image->circles == NULL || image->rectangles == NULL || image->paths == NULL || image->groups == NULL || image->otherAttributes == NULL)
-    {
-        printf("no good");
-        return false;
-    }
-
-    else
-    {
-        bool valid = true;
-        valid = isValidSVGTag(image->otherAttributes);
-        if (valid == false)
-        {
-            printf("invalid @ svg");
-            return valid;
-        }
-        valid = isValidPathTag(image->paths);
-        if (valid == false)
-        {
-            printf("invalid @ Path");
-
-            return valid;
-        }
-        valid = isValidCircleTag(image->circles);
-        if (valid == false)
-        {
-            printf("invalid @ Circle");
-
-            return valid;
-        }
-        valid = isValidRectTag(image->rectangles);
-        if (valid == false)
-        {
-            printf("invalid @ Rect");
-            return valid;
-        }
-        valid = isValidGroupTag(image->groups, image);
-        if (valid == false)
-        {
-            printf("invalid @ Group");
-            return valid;
-        }
-
-        return true;
-    }
-}
 /*
  bool isValidPathTag(List *tempList){
      bool valid = true;
