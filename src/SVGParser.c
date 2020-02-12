@@ -573,7 +573,6 @@ SVGimage *createSVGimage(char *fileName)
         root_element = xmlDocGetRootElement(doc);
         print_element_names(root_element, &list);
         validateNameSpace((char *)root_element->ns->href, &list);
-        int test = numRectsWithArea(list, 2);
     }
 
     xmlFreeDoc(doc);
@@ -612,7 +611,8 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
             //VALIDATING SVG
             if (validateSVGimage(list, schemaFile) == true)
             {
-                writeSVGimage(list, fileName);
+              bool result = NULL;
+              result =   writeSVGimage(list, fileName);
             }
             else
             {
@@ -648,6 +648,9 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
 //XMLDocPtr for writing docs
 xmlDocPtr buildTree(SVGimage *image)
 {
+    if(image ==  NULL){
+        return NULL;
+    }
     xmlDocPtr doc = NULL;
     xmlNodePtr root_element = NULL;
 
@@ -658,9 +661,10 @@ xmlDocPtr buildTree(SVGimage *image)
     nameSpace = xmlNewNs(root_element, BAD_CAST image->namespace, NULL);
     xmlSetNs(root_element, nameSpace);
     xmlDocSetRootElement(doc, root_element);
-
+    
     createSVG(root_element, image);
-    if(image -> rectangles -> length > 0){
+    
+    if(image -> rectangles != NULL){
         createRect(root_element, image->rectangles);
 
     }
@@ -672,7 +676,7 @@ xmlDocPtr buildTree(SVGimage *image)
         createPath(root_element, image->paths);
 
     }
-    if(image -> groups -> length > 0){
+    if(image -> groups != NULL){
         createGroup(root_element, image -> groups);
 
     }
@@ -735,7 +739,8 @@ bool writeSVGimage(SVGimage *image, char *fileName)
                 return false;
                 */
 
-    xmlDocPtr tree = buildTree(image);
+    xmlDocPtr tree = NULL;
+    tree =  buildTree(image);
 
     int result = xmlSaveFormatFileEnc("my.svg", tree, "UTF-8", 1);
     xmlFreeDoc(tree);
@@ -890,6 +895,9 @@ void createPath(xmlNodePtr root_element, List *tempList)
 void createSVG(xmlNodePtr root_element, SVGimage *image)
 {
 
+    if(strlen(image -> title) == 0 ){
+        printf("null!");
+    }
     //e.g title
     xmlNewChild(root_element, NULL, BAD_CAST "title", BAD_CAST image->title);
     //description
@@ -1171,9 +1179,8 @@ bool isValidPathTag(List *tempList)
     while ((elem = nextElement(&iter)) != NULL)
     {
         Path *path = (Path *)elem;
-        valid = isProperlySpaced(path->data);
-        if (valid == false)
-        {
+        if(path -> data == NULL){
+            valid = false;
             return valid;
         }
     }
@@ -1897,6 +1904,8 @@ SVGimage *initializeObjects()
     ;
     list->groups = initializeList(groupToString, deleteGroup, compareGroups);
     list->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
+    strcpy(list -> description, " ");
+        strcpy(list -> title, " ");
 
     //initialize
     return list;

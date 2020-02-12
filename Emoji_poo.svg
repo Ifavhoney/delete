@@ -1,36 +1,19 @@
 <?xml version="1.0" standalone="no" ?>
 <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg width="12cm" height="6cm" viewBox="0 0 1200 600" xmlns="http://www.w3.org/2000/svg" version="1.1">
+<svg width="5cm" height="4cm" version="1.1" xmlns="http://www.w3.org/2000/svg">
 
-
-    <desc>Picture showing a "Q" a "T" command,
-        along with annotations showing the control points
-        and end points</desc>
-    <title>Example quad01 - quadratic Bézier commands in path data</title>
-    <path d="M200,300 Q400,50 600,300 T1000,300" stroke="red" stroke-width="5" />
-    <rect x="1px" y="1" width="1198" height="598" stroke="blue" stroke-width="1" />
-    <circle cx="800" cy="550" r="10" />
-
-    <g fill="none">
-        <rect x="1" y="1" width="1198" height="598" stroke="blue" stroke-width="1" />
-        <g fill="none">
-            <rect x="1" y="1" width="1198" height="598" stroke="blue" stroke-width="1" />
-
-        </g>
-        <g fill="none">
-            <rect x="1" y="1" width="1198" height="598" stroke="blue" stroke-width="1" />
-
+    <rect x="2" y="2" width="2" height="1cm" />
+    <g>
+        <rect x="0.5cm" y="2cm" width="1cm" height="1.5cm" />
+        <g>
+            <rect x="3cm" y="0.5cm" width="1.5cm" height="2cm" />
+            <g>
+                <rect x="3.5cm" y="3cm" width="1cm" height="0.5cm" />
+                <!-- Show outline of canvas using 'rect' element -->
+                <g>
+                    <rect x=".01cm" y=".01cm" width="5cm" height="4cm" fill="none" stroke="blue" stroke-width=".02cm" />
+                </g>
+            </g>
         </g>
     </g>
-    <!-- End points -->
-    <g fill="black">
-        <circle cx="200" cy="300" r="10" />
-        <circle cx="600" cy="300" r="10" />
-        <circle cx="1000" cy="300" r="10" />
-    </g>
-    <!-- Control points and lines from end points to control points -->
-    <g fill="#888888">
-        <circle cx="400" cy="50" r="10" />
-    </g>
-    <path d="M200,300 L400,50 L600,300 L800,550 L1000,300 L100,299" fill="none" stroke="#888888" stroke-width="2" />
 </svg>
