@@ -63,6 +63,7 @@ List *recursiveCreateGroup(List *list, Group *group, xmlNodePtr root_element);
 void setCircleAttribute(List *tempList, int elemIndex,Attribute* newAttribute );
 void setRectAttribute(List *tempList, int elemIndex,Attribute* newAttribute );
 void setPathAttribute(List *tempList, int elemIndex,Attribute* newAttribute );
+void writeSVGAttribute(void *list,  int elemIndex,  Attribute *newAttribute);
 int hasAttribute(List *otherAttributes)
 {
     if (otherAttributes->length == 0)
@@ -671,8 +672,10 @@ void setAttribute(SVGimage* image, elementType elemType, int elemIndex, Attribut
     printf("length: %d\n", length);
      */
     
-    if(image == NULL || elemIndex > (image -> circles  -> length) - 1 ) {
+    if(image == NULL || elemIndex < 0) {
         printf("here");
+        deleteAttribute(newAttribute);
+
         return;
     }
     if(elemType == CIRC){
@@ -691,7 +694,33 @@ void setAttribute(SVGimage* image, elementType elemType, int elemIndex, Attribut
     if(elemType == SVG_IMAGE){
         //OtherAttributes
     }
+    deleteAttribute(newAttribute);
 }
+void writeSVGAttribute(void *list,  int elemIndex,  Attribute *newAttribute)
+{
+    void *elem;
+
+    List *tempList = (void *)list;
+    ListIterator iter = createIterator(tempList);
+    int i = -1;
+    bool isFound  = false;
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+        Attribute *attribute = (Attribute *)elem;
+        if(strcmp(attribute ->name, newAttribute -> name) == 0 && elemIndex == i){
+            printf("Insert @ index %d for %s", elemIndex, attribute ->name);
+            tempList -> head -> data = attribute;
+            
+        }
+    }
+    if(isFound == false){
+        printf("Happens here");
+        Attribute *attribute =  createAttribute(newAttribute -> name, newAttribute -> value);
+        insertBack(list, attribute);
+        //deleteAttribute(attribute);
+    }
+}
+
 
 void setPathAttribute(List *tempList, int elemIndex,Attribute* newAttribute ){
     
@@ -711,24 +740,29 @@ void setCircleAttribute(List *tempList, int elemIndex,Attribute* newAttribute ){
          if(strcmp(newAttribute -> name, "cx") == 0 && i == elemIndex ){
              circle -> cx = atof(newAttribute -> value);
          }
-         if(strcmp(newAttribute -> name, "cy") == 0 && i == elemIndex ){
+       else if(strcmp(newAttribute -> name, "cy") == 0 && i == elemIndex ){
                    circle -> cy = atof(newAttribute -> value);
                }
-         if(strcmp(newAttribute -> name, "r") == 0 && i == elemIndex){
+       else if(strcmp(newAttribute -> name, "r") == 0 && i == elemIndex){
              bool valid = isAboveZero(newAttribute -> value);
              if(valid == true){
                  circle -> r = atof(newAttribute -> value);
              }
         }
+       else{
+           if(i == elemIndex){
+            writeSVGAttribute(circle -> otherAttributes, elemIndex, newAttribute);
+
+           }
+       }
+    
         
     
          
      }
     
-
-
-    
 }
+
 void setRectAttribute(List *tempList, int elemIndex,Attribute* newAttribute ){
     
     void *elem;
