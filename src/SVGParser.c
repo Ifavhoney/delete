@@ -636,7 +636,35 @@ char *pathToJSON(const Path *p){
     return jsonString;
     
 }
-
+char* pathListToJSON(const List *list){
+    if(list == NULL){
+            char *temp = malloc(10);
+            strcpy(temp, "[]");
+            return temp;
+        }
+    ListIterator iter = createIterator((List*)list);
+        void *elem;
+    char *jsonToPath = malloc(MAXLENGTH + 1);
+    jsonToPath[0] = '\0';
+    strcat(jsonToPath, "[");
+    int i = 0;
+    while ((elem = nextElement(&iter)) != NULL)
+       {
+           
+           Path *p = (Path *) elem;
+        
+           if(i > 0 && i <= list -> length){
+            strcat(jsonToPath, ",");
+                }
+           char *value = pathToJSON(p);
+           strcat(jsonToPath, value );
+           i++;
+           free(value);
+       }
+    strcat(jsonToPath, "]");
+    return jsonToPath;
+    
+}
 //Got this from prof
 SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
 {
