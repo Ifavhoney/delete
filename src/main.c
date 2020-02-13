@@ -12,7 +12,7 @@ int main(int argc, const char *argv[])
 {
     // insert code here...
     SVGimage *image = NULL;
-   image = createValidSVGimage("Emoji_poo.svg", "svg.xsd");
+   image = createValidSVGimage("quad01.svg", "svg.xsd");
     deleteSVGimage(image);
   
 
