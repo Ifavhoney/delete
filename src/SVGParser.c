@@ -623,6 +623,14 @@ char *jsonString = malloc(sizeof(char) + MAXLENGTH);
     return jsonString;
 }
 
+char* attrToJSON(const Attribute *a){
+    if(a == NULL){
+           char *temp = malloc(10);
+           strcpy(temp, "{}");
+           return temp;
+       }
+    return NULL;
+}
 char *pathToJSON(const Path *p){
     if(p == NULL){
           char *temp = malloc(10);
@@ -631,8 +639,15 @@ char *pathToJSON(const Path *p){
       }
     
     char *jsonString = malloc(sizeof(char) + MAXLENGTH);
-
-    sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\": %d}", p -> data, (getLength(p ->  otherAttributes)));
+    char *trunc = malloc(65);
+    if(strlen(p -> data) > 64){
+         strncpy(trunc, p -> data, 64 );
+         sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\": %d}",trunc, (getLength(p ->  otherAttributes)));
+    }
+    else{
+        sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\": %d}", p -> data, (getLength(p ->  otherAttributes)));
+    }
+    free(trunc);
     return jsonString;
     
 }
@@ -725,7 +740,7 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     char *test = pathListToJSON(_getPaths);
     printf("%s\n\n", test);
     freeList(_getPaths);
-    //free(test);
+    free(test);
     
     Attribute *attribute = createAttribute("fill", "#FFF");
     //printf("%s", attribute -> name);
@@ -2464,8 +2479,7 @@ void validateNameSpace(char *namespace, SVGimage **list)
         else
         {
 
-            long length = strlen((char *)namespace) - 256;
-            strncpy(temp_list->namespace, (char *)namespace, 256 - length);
+            strncpy(temp_list->namespace, (char *)namespace, 256);
         }
     }
     else
