@@ -60,6 +60,9 @@ void createRect(xmlNodePtr root_element, List *tempList);
 void createCircle(xmlNodePtr root_element, List *tempList);
 void createGroup(xmlNodePtr root_element, List *image);
 List *recursiveCreateGroup(List *list, Group *group, xmlNodePtr root_element);
+void setCircleAttribute(List *tempList, int elemIndex,Attribute* newAttribute );
+void setRectAttribute(List *tempList, int elemIndex,Attribute* newAttribute );
+void setPathAttribute(List *tempList, int elemIndex,Attribute* newAttribute );
 int hasAttribute(List *otherAttributes)
 {
     if (otherAttributes->length == 0)
@@ -604,8 +607,6 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     SVGimage *list = initializeObjects();
     char *extension = strrchr(schemaFile, '.');
     char *extension2 = strrchr(fileName, '.');
-
-    printf("\n%s", extension2);
     
     LIBXML_TEST_VERSION
     doc = xmlReadFile(fileName, NULL, 0);
@@ -635,7 +636,7 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
             
             if (validateSVGimage(list, schemaFile) == false)
             {
-                //JUST ADDED
+                
                 cleanUp(doc, list);
                 printf("\nNot a valid SVG Image\n");
                 return NULL;
@@ -649,18 +650,143 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
             return NULL;
         }
     }
-
+    Attribute *attribute = createAttribute("fill", "#FFF");
+    //printf("%s", attribute -> name);
+    setAttribute(list, CIRC, 0, attribute);
+    Circle *circle = list -> circles -> head -> data;
+    
+    printf("%f\n", circle -> r);
+    
     xmlFreeDoc(doc);
     xmlCleanupParser();
     return list;
 
     //Returns the pointer of type SVGimage containing all data
 }
+
+void setAttribute(SVGimage* image, elementType elemType, int elemIndex, Attribute* newAttribute){
+    
+    /*
+    int length = getLength(image -> circles);
+    printf("length: %d\n", length);
+     */
+    
+    if(image == NULL || elemIndex > (image -> circles  -> length) - 1 ) {
+        printf("here");
+        return;
+    }
+    if(elemType == CIRC){
+        setCircleAttribute(image ->circles, elemIndex, newAttribute);
+    }
+    if(elemType == RECT){
+         setCircleAttribute(image ->rectangles, elemIndex, newAttribute);
+     }
+    if(elemType == PATH){
+          setCircleAttribute(image ->paths, elemIndex, newAttribute);
+      }
+    if(elemType == GROUP){
+           setCircleAttribute(image ->groups, elemIndex, newAttribute);
+       }
+     
+    if(elemType == SVG_IMAGE){
+        //OtherAttributes
+    }
+}
+
+void setPathAttribute(List *tempList, int elemIndex,Attribute* newAttribute ){
+    
+}
+
+void setCircleAttribute(List *tempList, int elemIndex,Attribute* newAttribute ){
+    void *elem;
+     ListIterator iter = createIterator(tempList);
+    int i = -1;
+     while ((elem = nextElement(&iter)) != NULL)
+     {
+         i = i + 1;
+         
+         Circle *circle = (Circle *)elem;
+         
+         //added
+         if(strcmp(newAttribute -> name, "cx") == 0 && i == elemIndex ){
+             circle -> cx = atof(newAttribute -> value);
+         }
+         if(strcmp(newAttribute -> name, "cy") == 0 && i == elemIndex ){
+                   circle -> cy = atof(newAttribute -> value);
+               }
+         if(strcmp(newAttribute -> name, "r") == 0 && i == elemIndex){
+             bool valid = isAboveZero(newAttribute -> value);
+             if(valid == true){
+                 circle -> r = atof(newAttribute -> value);
+             }
+        }
+        
+    
+         
+     }
+    
+
+
+    
+}
+void setRectAttribute(List *tempList, int elemIndex,Attribute* newAttribute ){
+    
+    void *elem;
+     ListIterator iter = createIterator(tempList);
+    int i = -1;
+     while ((elem = nextElement(&iter)) != NULL)
+     {
+         i = i + 1;
+         
+         Rectangle *rect = (Rectangle *)elem;
+         
+         //added
+         if(strcmp(newAttribute -> name, "x") == 0 && i == elemIndex ){
+             rect -> x = atof(newAttribute -> value);
+         }
+         if(strcmp(newAttribute -> name, "y") == 0 && i == elemIndex ){
+                   rect -> y = atof(newAttribute -> value);
+               }
+         if(strcmp(newAttribute -> name, "width") == 0 && i == elemIndex){
+             bool valid = isAboveZero(newAttribute -> value);
+             if(valid == true){
+                 rect -> width = atof(newAttribute -> value);
+             }
+        }
+         if(strcmp(newAttribute -> name, "height") == 0 && i == elemIndex){
+                     bool valid = isAboveZero(newAttribute -> value);
+                     if(valid == true){
+                         rect -> height = atof(newAttribute -> value);
+                     }
+                }
+    
+    
+         
+     }
+
+}
 bool validateSVGimage(SVGimage *doc, char *schemaFile)
 {
 
+    xmlDoc *test = NULL;
+    //Writes Filename
+    writeSVGimage(doc, "my.svg");
+    //Read file name
+    test = xmlReadFile("my.svg", NULL, 0);
+    //Check if they are good
+    bool isValid = isValidXML(test, schemaFile);
+    xmlFreeDoc(test);
+
+    if(isValid == false){
+        printf("returning false");
+        return false;
+    }
+    
     SVGimage *image = doc;
+    
+    
     char *extension = strrchr(schemaFile, '.');
+    
 
     if (image == NULL || strcmp(extension, ".xsd") != 0 )
     {
@@ -821,8 +947,8 @@ void writeAttribute(void *list, xmlNodePtr cur_child)
         Attribute *attribute = (Attribute *)elem;
         xmlNewProp(cur_child, BAD_CAST attribute->name, BAD_CAST attribute->value);
     }
-    printf("\n");
 }
+
 
 void createRect(xmlNodePtr root_element, List *tempList)
 {
@@ -1199,87 +1325,7 @@ bool isValidPathTag(List *tempList)
 }
 //Checks if path is probably spaced
 
-/*
-bool isProperlySpaced(char *value)
-{
 
-    int i;
-    char array[strlen(value)];
-    strcpy(array, value);
-    int digit = 1;
-    int asci;
-    for (i = 0; i < strlen(value); i++)
-    {
-        if (isdigit(array[i]) == false)
-        {
-            asci = array[i];
-            if (asci >= 65 && asci <= 122)
-            {
-                //Z means end of path
-                if (array[i] == 'z' && i == strlen(value) - 1)
-                {
-                    break;
-                }
-                //go to next int
-                i++;
-                while (true)
-                {
-                    asci = array[i];
-                    if (i == strlen(value))
-                    {
-                        break;
-                    }
-                    //checks if the next asci is a space
-
-                    int nextAsci = array[i + 1];
-                    //comma or dash (-)
-
-                    if (asci == 44 || asci == 45)
-                    {
-                        digit++;
-                    }
-                    //if it's a space
-                    if (nextAsci == 32)
-                    {
-
-                        //check untill the next Alphabetical
-                        nextAsci = array[i + 2];
-                        if (nextAsci >= 65 && nextAsci <= 122 && array[i + 3] != '-')
-                        {
-                            //end of path data
-
-                            break;
-                        }
-                        //If is a space, not alphabetic, and the next two is a digit - increment
-
-                        nextAsci = array[i + 1];
-
-                        if (nextAsci == 32 && isdigit(array[i + 2]))
-                        {
-
-                            digit++;
-                        }
-                    }
-                    //increment array inside;
-                    i++;
-                }
-
-                //printf("\nRESETTED %d @ I %d && max is %d\n", digit, i, strlen(value));
-
-                if (digit % 2 != 0)
-                {
-                    printf("%d", digit);
-                    return false;
-                }
-                digit = 1;
-            }
-        }
-    }
-
-    printf("\nComplete cycle %d\n", digit);
-    return true;
-}
- */
 
 bool isValidSVGTag(List *tempList)
 {
@@ -1372,7 +1418,7 @@ bool isValidXML(xmlDoc *doc, char *schemaFile)
     xmlSchemaValidCtxtPtr validator;
     validator = xmlSchemaNewValidCtxt(schema);
     xmlSchemaSetValidErrors(validator, (xmlSchemaValidityErrorFunc)fprintf, (xmlSchemaValidityWarningFunc)fprintf, stderr);
-
+    
     value = xmlSchemaValidateDoc(validator, doc);
     if (value == 0)
     {
@@ -2367,3 +2413,86 @@ int StartsWith(const char *a, const char *b)
         return 1;
     return 0;
 }
+
+
+/*
+bool isProperlySpaced(char *value)
+{
+
+    int i;
+    char array[strlen(value)];
+    strcpy(array, value);
+    int digit = 1;
+    int asci;
+    for (i = 0; i < strlen(value); i++)
+    {
+        if (isdigit(array[i]) == false)
+        {
+            asci = array[i];
+            if (asci >= 65 && asci <= 122)
+            {
+                //Z means end of path
+                if (array[i] == 'z' && i == strlen(value) - 1)
+                {
+                    break;
+                }
+                //go to next int
+                i++;
+                while (true)
+                {
+                    asci = array[i];
+                    if (i == strlen(value))
+                    {
+                        break;
+                    }
+                    //checks if the next asci is a space
+
+                    int nextAsci = array[i + 1];
+                    //comma or dash (-)
+
+                    if (asci == 44 || asci == 45)
+                    {
+                        digit++;
+                    }
+                    //if it's a space
+                    if (nextAsci == 32)
+                    {
+
+                        //check untill the next Alphabetical
+                        nextAsci = array[i + 2];
+                        if (nextAsci >= 65 && nextAsci <= 122 && array[i + 3] != '-')
+                        {
+                            //end of path data
+
+                            break;
+                        }
+                        //If is a space, not alphabetic, and the next two is a digit - increment
+
+                        nextAsci = array[i + 1];
+
+                        if (nextAsci == 32 && isdigit(array[i + 2]))
+                        {
+
+                            digit++;
+                        }
+                    }
+                    //increment array inside;
+                    i++;
+                }
+
+                //printf("\nRESETTED %d @ I %d && max is %d\n", digit, i, strlen(value));
+
+                if (digit % 2 != 0)
+                {
+                    printf("%d", digit);
+                    return false;
+                }
+                digit = 1;
+            }
+        }
+    }
+
+    printf("\nComplete cycle %d\n", digit);
+    return true;
+}
+ */
