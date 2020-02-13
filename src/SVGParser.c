@@ -623,7 +623,19 @@ char *jsonString = malloc(sizeof(char) + MAXLENGTH);
     return jsonString;
 }
 
+char *pathToJSON(const Path *p){
+    if(p == NULL){
+          char *temp = malloc(10);
+          strcpy(temp, "{}");
+          return temp;
+      }
+    
+    char *jsonString = malloc(sizeof(char) + MAXLENGTH);
 
+    sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\": %d}", p -> data, (getLength(p ->  otherAttributes)));
+    return jsonString;
+    
+}
 
 //Got this from prof
 SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
@@ -678,7 +690,6 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
             return NULL;
         }
     }
-<<<<<<< HEAD
 
     List *_getPaths = getPaths(list);
     //Path *p = _getPaths -> head -> next -> data;
@@ -694,7 +705,7 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
    // Circle *circle = list -> circles -> head -> data;
     
   //  printf("%f\n", circle -> r);
-
+    
     xmlFreeDoc(doc);
     xmlCleanupParser();
     return list;
@@ -747,32 +758,19 @@ void writeSVGAttribute(void *list,  int elemIndex,  Attribute *newAttribute)
         if(strcmp(attribute ->name, newAttribute -> name) == 0 && elemIndex == i){
             printf("Insert @ index %d for %s", elemIndex, attribute ->name);
             tempList -> head -> data = attribute;
-<<<<<<< HEAD
         
-=======
->>>>>>> 817cc9bbfca232ec29cc3c69736984204532b8ad
             
         }
     }
     if(isFound == false){
-<<<<<<< HEAD
         Attribute *attribute =  createAttribute(newAttribute -> name, newAttribute -> value);
         insertBack(list, attribute);
         //deleteAttribute(newAttribute);
-=======
-        printf("Happens here");
-        Attribute *attribute =  createAttribute(newAttribute -> name, newAttribute -> value);
-        insertBack(list, attribute);
-        //deleteAttribute(attribute);
->>>>>>> 817cc9bbfca232ec29cc3c69736984204532b8ad
     }
 }
 
 
-<<<<<<< HEAD
 
-=======
->>>>>>> 817cc9bbfca232ec29cc3c69736984204532b8ad
 void setPathAttribute(List *tempList, int elemIndex,Attribute* newAttribute ){
     
 }
