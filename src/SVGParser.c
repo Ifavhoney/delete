@@ -624,28 +624,35 @@ char *jsonString = malloc(sizeof(char) + MAXLENGTH);
 }
 
 char* attrToJSON(const Attribute *a){
-    if(a == NULL){
+    if(a == NULL || a ->name == NULL || a -> value == NULL){
            char *temp = malloc(10);
            strcpy(temp, "{}");
            return temp;
        }
-    return NULL;
+    char *jsonString = malloc(strlen(a ->value) +  strlen(a -> name) + MAXLENGTH);
+    sprintf(jsonString, "{\"name\":\"%s\",\"value\":\"%s\"}", a -> name, a -> value);
+    return jsonString;
+    
+
 }
+
+
+
 char *pathToJSON(const Path *p){
-    if(p == NULL){
+    if(p == NULL || p ->data == NULL){
           char *temp = malloc(10);
           strcpy(temp, "{}");
           return temp;
       }
     
-    char *jsonString = malloc(sizeof(char) + MAXLENGTH);
+    char *jsonString = malloc(strlen(p -> data) + MAXLENGTH);
     char *trunc = malloc(65);
     if(strlen(p -> data) > 64){
          strncpy(trunc, p -> data, 64 );
          sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\": %d}",trunc, (getLength(p ->  otherAttributes)));
     }
     else{
-        sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\": %d}", p -> data, (getLength(p ->  otherAttributes)));
+        sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\":%d}", p -> data, (getLength(p ->  otherAttributes)));
     }
     free(trunc);
     return jsonString;
@@ -667,10 +674,12 @@ char* pathListToJSON(const List *list){
        {
            
            Path *p = (Path *) elem;
-        
+            p -> data = NULL;
+            
            if(i > 0 && i <= list -> length){
             strcat(jsonToPath, ",");
                 }
+            
            char *value = pathToJSON(p);
            strcat(jsonToPath, value );
            i++;
@@ -735,17 +744,24 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     }
 
     List *_getPaths = getPaths(list);
-    //Path *p = _getPaths -> head -> next -> data;
-    //printf("%s\n", p ->data );
+ 
+    /*
     char *test = pathListToJSON(_getPaths);
     printf("%s\n\n", test);
-    freeList(_getPaths);
+
     free(test);
-    
-    Attribute *attribute = createAttribute("fill", "#FFF");
+    */
+    freeList(_getPaths);
+
+    /*
+    Attribute *attribute = createAttribute("fill", "red");
     //printf("%s", attribute -> name);
-    setAttribute(list, CIRC, 0, attribute);
-   // Circle *circle = list -> circles -> head -> data;
+    char *test = attrToJSON(attribute);
+    printf("%s\n\n", test);
+    free(test);
+     */
+
+    // Circle *circle = list -> circles -> head -> data;
     
   //  printf("%f\n", circle -> r);
     
