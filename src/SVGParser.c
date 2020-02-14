@@ -60,10 +60,10 @@ void createRect(xmlNodePtr root_element, List *tempList);
 void createCircle(xmlNodePtr root_element, List *tempList);
 void createGroup(xmlNodePtr root_element, List *image);
 List *recursiveCreateGroup(List *list, Group *group, xmlNodePtr root_element);
-void setCircleAttribute(List *tempList, int elemIndex,Attribute* newAttribute );
-void setRectAttribute(List *tempList, int elemIndex,Attribute* newAttribute );
-void setPathAttribute(List *tempList, int elemIndex,Attribute* newAttribute );
-void writeSVGAttribute(void *list,  int elemIndex,  Attribute *newAttribute);
+void setCircleAttribute(List *tempList, int elemIndex, Attribute *newAttribute);
+void setRectAttribute(List *tempList, int elemIndex, Attribute *newAttribute);
+void setPathAttribute(List *tempList, int elemIndex, Attribute *newAttribute);
+void writeSVGAttribute(void *list, int elemIndex, Attribute *newAttribute);
 int hasAttribute(List *otherAttributes)
 {
     if (otherAttributes->length == 0)
@@ -152,7 +152,7 @@ int numGroupsWithLen(SVGimage *img, int len)
     int counter = 0;
     void *elem;
     List *list = getGroups(img);
-//
+    //
     ListIterator iter = createIterator(list);
     while ((elem = nextElement(&iter)) != NULL)
     {
@@ -163,7 +163,7 @@ int numGroupsWithLen(SVGimage *img, int len)
         i += group->paths->length;
         i += group->groups->length;
         i += group->otherAttributes->length;
-        
+
         if (i == len)
         {
             counter++;
@@ -235,8 +235,8 @@ int numPathsWithdata(SVGimage *img, char *data)
     int num = 0;
     if (img == NULL || data == NULL)
     {
-        
-         printf("null");
+
+        printf("null");
         return 0;
     }
     else
@@ -315,7 +315,6 @@ char *SVGimageToString(SVGimage *img)
 
     return temp;
 }
-
 
 List *getGroups(SVGimage *img)
 {
@@ -571,25 +570,24 @@ SVGimage *createSVGimage(char *fileName)
     if (doc == NULL || strcmp(extension2, ".svg") != 0)
     {
         //   printf("error: could not parse file %s\n", fileName);
-                cleanUp(doc, list);
+        cleanUp(doc, list);
 
         return NULL;
     }
     else
     {
-        if(root_element -> ns != NULL){
+        if (root_element->ns != NULL)
+        {
             validateNameSpace((char *)root_element->ns->href, &list);
-                         }
-            else{
-                return NULL;
-                         }
+        }
+        else
+        {
+            return NULL;
+        }
 
         /*Get the root element node */
         root_element = xmlDocGetRootElement(doc);
         print_element_names(root_element, &list);
-       
-        
-     
     }
 
     xmlFreeDoc(doc);
@@ -599,22 +597,23 @@ SVGimage *createSVGimage(char *fileName)
     //Returns the pointer of type SVGimage containing all data
 }
 
-char* SVGtoJSON(const SVGimage* imge){
-    if(imge == NULL){
+char *SVGtoJSON(const SVGimage *imge)
+{
+    if (imge == NULL)
+    {
         char *temp = malloc(10);
         strcpy(temp, "{}");
         return temp;
     }
-    
 
-char *jsonString = malloc(sizeof(char) + MAXLENGTH);
-    List *getRect = getRects((SVGimage*)imge);
-    List *getCirc = getCircles((SVGimage*)imge);
-    List *getPath = getPaths((SVGimage*)imge);
-    List *getGroup = getGroups((SVGimage*)imge);
+    char *jsonString = malloc(sizeof(char) + MAXLENGTH);
+    List *getRect = getRects((SVGimage *)imge);
+    List *getCirc = getCircles((SVGimage *)imge);
+    List *getPath = getPaths((SVGimage *)imge);
+    List *getGroup = getGroups((SVGimage *)imge);
 
-        sprintf(jsonString, "{\"numRect\":%d,\"numCirc\":%d,\"numPaths\":%d, \"numGroups\":%d}",getLength(getRect), getLength(getCirc), getLength(getPath), getLength(getGroup) );
-    
+    sprintf(jsonString, "{\"numRect\":%d,\"numCirc\":%d,\"numPaths\":%d, \"numGroups\":%d}", getLength(getRect), getLength(getCirc), getLength(getPath), getLength(getGroup));
+
     freeList(getRect);
     freeList(getCirc);
     freeList(getPath);
@@ -623,71 +622,78 @@ char *jsonString = malloc(sizeof(char) + MAXLENGTH);
     return jsonString;
 }
 
-char* attrToJSON(const Attribute *a){
-    if(a == NULL || a ->name == NULL || a -> value == NULL){
-           char *temp = malloc(10);
-           strcpy(temp, "{}");
-           return temp;
-       }
-    char *jsonString = malloc(strlen(a ->value) +  strlen(a -> name) + MAXLENGTH);
-    sprintf(jsonString, "{\"name\":\"%s\",\"value\":\"%s\"}", a -> name, a -> value);
+char *attrToJSON(const Attribute *a)
+{
+    if (a == NULL || a->name == NULL || a->value == NULL)
+    {
+        char *temp = malloc(10);
+        strcpy(temp, "{}");
+        return temp;
+    }
+    char *jsonString = malloc(strlen(a->value) + strlen(a->name) + MAXLENGTH);
+    sprintf(jsonString, "{\"name\":\"%s\",\"value\":\"%s\"}", a->name, a->value);
     return jsonString;
-    
-
 }
 
-
-
-char *pathToJSON(const Path *p){
-    if(p == NULL || p ->data == NULL){
-          char *temp = malloc(10);
-          strcpy(temp, "{}");
-          return temp;
-      }
-    
-    char *jsonString = malloc(strlen(p -> data) + MAXLENGTH);
-    char *trunc = malloc(65);
-    if(strlen(p -> data) > 64){
-         strncpy(trunc, p -> data, 64 );
-         sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\": %d}",trunc, (getLength(p ->  otherAttributes)));
+char *pathToJSON(const Path *p)
+{
+    if (p == NULL || p->data == NULL)
+    {
+        char *temp = malloc(10);
+        strcpy(temp, "{}");
+        return temp;
     }
-    else{
-        sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\":%d}", p -> data, (getLength(p ->  otherAttributes)));
+
+    char *jsonString = malloc(sizeof(char) + MAXLENGTH);
+    jsonString[0] = '\0';
+
+    printf("%s\n", p->data);
+    if (strlen(p->data) > 64)
+    {
+        // char *trunc = malloc(sizeof(char) + 10000);
+        char *trunc = calloc(1, sizeof(char) + MAXLENGTH);
+        trunc[0] = '\0';
+        strncpy(trunc, p->data, 64);
+        sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\": %d}", trunc, (getLength(p->otherAttributes)));
+        free(trunc);
     }
-    free(trunc);
+    else
+    {
+        sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\":%d}", p->data, (getLength(p->otherAttributes)));
+    }
     return jsonString;
-    
 }
-char* pathListToJSON(const List *list){
-    if(list == NULL){
-            char *temp = malloc(10);
-            strcpy(temp, "[]");
-            return temp;
-        }
-    ListIterator iter = createIterator((List*)list);
-        void *elem;
+char *pathListToJSON(const List *list)
+{
+    if (list == NULL)
+    {
+        char *temp = malloc(10);
+        strcpy(temp, "[]");
+        return temp;
+    }
+    ListIterator iter = createIterator((List *)list);
+    void *elem;
     char *jsonToPath = malloc(MAXLENGTH + 1);
     jsonToPath[0] = '\0';
     strcat(jsonToPath, "[");
     int i = 0;
     while ((elem = nextElement(&iter)) != NULL)
-       {
-           
-           Path *p = (Path *) elem;
-            p -> data = NULL;
-            
-           if(i > 0 && i <= list -> length){
+    {
+
+        Path *p = (Path *)elem;
+
+        if (i > 0 && i <= list->length)
+        {
             strcat(jsonToPath, ",");
-                }
-            
-           char *value = pathToJSON(p);
-           strcat(jsonToPath, value );
-           i++;
-           free(value);
-       }
+        }
+
+        char *value = pathToJSON(p);
+        strcat(jsonToPath, value);
+        i++;
+        free(value);
+    }
     strcat(jsonToPath, "]");
     return jsonToPath;
-    
 }
 //Got this from prof
 SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
@@ -695,6 +701,11 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
 
     //Initialize Our tempData - we'll be reusing this memory, modifying the data
     xmlDoc *doc = NULL;
+    if(strstr(schemaFile, ".") == NULL || strstr(fileName, ".") == NULL || fileName == NULL || schemaFile == NULL || strlen(schemaFile) <= 4 || strlen(fileName) <= 4){
+        printf("nulll!!!\n");
+       return NULL;
+        
+    }
     xmlNode *root_element = NULL;
     SVGimage *list = initializeObjects();
     char *extension = strrchr(schemaFile, '.');
@@ -702,7 +713,7 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     
     LIBXML_TEST_VERSION
     doc = xmlReadFile(fileName, NULL, 0);
-    
+
     if (doc == NULL || strcmp(extension, ".xsd") != 0 || strcmp(extension2, ".svg") != 0)
     {
         printf("error: could not parse file %s\n", fileName);
@@ -718,21 +729,17 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
             root_element = xmlDocGetRootElement(doc);
             print_element_names(root_element, &list);
             //VALIDATING SVG
-            
-         if(root_element -> ns != NULL){
-            validateNameSpace((char *)root_element->ns->href, &list);
-                         }
-            else{
-                return NULL;
-                         }
-            
-            if (validateSVGimage(list, schemaFile) == false)
+
+            if (root_element->ns != NULL)
             {
-                
-                cleanUp(doc, list);
-                printf("\nNot a valid SVG Image\n");
+                validateNameSpace((char *)root_element->ns->href, &list);
+            }
+            else
+            {
                 return NULL;
             }
+
+          
         }
         else
         {
@@ -743,16 +750,8 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
         }
     }
 
-    List *_getPaths = getPaths(list);
- 
-    /*
-    char *test = pathListToJSON(_getPaths);
-    printf("%s\n\n", test);
 
-    free(test);
-    */
-    freeList(_getPaths);
-
+   
     /*
     Attribute *attribute = createAttribute("fill", "red");
     //printf("%s", attribute -> name);
@@ -762,9 +761,9 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
      */
 
     // Circle *circle = list -> circles -> head -> data;
-    
-  //  printf("%f\n", circle -> r);
-    
+
+    //  printf("%f\n", circle -> r);
+
     xmlFreeDoc(doc);
     xmlCleanupParser();
     return list;
@@ -772,173 +771,185 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     //Returns the pointer of type SVGimage containing all data
 }
 
-void setAttribute(SVGimage* image, elementType elemType, int elemIndex, Attribute* newAttribute){
-    
+void setAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute)
+{
+
     /*
     int length = getLength(image -> circles);
     printf("length: %d\n", length);
      */
-    
-    if(image == NULL || elemIndex < 0) {
+
+    if (image == NULL || elemIndex < 0)
+    {
         printf("here");
         deleteAttribute(newAttribute);
 
         return;
     }
-    if(elemType == CIRC){
-        setCircleAttribute(image ->circles, elemIndex, newAttribute);
+    if (elemType == CIRC)
+    {
+        setCircleAttribute(image->circles, elemIndex, newAttribute);
     }
-    if(elemType == RECT){
-         setCircleAttribute(image ->rectangles, elemIndex, newAttribute);
-     }
-    if(elemType == PATH){
-          setCircleAttribute(image ->paths, elemIndex, newAttribute);
-      }
-    if(elemType == GROUP){
-           setCircleAttribute(image ->groups, elemIndex, newAttribute);
-       }
-     
-    if(elemType == SVG_IMAGE){
+    if (elemType == RECT)
+    {
+        setCircleAttribute(image->rectangles, elemIndex, newAttribute);
+    }
+    if (elemType == PATH)
+    {
+        setCircleAttribute(image->paths, elemIndex, newAttribute);
+    }
+    if (elemType == GROUP)
+    {
+        setCircleAttribute(image->groups, elemIndex, newAttribute);
+    }
+
+    if (elemType == SVG_IMAGE)
+    {
         //OtherAttributes
     }
     deleteAttribute(newAttribute);
 }
-void writeSVGAttribute(void *list,  int elemIndex,  Attribute *newAttribute)
+void writeSVGAttribute(void *list, int elemIndex, Attribute *newAttribute)
 {
     void *elem;
 
     List *tempList = (void *)list;
     ListIterator iter = createIterator(tempList);
     int i = -1;
-    bool isFound  = false;
+    bool isFound = false;
     while ((elem = nextElement(&iter)) != NULL)
     {
         Attribute *attribute = (Attribute *)elem;
-        if(strcmp(attribute ->name, newAttribute -> name) == 0 && elemIndex == i){
-            printf("Insert @ index %d for %s", elemIndex, attribute ->name);
-            tempList -> head -> data = attribute;
-        
-            
+        if (strcmp(attribute->name, newAttribute->name) == 0 && elemIndex == i)
+        {
+            printf("Insert @ index %d for %s", elemIndex, attribute->name);
+            tempList->head->data = attribute;
         }
     }
-    if(isFound == false){
-        Attribute *attribute =  createAttribute(newAttribute -> name, newAttribute -> value);
+    if (isFound == false)
+    {
+        Attribute *attribute = createAttribute(newAttribute->name, newAttribute->value);
         insertBack(list, attribute);
         //deleteAttribute(newAttribute);
     }
 }
 
-
-
-void setPathAttribute(List *tempList, int elemIndex,Attribute* newAttribute ){
-    
+void setPathAttribute(List *tempList, int elemIndex, Attribute *newAttribute)
+{
 }
 
-void setCircleAttribute(List *tempList, int elemIndex,Attribute* newAttribute ){
+void setCircleAttribute(List *tempList, int elemIndex, Attribute *newAttribute)
+{
     void *elem;
-     ListIterator iter = createIterator(tempList);
+    ListIterator iter = createIterator(tempList);
     int i = -1;
-     while ((elem = nextElement(&iter)) != NULL)
-     {
-         i = i + 1;
-         
-         Circle *circle = (Circle *)elem;
-         
-         //added
-         if(strcmp(newAttribute -> name, "cx") == 0 && i == elemIndex ){
-             circle -> cx = atof(newAttribute -> value);
-         }
-       else if(strcmp(newAttribute -> name, "cy") == 0 && i == elemIndex ){
-                   circle -> cy = atof(newAttribute -> value);
-               }
-       else if(strcmp(newAttribute -> name, "r") == 0 && i == elemIndex){
-             bool valid = isAboveZero(newAttribute -> value);
-             if(valid == true){
-                 circle -> r = atof(newAttribute -> value);
-             }
-        }
-       else{
-           if(i == elemIndex){
-            writeSVGAttribute(circle -> otherAttributes, elemIndex, newAttribute);
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+        i = i + 1;
 
-           }
-       }
-    
-        
-    
-         
-     }
-    
+        Circle *circle = (Circle *)elem;
+
+        //added
+        if (strcmp(newAttribute->name, "cx") == 0 && i == elemIndex)
+        {
+            circle->cx = atof(newAttribute->value);
+        }
+        else if (strcmp(newAttribute->name, "cy") == 0 && i == elemIndex)
+        {
+            circle->cy = atof(newAttribute->value);
+        }
+        else if (strcmp(newAttribute->name, "r") == 0 && i == elemIndex)
+        {
+            bool valid = isAboveZero(newAttribute->value);
+            if (valid == true)
+            {
+                circle->r = atof(newAttribute->value);
+            }
+        }
+        else
+        {
+            if (i == elemIndex)
+            {
+                writeSVGAttribute(circle->otherAttributes, elemIndex, newAttribute);
+            }
+        }
+    }
 }
 
-void setRectAttribute(List *tempList, int elemIndex,Attribute* newAttribute ){
-    
-    void *elem;
-     ListIterator iter = createIterator(tempList);
-    int i = -1;
-     while ((elem = nextElement(&iter)) != NULL)
-     {
-         i = i + 1;
-         
-         Rectangle *rect = (Rectangle *)elem;
-         
-         //added
-         if(strcmp(newAttribute -> name, "x") == 0 && i == elemIndex ){
-             rect -> x = atof(newAttribute -> value);
-         }
-         if(strcmp(newAttribute -> name, "y") == 0 && i == elemIndex ){
-                   rect -> y = atof(newAttribute -> value);
-               }
-         if(strcmp(newAttribute -> name, "width") == 0 && i == elemIndex){
-             bool valid = isAboveZero(newAttribute -> value);
-             if(valid == true){
-                 rect -> width = atof(newAttribute -> value);
-             }
-        }
-         if(strcmp(newAttribute -> name, "height") == 0 && i == elemIndex){
-                     bool valid = isAboveZero(newAttribute -> value);
-                     if(valid == true){
-                         rect -> height = atof(newAttribute -> value);
-                     }
-                }
-    
-    
-         
-     }
+void setRectAttribute(List *tempList, int elemIndex, Attribute *newAttribute)
+{
 
+    void *elem;
+    ListIterator iter = createIterator(tempList);
+    int i = -1;
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+        i = i + 1;
+
+        Rectangle *rect = (Rectangle *)elem;
+
+        //added
+        if (strcmp(newAttribute->name, "x") == 0 && i == elemIndex)
+        {
+            rect->x = atof(newAttribute->value);
+        }
+        if (strcmp(newAttribute->name, "y") == 0 && i == elemIndex)
+        {
+            rect->y = atof(newAttribute->value);
+        }
+        if (strcmp(newAttribute->name, "width") == 0 && i == elemIndex)
+        {
+            bool valid = isAboveZero(newAttribute->value);
+            if (valid == true)
+            {
+                rect->width = atof(newAttribute->value);
+            }
+        }
+        if (strcmp(newAttribute->name, "height") == 0 && i == elemIndex)
+        {
+            bool valid = isAboveZero(newAttribute->value);
+            if (valid == true)
+            {
+                rect->height = atof(newAttribute->value);
+            }
+        }
+    }
 }
 bool validateSVGimage(SVGimage *doc, char *schemaFile)
 {
 
-    xmlDoc *test = NULL;
-    //Writes Filename
-    writeSVGimage(doc, "my.svg");
-    //Read file name
-    test = xmlReadFile("my.svg", NULL, 0);
-    //Check if they are good
-    bool isValid = isValidXML(test, schemaFile);
-    xmlFreeDoc(test);
+    if(strstr(schemaFile, ".") == NULL || doc == NULL){
+          printf("nulll!!!\n");
+         return NULL;
+          
+      }
 
-    if(isValid == false){
-        printf("returning false");
-        return false;
-    }
+    //Initialize Our tempData - we'll be reusing this memory, modifying the data
+    xmlDoc *docs = NULL;
+     //Writes Filename
+    writeSVGimage(doc, "my.svg");
+
+    //Read file name
+    docs = xmlReadFile("my.svg", NULL, 0);
     
     SVGimage *image = doc;
-    
-    
     char *extension = strrchr(schemaFile, '.');
-    
 
-    if (image == NULL || strcmp(extension, ".xsd") != 0 )
-    {
-        printf("no good");
-        return false;
-    }
+        //Checks if it's a valid XML
+        if (isValidXML(docs, schemaFile) == false || image == NULL ||  strcmp(extension, ".xsd") != 0)
+        {
 
-    else
-    {
-        bool valid = true;
+            //VALIDATING SVG
+            xmlFreeDoc(docs);
+            xmlCleanupParser();
+            printf("\nNot a valid XML File\n");
+            return false;
+
+        }
+        else
+        {
+
+             bool valid = true;
         valid = isValidSVGTag(image->otherAttributes);
         if (valid == false)
         {
@@ -972,10 +983,29 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
             return valid;
         }
 
-        return true;
-    }
-}
+           
+        }
+    
 
+ 
+    /*
+    Attribute *attribute = createAttribute("fill", "red");
+    //printf("%s", attribute -> name);
+    char *test = attrToJSON(attribute);
+    printf("%s\n\n", test);
+    free(test);
+     */
+
+    // Circle *circle = list -> circles -> head -> data;
+
+    //  printf("%f\n", circle -> r);
+
+
+    xmlFreeDoc(docs);
+    xmlCleanupParser();
+    return true;
+    
+}
 
 /*
  
@@ -999,21 +1029,21 @@ xmlDocPtr buildTree(SVGimage *image)
     xmlDocSetRootElement(doc, root_element);
 
     createSVG(root_element, image);
-    if(getLength(image -> rectangles ) > 0){
+    if (getLength(image->rectangles) > 0)
+    {
         createRect(root_element, image->rectangles);
-
     }
-    if(getLength(image -> circles) > 0){
+    if (getLength(image->circles) > 0)
+    {
         createCircle(root_element, image->circles);
-
     }
-    if(getLength(image -> paths) > 0){
+    if (getLength(image->paths) > 0)
+    {
         createPath(root_element, image->paths);
-
     }
-    if(getLength(image -> groups) > 0){
-        createGroup(root_element, image -> groups);
-
+    if (getLength(image->groups) > 0)
+    {
+        createGroup(root_element, image->groups);
     }
 
     // xmlNewChild(root_element, BAD_CAST image -> title);
@@ -1024,51 +1054,53 @@ void createGroup(xmlNodePtr root_element, List *image)
 {
     ListIterator iter2 = createIterator(image);
     void *elem;
-    
-        while (( elem = nextElement(&iter2)) != NULL)
+
+    while ((elem = nextElement(&iter2)) != NULL)
+    {
+        xmlNodePtr cur_child = xmlNewChild(root_element, NULL, BAD_CAST "g", NULL);
+
+        Group *group = (Group *)elem;
+      
+        if (group->rectangles)
         {
-            xmlNodePtr  cur_child   = xmlNewChild(root_element, NULL, BAD_CAST "g", NULL);
-
-            Group *group = (Group *)elem;
-            if(group -> groups){
-                createGroup(cur_child, group -> groups);
-
-            }
-            if(group -> rectangles){
-                createRect(cur_child, group -> rectangles);
-            }
-            if(group -> circles){
-                          createCircle(cur_child, group -> circles);
-                      }
-                if(group -> paths){
-                              createPath(cur_child, group -> paths);
-                }
-            
-            if(group -> otherAttributes != NULL){
-             writeAttribute(group -> otherAttributes, cur_child);
-
-            }
+            createRect(cur_child, group->rectangles);
         }
-    
-   
+        if (group->circles)
+        {
+            createCircle(cur_child, group->circles);
+        }
+        if (group->paths)
+        {
+            createPath(cur_child, group->paths);
+        }
+        if (group->groups)
+              {
+                  createGroup(cur_child, group->groups);
+              }
+        if (group->otherAttributes != NULL)
+        {
+            writeAttribute(group->otherAttributes, cur_child);
+        }
+    }
 }
-
 
 //create function for circle, rect, etc
 bool writeSVGimage(SVGimage *image, char *fileName)
 {
     //Create an xml file: validSVG == true ? return true : return false
     char *extension = strrchr(fileName, '.');
-    if (image == NULL || fileName == NULL || extension == NULL || strcmp(extension + 1, "svg") != 0 )
+    if (image == NULL || fileName == NULL || extension == NULL || strcmp(extension + 1, "svg") != 0)
     {
         return false;
     }
-            
+
     xmlDocPtr tree = buildTree(image);
 
     int result = xmlSaveFormatFileEnc(fileName, tree, "UTF-8", 1);
     xmlFreeDoc(tree);
-    if (result < 0)
+    xmlCleanupParser();
+    
+        if (result < 0)
     {
         return false;
     }
@@ -1090,7 +1122,6 @@ void writeAttribute(void *list, xmlNodePtr cur_child)
         xmlNewProp(cur_child, BAD_CAST attribute->name, BAD_CAST attribute->value);
     }
 }
-
 
 void createRect(xmlNodePtr root_element, List *tempList)
 {
@@ -1219,15 +1250,16 @@ void createPath(xmlNodePtr root_element, List *tempList)
 void createSVG(xmlNodePtr root_element, SVGimage *image)
 {
     //changed from ! to ==
-     if(strcmp(image -> title, " ") != 0 ){
-             xmlNewChild(root_element, NULL, BAD_CAST "title", BAD_CAST image->title);
+    if (strcmp(image->title, " ") != 0)
+    {
+        xmlNewChild(root_element, NULL, BAD_CAST "title", BAD_CAST image->title);
+    }
 
+    if (strcmp(image->description, " ") != 0)
+    {
+        xmlNewChild(root_element, NULL, BAD_CAST "desc", BAD_CAST image->description);
     }
-   
-    if(strcmp(image -> description, " ") != 0){
-    xmlNewChild(root_element, NULL, BAD_CAST "desc", BAD_CAST image -> description);
-    }
-   
+
     writeAttribute(image->otherAttributes, root_element);
 }
 
@@ -1334,7 +1366,7 @@ bool isGoodRectangle(Rectangle *rect)
 bool isGoodRectAttribute(Attribute *attribute, Rectangle *rect)
 {
     bool valid = true;
-    
+
     if (strcmp(attribute->name, "rx") == 0 || strcmp(attribute->name, "ry") == 0)
     {
         valid = isAboveZero(attribute->value);
@@ -1455,19 +1487,17 @@ bool isValidPathTag(List *tempList)
 
     while ((elem = nextElement(&iter)) != NULL)
     {
-    
+
         Path *path = (Path *)elem;
-        if(path -> data == NULL){
+        if (path->data == NULL)
+        {
             valid = false;
             return valid;
         }
-      
     }
     return valid;
 }
 //Checks if path is probably spaced
-
-
 
 bool isValidSVGTag(List *tempList)
 {
@@ -1560,7 +1590,7 @@ bool isValidXML(xmlDoc *doc, char *schemaFile)
     xmlSchemaValidCtxtPtr validator;
     validator = xmlSchemaNewValidCtxt(schema);
     xmlSchemaSetValidErrors(validator, (xmlSchemaValidityErrorFunc)fprintf, (xmlSchemaValidityWarningFunc)fprintf, stderr);
-    
+
     value = xmlSchemaValidateDoc(validator, doc);
     if (value == 0)
     {
@@ -1649,16 +1679,7 @@ SVGimage *print_element_names(xmlNode *a_node, SVGimage **list)
 
                     insertGroup(tempList, cur_node, 0);
                 }
-                /*
-            if(strcmp((char *)cur_node -> name, "g") != 0 && strcmp((char *)cur_node -> name, "circle") != 0 && strcmp((char *)cur_node -> name, "path") != 0 && strcmp((char *)cur_node -> name, "rect") != 0  && strcmp((char *)cur_node -> name, "text") != 0  && strcmp((char *)cur_node -> name, "comment") != 0 && strcmp((char *)cur_node -> name, "desc") != 0 && strcmp((char *)cur_node -> name, "title") != 0     ){
-                insertOtherAttribute(tempList, cur_node);               // printf("%s", attribute ->value);
-            }
-             */
-                /*Uncomment the code below if you want to see the content of every node.
-        
-        */
-
-                //increments by children
+           
             }
             else
             {
@@ -1696,29 +1717,6 @@ void insertOtherAttribute(void *data, xmlNode *cur_node)
         }
     }
 }
-/*
-void insertOtherAttribute(void *data, xmlNode *cur_node){
-    SVGimage *list = data;
-
-    xmlAttr *attr;
-           // printf("%d\n",i);
-    
-    for (attr = cur_node->properties; attr != NULL; attr = attr->next)
-    {
-        xmlNode *snapshot = attr->children;
-        char *getAttrValue = (char *)snapshot->content;
-        char *getAttrName = (char *)attr->name;
-        char *name = calloc(1, strlen(getAttrName) + strlen((char *)cur_node -> name)  + 10);
-        strcat(name, (char *)cur_node -> name );
-        strcat(name, " >");
-        strcat(name, getAttrName);
-        Attribute *attribute = createAttribute(name, getAttrValue);
-        insertBack(list -> otherAttributes, attribute);
-      
-        free(name);
-    }
- }
- */
 
 void insertGroup(void *data, xmlNode *cur_node, int version)
 {
@@ -1728,99 +1726,99 @@ void insertGroup(void *data, xmlNode *cur_node, int version)
     char *getAttrValue = NULL;
     char *getAttrName = NULL;
     Group *group = NULL;
-    
+
     xmlNode *snapshot = NULL;
     if (i == 0)
     {
         group = createGroupObject();
     }
-    
+
     attr = cur_node->properties;
-    if(attr != NULL){
-      //  printf("not null");
+    if (attr != NULL)
+    {
+        //  printf("not null");
         snapshot = attr->children;
         getAttrValue = (char *)snapshot->content;
         getAttrName = (char *)attr->name;
     }
     
+
+    for (attr = cur_node->properties; attr != NULL; attr = attr->next)
+    {
     
-    
-        for (attr = cur_node->properties; attr != NULL; attr = attr->next)
+        if (version == 0 )
         {
-            if (version == 0)
-            {
-
-                Attribute *attribute = createAttribute(getAttrName, getAttrValue);
-                insertBack(group->otherAttributes, attribute);
-            }
-            if (version == 1)
-            {
-                Attribute *attribute = createAttribute(getAttrName, getAttrValue);
-
-                insertBack(group->otherAttributes, attribute);
-            }
-        }
-
-        //9
-        long nodeCounter = xmlChildElementCount(cur_node);
-        xmlNode *temp_cur_children = cur_node->children;
-        xmlNode *temp_cur_node;
-        //Looks at the sibling of the current children
-        // printf("\n%ld\n", nodeCounter);
-        const char *validateName;
-
-        while (nodeCounter != 0)
-        {
-
-            temp_cur_node = xmlNextElementSibling(temp_cur_children);
-            if (temp_cur_node != NULL)
-            {
-                validateName = (const char *)temp_cur_node->name;
-                // printf("%s\n", validateName);
-                if (strcmp(validateName, "rect") == 0)
-                {
-
-                    insertRect(group, temp_cur_node, 1);
-                    //we'll be storing the other attributes here as well;xxw
-                }
-
-                if (strcmp(validateName, "circle") == 0)
-                {
-                    insertCircle(group, temp_cur_node, 1);
-                }
-                if (strcmp(validateName, "path") == 0)
-                {
-                    insertPath(group, temp_cur_node, 1);
-                }
-                if (strcmp(validateName, "g") == 0)
-                {
-                    //Calls recursion - goes to the nexr group
-                    insertGroup(group, temp_cur_node, 1);
-                }
-            }
+        
+            Attribute *attribute = createAttribute(getAttrName, getAttrValue);
             
-            if(temp_cur_children -> next -> next != NULL){
-                 temp_cur_children = temp_cur_children->next->next;
-            }
-          
-            
-
-            nodeCounter--;
+            insertBack(group->otherAttributes, attribute);
         }
-        if (nodeCounter == 0)
+        if (version == 1)
         {
-            if (version == 0)
+            Attribute *attribute = createAttribute(getAttrName, getAttrValue);
+
+            insertBack(group->otherAttributes, attribute);
+        }
+    }
+
+    //9
+    long nodeCounter = xmlChildElementCount(cur_node);
+    xmlNode *temp_cur_children = cur_node->children;
+    xmlNode *temp_cur_node;
+    //Looks at the sibling of the current children
+    // printf("\n%ld\n", nodeCounter);
+    const char *validateName;
+
+    while (nodeCounter != 0)
+    {
+
+        temp_cur_node = xmlNextElementSibling(temp_cur_children);
+        if (temp_cur_node != NULL)
+        {
+            validateName = (const char *)temp_cur_node->name;
+            // printf("%s\n", validateName);
+            if (strcmp(validateName, "rect") == 0)
             {
-                SVGimage *list = data;
-                insertBack(list->groups, group);
+
+                insertRect(group, temp_cur_node, 1);
+                //we'll be storing the other attributes here as well;xxw
             }
-            if (version == 1)
+
+            if (strcmp(validateName, "circle") == 0)
             {
-                Group *list = data;
-                insertBack(list->groups, group);
+                insertCircle(group, temp_cur_node, 1);
+            }
+            if (strcmp(validateName, "path") == 0)
+            {
+                insertPath(group, temp_cur_node, 1);
+            }
+            if (strcmp(validateName, "g") == 0)
+            {
+                //Calls recursion - goes to the nexr group
+                insertGroup(group, temp_cur_node, 1);
             }
         }
-    
+
+        if (temp_cur_children->next->next != NULL)
+        {
+            temp_cur_children = temp_cur_children->next->next;
+        }
+
+        nodeCounter--;
+    }
+    if (nodeCounter == 0)
+    {
+        if (version == 0)
+        {
+            SVGimage *list = data;
+            insertBack(list->groups, group);
+        }
+        if (version == 1)
+        {
+            Group *list = data;
+            insertBack(list->groups, group);
+        }
+    }
 }
 
 ///Version is so that we could reuse this with different types of list
@@ -2107,8 +2105,8 @@ SVGimage *initializeObjects()
     list->groups = initializeList(groupToString, deleteGroup, compareGroups);
     list->otherAttributes = initializeList(attributeToString, deleteAttribute, compareAttributes);
 
-    strcpy(list -> description, " ");
-           strcpy(list -> title, " ");
+    strcpy(list->description, " ");
+    strcpy(list->title, " ");
     //initialize
     return list;
 }
@@ -2517,7 +2515,7 @@ void validateTitle(char *title, SVGimage **list)
         else
         {
 
-            strncpy(temp_list->title, (char *)title,256);
+            strncpy(temp_list->title, (char *)title, 256);
         }
     }
     else
@@ -2554,7 +2552,6 @@ int StartsWith(const char *a, const char *b)
         return 1;
     return 0;
 }
-
 
 /*
 bool isProperlySpaced(char *value)

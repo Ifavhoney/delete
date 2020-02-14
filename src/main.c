@@ -12,7 +12,14 @@ int main(int argc, const char *argv[])
 {
     // insert code here...
     SVGimage *image = NULL;
-   image = createValidSVGimage("quad01.svg", "svg.xsd");
+   image = createValidSVGimage("Emoji_smiling.svg", NULL);
+    if(validateSVGimage(image, "svg.xsd") == false){
+        printf("\n\n FALSEE\n");
+    }
+    else{
+        printf("\n\nIS TRUEE\n");
+    }
+    
     deleteSVGimage(image);
   
 
