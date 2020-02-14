@@ -701,7 +701,12 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
 
     //Initialize Our tempData - we'll be reusing this memory, modifying the data
     xmlDoc *doc = NULL;
-    if(strstr(schemaFile, ".") == NULL || strstr(fileName, ".") == NULL || fileName == NULL || schemaFile == NULL || strlen(schemaFile) <= 4 || strlen(fileName) <= 4){
+    if(fileName == NULL || schemaFile == NULL){
+        printf("nulll!!!\n");
+
+        return NULL;
+    }
+    if(strstr(schemaFile, ".") == NULL || strstr(fileName, ".") == NULL || strlen(schemaFile) <= 4 || strlen(fileName) <= 4){
         printf("nulll!!!\n");
        return NULL;
         
@@ -917,7 +922,10 @@ void setRectAttribute(List *tempList, int elemIndex, Attribute *newAttribute)
 }
 bool validateSVGimage(SVGimage *doc, char *schemaFile)
 {
-
+  
+    if(schemaFile == NULL){
+        return false;
+    }
     if(strstr(schemaFile, ".") == NULL || doc == NULL){
           printf("nulll!!!\n");
          return NULL;
@@ -1087,9 +1095,13 @@ void createGroup(xmlNodePtr root_element, List *image)
 //create function for circle, rect, etc
 bool writeSVGimage(SVGimage *image, char *fileName)
 {
+    if(fileName == NULL || image == NULL){
+        return false;
+    }
+    
     //Create an xml file: validSVG == true ? return true : return false
     char *extension = strrchr(fileName, '.');
-    if (image == NULL || fileName == NULL || extension == NULL || strcmp(extension + 1, "svg") != 0)
+    if (image == NULL || extension == NULL || strcmp(extension + 1, "svg") != 0)
     {
         return false;
     }
