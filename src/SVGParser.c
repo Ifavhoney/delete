@@ -769,6 +769,7 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
 
     //  printf("%f\n", circle -> r);
 
+    insertBack(list -> circles, NULL);
     xmlFreeDoc(doc);
     xmlCleanupParser();
     return list;
