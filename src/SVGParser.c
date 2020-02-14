@@ -757,19 +757,13 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
 
 
    
-    /*
-    Attribute *attribute = createAttribute("fill", "red");
-    //printf("%s", attribute -> name);
-    char *test = attrToJSON(attribute);
-    printf("%s\n\n", test);
-    free(test);
-     */
-
+    Attribute *attribute = createAttribute("fill", "GREEN");
+    
+    setAttribute(list, CIRC, 0, attribute);
     // Circle *circle = list -> circles -> head -> data;
 
     //  printf("%f\n", circle -> r);
 
-    insertBack(list -> circles, NULL);
     xmlFreeDoc(doc);
     xmlCleanupParser();
     return list;
@@ -788,7 +782,6 @@ void setAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribut
     if (image == NULL || elemIndex < 0)
     {
         printf("here");
-        deleteAttribute(newAttribute);
 
         return;
     }
@@ -813,7 +806,6 @@ void setAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribut
     {
         //OtherAttributes
     }
-    deleteAttribute(newAttribute);
 }
 void writeSVGAttribute(void *list, int elemIndex, Attribute *newAttribute)
 {
@@ -825,11 +817,14 @@ void writeSVGAttribute(void *list, int elemIndex, Attribute *newAttribute)
     bool isFound = false;
     while ((elem = nextElement(&iter)) != NULL)
     {
+        i++;
         Attribute *attribute = (Attribute *)elem;
+
         if (strcmp(attribute->name, newAttribute->name) == 0 && elemIndex == i)
         {
             printf("Insert @ index %d for %s", elemIndex, attribute->name);
-            tempList->head->data = attribute;
+            attribute -> value = newAttribute -> value;
+            isFound = true;
         }
     }
     if (isFound == false)
@@ -876,6 +871,7 @@ void setCircleAttribute(List *tempList, int elemIndex, Attribute *newAttribute)
         {
             if (i == elemIndex)
             {
+            
                 writeSVGAttribute(circle->otherAttributes, elemIndex, newAttribute);
             }
         }

@@ -18,7 +18,7 @@ int main(int argc, const char *argv[])
         printf("\n\n FALSEE\n");
     }
     else{
-       writeSVGimage(image, "babe.svg");
+       writeSVGimage(image, "my.svg");
     }
     
     deleteSVGimage(image);
