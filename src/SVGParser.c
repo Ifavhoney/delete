@@ -60,10 +60,10 @@ void createRect(xmlNodePtr root_element, List *tempList);
 void createCircle(xmlNodePtr root_element, List *tempList);
 void createGroup(xmlNodePtr root_element, List *image);
 List *recursiveCreateGroup(List *list, Group *group, xmlNodePtr root_element);
-void setCircleAttribute(List *tempList, int elemIndex, Attribute *newAttribute);
-void setRectAttribute(List *tempList, int elemIndex, Attribute *newAttribute);
-void setPathAttribute(List *tempList, int elemIndex, Attribute *newAttribute);
-void writeSVGAttribute(void *list, int elemIndex, Attribute *newAttribute);
+bool setCircleAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute);
+bool setRectAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute);
+bool setPathAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute);
+bool writeSVGAttribute(void *list, elementType elemType, int elemIndex, Attribute *newAttribute);
 int hasAttribute(List *otherAttributes)
 {
     if (otherAttributes->length == 0)
@@ -757,11 +757,10 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
 
 
    
-    Attribute *attribute = createAttribute("fill", "GREEN");
+    Attribute *attribute = createAttribute("x", "123");
     
-    setAttribute(list, CIRC, 0, attribute);
+    setAttribute(list, RECT, 0, attribute);
     // Circle *circle = list -> circles -> head -> data;
-
     //  printf("%f\n", circle -> r);
 
     xmlFreeDoc(doc);
@@ -771,6 +770,18 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     //Returns the pointer of type SVGimage containing all data
 }
 
+
+/*
+"If the attribute with the specified name exists in the otherAttributes
+list of the relevant element, update the value on the
+Attribute in the list to the new value, and free the newAttribute struct.
+If  the  attribute  with  the  specified  name  does  not
+ exist  in  the otherAttributes  list  of  the  relevant
+ element, append the new attribute to that list."
+
+*/
+
+
 void setAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute)
 {
 
@@ -778,72 +789,72 @@ void setAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribut
     int length = getLength(image -> circles);
     printf("length: %d\n", length);
      */
+     bool isFound = false;
+     if(newAttribute == NULL){
+         return;
+     }
 
-    if (image == NULL || elemIndex < 0)
+    if (image == NULL || elemIndex < 0  || elemType < 0)
     {
         printf("here");
 
         return;
     }
-    if (elemType == CIRC)
+    if (elemType == CIRC && getLength(image -> circles)-1 >= elemIndex)
     {
-        setCircleAttribute(image->circles, elemIndex, newAttribute);
+         isFound = setCircleAttribute(image, CIRC, elemIndex, newAttribute);
+     
     }
-    if (elemType == RECT)
+
+    if (elemType == RECT && getLength(image -> rectangles)-1 >= elemIndex)
     {
-        setCircleAttribute(image->rectangles, elemIndex, newAttribute);
+        isFound = setRectAttribute(image, RECT, elemIndex, newAttribute);
     }
-    if (elemType == PATH)
+    if (elemType == PATH && getLength(image -> paths)-1 >= elemIndex)
     {
-        setCircleAttribute(image->paths, elemIndex, newAttribute);
+      
     }
-    if (elemType == GROUP)
+    if (elemType == GROUP && getLength(image -> groups)-1 >= elemIndex)
     {
-        setCircleAttribute(image->groups, elemIndex, newAttribute);
+        
     }
 
     if (elemType == SVG_IMAGE)
     {
+        //Will always have a 0 index
         //OtherAttributes
     }
+
+    if(isFound == true){
+        printf("delete??");
+      deleteAttribute(newAttribute);
+
+    }
+    
+
 }
-void writeSVGAttribute(void *list, int elemIndex, Attribute *newAttribute)
+/*
+"If the attribute with the specified name exists in the otherAttributes
+list of the relevant element, update the value on the
+Attribute in the list to the new value, and free the newAttribute struct.
+If  the  attribute  with  the  specified  name  does  not
+ exist  in  the otherAttributes  list  of  the  relevant
+ element, append the new attribute to that list."
+
+*/
+
+
+bool setPathAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute)
+{
+    return false;
+}
+
+bool setCircleAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute)
 {
     void *elem;
-
-    List *tempList = (void *)list;
-    ListIterator iter = createIterator(tempList);
+    ListIterator iter = createIterator(image -> circles);
     int i = -1;
     bool isFound = false;
-    while ((elem = nextElement(&iter)) != NULL)
-    {
-        i++;
-        Attribute *attribute = (Attribute *)elem;
-
-        if (strcmp(attribute->name, newAttribute->name) == 0 && elemIndex == i)
-        {
-            printf("Insert @ index %d for %s", elemIndex, attribute->name);
-            attribute -> value = newAttribute -> value;
-            isFound = true;
-        }
-    }
-    if (isFound == false)
-    {
-        Attribute *attribute = createAttribute(newAttribute->name, newAttribute->value);
-        insertBack(list, attribute);
-        //deleteAttribute(newAttribute);
-    }
-}
-
-void setPathAttribute(List *tempList, int elemIndex, Attribute *newAttribute)
-{
-}
-
-void setCircleAttribute(List *tempList, int elemIndex, Attribute *newAttribute)
-{
-    void *elem;
-    ListIterator iter = createIterator(tempList);
-    int i = -1;
     while ((elem = nextElement(&iter)) != NULL)
     {
         i = i + 1;
@@ -854,36 +865,77 @@ void setCircleAttribute(List *tempList, int elemIndex, Attribute *newAttribute)
         if (strcmp(newAttribute->name, "cx") == 0 && i == elemIndex)
         {
             circle->cx = atof(newAttribute->value);
+            isFound = true;
         }
         else if (strcmp(newAttribute->name, "cy") == 0 && i == elemIndex)
         {
             circle->cy = atof(newAttribute->value);
+            isFound = true;
         }
         else if (strcmp(newAttribute->name, "r") == 0 && i == elemIndex)
         {
-            bool valid = isAboveZero(newAttribute->value);
-            if (valid == true)
-            {
+           
                 circle->r = atof(newAttribute->value);
-            }
+                isFound = true;
+    
         }
         else
         {
             if (i == elemIndex)
             {
-            
-                writeSVGAttribute(circle->otherAttributes, elemIndex, newAttribute);
+             isFound = writeSVGAttribute(circle -> otherAttributes, CIRC, elemIndex, newAttribute);
             }
         }
     }
+    return isFound;
 }
 
-void setRectAttribute(List *tempList, int elemIndex, Attribute *newAttribute)
+bool writeSVGAttribute(void *list, elementType elemType,  int elemIndex, Attribute *newAttribute)
+{
+    bool isFound  = false;
+    void *elem;
+
+    List *tempList = (void *)list;
+    ListIterator iter = createIterator(tempList);
+         Attribute *attribute = NULL;
+    int i = -1;
+         while ((elem = nextElement(&iter)) != NULL)
+    {
+
+          i++;
+          attribute =(Attribute *)elem;
+        
+       if (strcmp(attribute->name, newAttribute->name) == 0)
+              {
+                  printf("Insert @ index %d for %s", elemIndex, attribute->value);
+                  strcpy(attribute -> value, newAttribute -> value);
+                printf("\nInsert @ index %d for %s\n", elemIndex, attribute->value);
+                  
+                  isFound = true;
+              }
+        
+          }
+          if (isFound == false)
+          {
+              insertBack(list, newAttribute);
+              //deleteAttribute(newAttribute);
+          }
+
+
+
+
+    return isFound;
+
+}
+
+bool setRectAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute)
 {
 
     void *elem;
-    ListIterator iter = createIterator(tempList);
+    ListIterator iter = createIterator(image -> rectangles);
     int i = -1;
+    bool isFound = false;
+
     while ((elem = nextElement(&iter)) != NULL)
     {
         i = i + 1;
@@ -894,28 +946,38 @@ void setRectAttribute(List *tempList, int elemIndex, Attribute *newAttribute)
         if (strcmp(newAttribute->name, "x") == 0 && i == elemIndex)
         {
             rect->x = atof(newAttribute->value);
+            isFound = true;
+
         }
         if (strcmp(newAttribute->name, "y") == 0 && i == elemIndex)
         {
             rect->y = atof(newAttribute->value);
+            isFound = true;
+
         }
         if (strcmp(newAttribute->name, "width") == 0 && i == elemIndex)
         {
-            bool valid = isAboveZero(newAttribute->value);
-            if (valid == true)
-            {
+           
                 rect->width = atof(newAttribute->value);
-            }
+            isFound = true;
+
+        
         }
         if (strcmp(newAttribute->name, "height") == 0 && i == elemIndex)
         {
-            bool valid = isAboveZero(newAttribute->value);
-            if (valid == true)
-            {
+          
                 rect->height = atof(newAttribute->value);
+            isFound = true;
+        }
+        else
+        {
+            if (i == elemIndex)
+            {
+             isFound = writeSVGAttribute(rect -> otherAttributes, RECT, elemIndex, newAttribute);
             }
         }
     }
+    return isFound;
 }
 bool validateSVGimage(SVGimage *doc, char *schemaFile)
 {
