@@ -63,6 +63,7 @@ List *recursiveCreateGroup(List *list, Group *group, xmlNodePtr root_element);
 bool setCircleAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute);
 bool setRectAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute);
 bool setPathAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute);
+bool setGroupAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute);
 bool writeSVGAttribute(void *list, elementType elemType, int elemIndex, Attribute *newAttribute);
 int hasAttribute(List *otherAttributes)
 {
@@ -757,9 +758,9 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
 
 
    
-    Attribute *attribute = createAttribute("x", "123");
+    Attribute *attribute = createAttribute("opacity", "123");
     
-    setAttribute(list, RECT, 0, attribute);
+    setAttribute(list, GROUP, 1, attribute);
     // Circle *circle = list -> circles -> head -> data;
     //  printf("%f\n", circle -> r);
 
@@ -812,11 +813,11 @@ void setAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribut
     }
     if (elemType == PATH && getLength(image -> paths)-1 >= elemIndex)
     {
-      
+        isFound = setPathAttribute(image, PATH, elemIndex, newAttribute);
     }
     if (elemType == GROUP && getLength(image -> groups)-1 >= elemIndex)
     {
-        
+        isFound = setGroupAttribute(image, GROUP, elemIndex, newAttribute);
     }
 
     if (elemType == SVG_IMAGE)
@@ -824,6 +825,7 @@ void setAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribut
         //Will always have a 0 index
         //OtherAttributes
     }
+    
 
     if(isFound == true){
         printf("delete??");
@@ -843,10 +845,55 @@ If  the  attribute  with  the  specified  name  does  not
 
 */
 
+bool setGroupAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute)
+{
+    void *elem;
+          ListIterator iter = createIterator(image -> groups);
+          int i = -1;
+          bool isFound = false;
+          while ((elem = nextElement(&iter)) != NULL)
+          {
+              i = i + 1;
 
+              Group *group = (Group *)elem;
+
+             
+                  if (i == elemIndex)
+                  {
+                   isFound = writeSVGAttribute(group -> otherAttributes,GROUP, elemIndex, newAttribute);
+                  }
+            
+          }
+          return isFound;
+}
 bool setPathAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute)
 {
-    return false;
+    void *elem;
+       ListIterator iter = createIterator(image -> paths);
+       int i = -1;
+       bool isFound = false;
+       while ((elem = nextElement(&iter)) != NULL)
+       {
+           i = i + 1;
+
+           Path *path = (Path *)elem;
+
+           //added
+           if (strcmp(newAttribute->name, "d") == 0 && i == elemIndex)
+           {
+               strcpy(path->data,newAttribute -> value);
+               isFound = true;
+           }
+           else
+           {
+               if (i == elemIndex)
+               {
+                isFound = writeSVGAttribute(path -> otherAttributes,PATH, elemIndex, newAttribute);
+               }
+           }
+       }
+       return isFound;
+    
 }
 
 bool setCircleAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute)
@@ -949,13 +996,13 @@ bool setRectAttribute(SVGimage *image, elementType elemType, int elemIndex, Attr
             isFound = true;
 
         }
-        if (strcmp(newAttribute->name, "y") == 0 && i == elemIndex)
+       else if (strcmp(newAttribute->name, "y") == 0 && i == elemIndex)
         {
             rect->y = atof(newAttribute->value);
             isFound = true;
 
         }
-        if (strcmp(newAttribute->name, "width") == 0 && i == elemIndex)
+      else  if (strcmp(newAttribute->name, "width") == 0 && i == elemIndex)
         {
            
                 rect->width = atof(newAttribute->value);
@@ -963,7 +1010,7 @@ bool setRectAttribute(SVGimage *image, elementType elemType, int elemIndex, Attr
 
         
         }
-        if (strcmp(newAttribute->name, "height") == 0 && i == elemIndex)
+       else if (strcmp(newAttribute->name, "height") == 0 && i == elemIndex)
         {
           
                 rect->height = atof(newAttribute->value);
@@ -973,6 +1020,7 @@ bool setRectAttribute(SVGimage *image, elementType elemType, int elemIndex, Attr
         {
             if (i == elemIndex)
             {
+                printf("comes here??");
              isFound = writeSVGAttribute(rect -> otherAttributes, RECT, elemIndex, newAttribute);
             }
         }
