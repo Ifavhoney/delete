@@ -755,12 +755,10 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
             return NULL;
         }
     }
-
-
+        Circle *circle = createCircleObject(1, 2, 3, " ");
+    addComponent(list, CIRC, circle );
    
-    Attribute *attribute = createAttribute("opacity", "123");
     
-    setAttribute(list, GROUP, 1, attribute);
     // Circle *circle = list -> circles -> head -> data;
     //  printf("%f\n", circle -> r);
 
@@ -1063,14 +1061,17 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
         }
         else
         {
-
+ xmlFreeDoc(docs);
+    xmlCleanupParser();
              bool valid = true;
+        /*
         valid = isValidSVGTag(image->otherAttributes);
         if (valid == false)
         {
             printf("invalid @ svg");
             return valid;
         }
+         */
         valid = isValidPathTag(image->paths);
         if (valid == false)
         {
@@ -1116,10 +1117,35 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
     //  printf("%f\n", circle -> r);
 
 
-    xmlFreeDoc(docs);
-    xmlCleanupParser();
+
     return true;
     
+}
+void addComponent(SVGimage* image, elementType type, void* newElement){
+   
+    if(image == NULL){
+        return;
+    }
+    if(type == CIRC){
+        Circle *circle = (Circle *)newElement;
+        if(circle != NULL){
+            insertBack(image -> circles, circle );
+        }
+    }
+    if(type == PATH){
+        Path *path = (Path *)newElement;
+               if(path != NULL){
+                   insertBack(image -> paths, path );
+               }
+    }
+    if(type == RECT){
+        Rectangle *rect = (Rectangle *)newElement;
+               if(rect != NULL){
+                   insertBack(image -> rectangles, rect );
+               }
+
+    }
+        
 }
 
 /*
@@ -1449,6 +1475,9 @@ bool isValidRectTag(List *tempList)
     {
         Rectangle *rect = (Rectangle *)elem;
         valid = isGoodRectangle(rect);
+        if(valid == false){
+            return valid;
+        }
     }
     return valid;
 }
@@ -1465,6 +1494,7 @@ bool isGoodRectangle(Rectangle *rect)
     }
     else
     {
+        /*
         bool valid = true;
         void *elem;
         List *tempList = rect->otherAttributes;
@@ -1478,6 +1508,7 @@ bool isGoodRectangle(Rectangle *rect)
                 return false;
             }
         }
+         */
     }
     return true;
 }
