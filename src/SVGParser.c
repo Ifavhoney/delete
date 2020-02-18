@@ -1,7 +1,7 @@
 //Jason Eddy N'Guessan | ID: 1079936
 //Creds to T.A for helping me to understand how to write c in an object oriented way
 //e.g began with initialize objects, andn therein set me off to complete objects
-#include "SVGParser_A2.h"
+#include "SVGParser.h"
 #include <math.h>
 #include <ctype.h>
 #define MAXLENGTH 1024
@@ -579,6 +579,10 @@ SVGimage *createSVGimage(char *fileName)
     }
     else
     {
+           /*Get the root element node */
+        root_element = xmlDocGetRootElement(doc);
+        print_element_names(root_element, &list);
+
         if (root_element->ns != NULL)
         {
             validateNameSpace((char *)root_element->ns->href, &list);
@@ -588,9 +592,7 @@ SVGimage *createSVGimage(char *fileName)
             return NULL;
         }
 
-        /*Get the root element node */
-        root_element = xmlDocGetRootElement(doc);
-        print_element_names(root_element, &list);
+     
     }
   
     xmlFreeDoc(doc);
@@ -837,7 +839,18 @@ char *pathListToJSON(const List *list)
     return jsonToPath;
 }
 
-
+char* attrListToJSON(const List *list){
+    return NULL;
+}
+char* circListToJSON(const List *list){
+    return NULL;
+}
+char* rectListToJSON(const List *list){
+    return NULL;
+}
+char* groupListToJSON(const List *list){
+    return NULL;
+}
 /*
 "If the attribute with the specified name exists in the otherAttributes
 list of the relevant element, update the value on the
@@ -1134,14 +1147,16 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
  xmlFreeDoc(docs);
     xmlCleanupParser();
              bool valid = true;
-        /*
+            List *otherAttributes = NULL;
+       
         valid = isValidSVGTag(image->otherAttributes);
+            
         if (valid == false)
         {
             printf("invalid @ svg");
             return valid;
         }
-         */
+         
         valid = isValidPathTag(image->paths);
         if (valid == false)
         {
@@ -1149,6 +1164,8 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
 
             return valid;
         }
+    
+
         valid = isValidCircleTag(image->circles);
         if (valid == false)
         {
@@ -1332,6 +1349,7 @@ void writeAttribute(void *list, xmlNodePtr cur_child)
     {
 
         Attribute *attribute = (Attribute *)elem;
+        
         xmlNewProp(cur_child, BAD_CAST attribute->name, BAD_CAST attribute->value);
     }
 }
@@ -1530,6 +1548,7 @@ bool isValidGroupTag(List *tempList, SVGimage *image)
     {
         return false;
     }
+    
     return valid;
 }
 
@@ -1545,6 +1564,17 @@ bool isValidRectTag(List *tempList)
         if(valid == false){
             return valid;
         }
+        if(rect -> otherAttributes == NULL){
+                       return false;
+                   }
+        
+        if(getLength(rect -> otherAttributes) > 0){
+                 valid = isValidSVGTag(rect ->otherAttributes);
+                 if(valid == false){
+                     return valid;
+                 }
+
+                     }
     }
     return valid;
 }
@@ -1636,6 +1666,17 @@ bool isValidCircleTag(List *tempList)
     while ((elem = nextElement(&iter)) != NULL)
     {
         Circle *circle = (Circle *)elem;
+
+         if(circle -> otherAttributes == NULL){
+            return false;
+        }
+        if(getLength(circle -> otherAttributes) > 0){
+                 valid = isValidSVGTag(circle ->otherAttributes);
+                 if(valid == false){
+                     return valid;
+                 }
+
+                     }
         if (circle->r < 0)
         {
             return false;
@@ -1711,6 +1752,18 @@ bool isValidPathTag(List *tempList)
             valid = false;
             return valid;
         }
+        if(path -> otherAttributes == NULL) {
+            return false;
+        }
+        
+        if(getLength(path -> otherAttributes) > 0){
+            valid = isValidSVGTag(path ->otherAttributes);
+            if(valid == false){
+                return valid;
+            }
+
+                }
+       
     }
     return valid;
 }
@@ -1725,6 +1778,10 @@ bool isValidSVGTag(List *tempList)
     while ((elem = nextElement(&iter)) != NULL)
     {
         Attribute *svg = (Attribute *)elem;
+        if(svg ->name == NULL || svg ->value == NULL){
+            return false;
+        }
+        /*
         if (strcmp("version", svg->name) == 0)
         {
             valid = isAboveZero(svg->value);
@@ -1782,6 +1839,7 @@ bool isValidSVGTag(List *tempList)
                 break;
             }
         }
+         */
     }
     return valid;
 }

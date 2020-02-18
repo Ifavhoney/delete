@@ -6,25 +6,16 @@
 //  Copyright © 2020 Jason Eddy. All rights reserved.
 //
 
-#include "SVGParser_A2.h"
+#include "SVGParser.h"
 
 
 int main(int argc, const char *argv[])
 {
     // Everts's microsystem.
      SVGimage *image = NULL;
-    image = createValidSVGimage("Emoji_smiling.svg", "svg.xsd");
-    int _numAttr = numGroupsWithLen(image, 3);
-    printf("\nRESULT:%d\n\n", _numAttr);
+    image = createSVGimage("quad01_A2.svg");
     
-    if(validateSVGimage(image, "svg.xsd") == false){
-        printf("\n\n FALSEE\n");
-    }
-    else{
-        
-        writeSVGimage(image, "my.svg");
-    }
-    
+    validateSVGimage(image, "svg.xsd");
     
     deleteSVGimage(image);
     
