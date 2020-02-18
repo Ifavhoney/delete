@@ -592,7 +592,7 @@ SVGimage *createSVGimage(char *fileName)
         root_element = xmlDocGetRootElement(doc);
         print_element_names(root_element, &list);
     }
-
+  
     xmlFreeDoc(doc);
     xmlCleanupParser();
     return list;
@@ -600,104 +600,7 @@ SVGimage *createSVGimage(char *fileName)
     //Returns the pointer of type SVGimage containing all data
 }
 
-char *SVGtoJSON(const SVGimage *imge)
-{
-    if (imge == NULL)
-    {
-        char *temp = malloc(10);
-        strcpy(temp, "{}");
-        return temp;
-    }
 
-    char *jsonString = malloc(sizeof(char) + MAXLENGTH);
-    List *getRect = getRects((SVGimage *)imge);
-    List *getCirc = getCircles((SVGimage *)imge);
-    List *getPath = getPaths((SVGimage *)imge);
-    List *getGroup = getGroups((SVGimage *)imge);
-
-    sprintf(jsonString, "{\"numRect\":%d,\"numCirc\":%d,\"numPaths\":%d, \"numGroups\":%d}", getLength(getRect), getLength(getCirc), getLength(getPath), getLength(getGroup));
-
-    freeList(getRect);
-    freeList(getCirc);
-    freeList(getPath);
-    freeList(getGroup);
-    //test for free
-    return jsonString;
-}
-
-char *attrToJSON(const Attribute *a)
-{
-    if (a == NULL || a->name == NULL || a->value == NULL)
-    {
-        char *temp = malloc(10);
-        strcpy(temp, "{}");
-        return temp;
-    }
-    char *jsonString = malloc(strlen(a->value) + strlen(a->name) + MAXLENGTH);
-    sprintf(jsonString, "{\"name\":\"%s\",\"value\":\"%s\"}", a->name, a->value);
-    return jsonString;
-}
-
-char *pathToJSON(const Path *p)
-{
-    if (p == NULL || p->data == NULL)
-    {
-        char *temp = malloc(10);
-        strcpy(temp, "{}");
-        return temp;
-    }
-
-    char *jsonString = malloc(sizeof(char) + MAXLENGTH);
-    jsonString[0] = '\0';
-
-    printf("%s\n", p->data);
-    if (strlen(p->data) > 64)
-    {
-        // char *trunc = malloc(sizeof(char) + 10000);
-        char *trunc = calloc(1, sizeof(char) + MAXLENGTH);
-        trunc[0] = '\0';
-        strncpy(trunc, p->data, 64);
-        sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\": %d}", trunc, (getLength(p->otherAttributes)));
-        free(trunc);
-    }
-    else
-    {
-        sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\":%d}", p->data, (getLength(p->otherAttributes)));
-    }
-    return jsonString;
-}
-char *pathListToJSON(const List *list)
-{
-    if (list == NULL)
-    {
-        char *temp = malloc(10);
-        strcpy(temp, "[]");
-        return temp;
-    }
-    ListIterator iter = createIterator((List *)list);
-    void *elem;
-    char *jsonToPath = malloc(MAXLENGTH + 1);
-    jsonToPath[0] = '\0';
-    strcat(jsonToPath, "[");
-    int i = 0;
-    while ((elem = nextElement(&iter)) != NULL)
-    {
-
-        Path *p = (Path *)elem;
-
-        if (i > 0 && i <= list->length)
-        {
-            strcat(jsonToPath, ",");
-        }
-
-        char *value = pathToJSON(p);
-        strcat(jsonToPath, value);
-        i++;
-        free(value);
-    }
-    strcat(jsonToPath, "]");
-    return jsonToPath;
-}
 //Got this from prof
 SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
 {
@@ -759,9 +662,8 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     }
        
     
-        Attribute *attribute = createAttribute("viewBox", "0 0 63 64");
-
-    setAttribute(list, SVG_IMAGE, 0, attribute);   
+      
+         printf("%s",circleToJSON(list -> circles -> head -> data));
 
 
     xmlFreeDoc(doc);
@@ -769,6 +671,156 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     return list;
 
     //Returns the pointer of type SVGimage containing all data
+}
+
+
+char *SVGtoJSON(const SVGimage *imge)
+{
+    if (imge == NULL)
+    {
+        char *temp = malloc(10);
+        strcpy(temp, "{}");
+        return temp;
+    }
+
+    char *jsonString = malloc(sizeof(char) + MAXLENGTH);
+    List *getRect = getRects((SVGimage *)imge);
+    List *getCirc = getCircles((SVGimage *)imge);
+    List *getPath = getPaths((SVGimage *)imge);
+    List *getGroup = getGroups((SVGimage *)imge);
+
+    sprintf(jsonString, "{\"numRect\":%d,\"numCirc\":%d,\"numPaths\":%d, \"numGroups\":%d}", getLength(getRect), getLength(getCirc), getLength(getPath), getLength(getGroup));
+
+    freeList(getRect);
+    freeList(getCirc);
+    freeList(getPath);
+    freeList(getGroup);
+    //test for free
+    return jsonString;
+}
+
+char *attrToJSON(const Attribute *a)
+{
+    if (a == NULL || a->name == NULL || a->value == NULL)
+    {
+        char *temp = malloc(10);
+        strcpy(temp, "{}");
+        return temp;
+    }
+    
+    char *jsonString = malloc(strlen(a->value) + strlen(a->name) + MAXLENGTH);
+    sprintf(jsonString, "{\"name\":\"%s\",\"value\":\"%s\"}", a->name, a->value);
+    return jsonString;
+}
+char* circleToJSON(const Circle *c){
+    if (c == NULL)
+    {
+        char *temp = malloc(10);
+        strcpy(temp, "{}");
+        return temp;
+    }
+    char *jsonString = malloc(sizeof(char) + MAXLENGTH);
+    jsonString[0] = '\0';
+   /* {"cx":xVal,"cy":yVal,"r":rVal,"numAttr":attVal,"units":"unitStr"}
+    */
+    
+    //default units adds too many spaces
+    if((strlen(c -> units) >= 50 || strlen(c -> units) <= 1) && strcmp(c -> units, "%")!= 0)
+   {
+        sprintf(jsonString, "{\"cx\":%.2f,\"cy\":%.2f,\"r\":%.2f,\"numAttr\":%d,\"units\":\"\"}", c ->cx, c -> cy, c -> r, getLength(c->otherAttributes));
+        
+    }
+    else{
+         sprintf(jsonString, "{\"cx\":%.2f,\"cy\":%.2f,\"r\":%.2f,\"numAttr\":%d,\"units\":\"%s\"}", c ->cx, c -> cy, c -> r, getLength(c->otherAttributes), c -> units);
+    }
+    
+    return jsonString;
+    
+}
+char* rectToJSON(const Rectangle *r){
+    if (r == NULL)
+    {
+        char *temp = malloc(10);
+        strcpy(temp, "{}");
+        return temp;
+    }
+    char *jsonString = malloc(sizeof(char) + MAXLENGTH);
+    jsonString[0] = '\0';
+   /* {"x":1,"y":2,"w":19,"h":15,"numAttr":3,"units":"cm"}
+    */
+    
+    //default units adds too many spaces
+     if((strlen(r -> units) >= 50 || strlen(r -> units) <= 1) && strcmp(r -> units, "%")!= 0){
+        sprintf(jsonString, "{\"x\":%.2f,\"y\":%.2f,\"w\":%.2f,\"h\":%.2f,\"numAttr\":%d,\"units\":\"\"}", r ->x, r -> y, r -> width, r ->height, getLength(r->otherAttributes));
+        
+    }
+    else{
+          sprintf(jsonString, "{\"x\":%.2f,\"y\":%.2f,\"w\":%.2f,\"h\":%.2f,\"numAttr\":%d,\"units\":\"%s\"}", r ->x, r -> y, r -> width, r ->height, getLength(r->otherAttributes), r -> units);
+    }
+    
+    return jsonString;
+    
+}
+
+char *pathToJSON(const Path *p)
+{
+    if (p == NULL || p->data == NULL)
+    {
+        char *temp = malloc(10);
+        strcpy(temp, "{}");
+        return temp;
+    }
+
+    char *jsonString = malloc(sizeof(char) + MAXLENGTH);
+    jsonString[0] = '\0';
+
+    printf("%s\n", p->data);
+    if (strlen(p->data) > 64)
+    {
+        // char *trunc = malloc(sizeof(char) + 10000);
+        char *trunc = calloc(1, sizeof(char) + MAXLENGTH);
+        trunc[0] = '\0';
+        strncpy(trunc, p->data, 64);
+        sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\": %d}", trunc, (getLength(p->otherAttributes)));
+        free(trunc);
+    }
+    else
+    {
+        sprintf(jsonString, "{\"d\":\"%s\",\"numAttr\":%d}", p->data, (getLength(p->otherAttributes)));
+    }
+    return jsonString;
+}
+char *pathListToJSON(const List *list)
+{
+    if (list == NULL)
+    {
+        char *temp = malloc(10);
+        strcpy(temp, "[]");
+        return temp;
+    }
+    ListIterator iter = createIterator((List *)list);
+    void *elem;
+    char *jsonToPath = malloc(MAXLENGTH + 1);
+    jsonToPath[0] = '\0';
+    strcat(jsonToPath, "[");
+    int i = 0;
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+
+        Path *p = (Path *)elem;
+
+        if (i > 0 && i <= list->length)
+        {
+            strcat(jsonToPath, ",");
+        }
+
+        char *value = pathToJSON(p);
+        strcat(jsonToPath, value);
+        i++;
+        free(value);
+    }
+    strcat(jsonToPath, "]");
+    return jsonToPath;
 }
 
 
@@ -1900,14 +1952,14 @@ void insertGroup(void *data, xmlNode *cur_node, int version)
                      getAttrName = (char *)attr->name;
                      //check for duplicatates
                    Attribute *attribute = createAttribute(getAttrName, getAttrValue);
-               printf("\n\n%s", attr -> name);
+             //  printf("\n\n%s", attr -> name);
                    insertBack(group->otherAttributes, attribute);
                
            }
     }
     
    
-    printf("END");
+ //   printf("END");
 
     //9
     long nodeCounter = xmlChildElementCount(cur_node);
