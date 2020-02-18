@@ -63,6 +63,7 @@ List *recursiveCreateGroup(List *list, Group *group, xmlNodePtr root_element);
 bool setCircleAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute);
 bool setRectAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute);
 bool setPathAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute);
+bool setSVGAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute);
 bool setGroupAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute);
 bool writeSVGAttribute(void *list, elementType elemType, int elemIndex, Attribute *newAttribute);
 int hasAttribute(List *otherAttributes)
@@ -242,17 +243,18 @@ int numPathsWithdata(SVGimage *img, char *data)
     }
     else
     {
-        str = malloc(1000);
 
         void *elem;
         list = getPaths(img);
+        str = calloc(getLength(img -> paths) + 1, MAXLENGTH);
 
         ListIterator iter = createIterator(list);
         while ((elem = nextElement(&iter)) != NULL)
         {
 
             Path *path = (Path *)elem;
-            printf("\n%s\n", path->data);
+            str = realloc(str,  strlen(path -> data) + 10);
+
             strcpy(str, path->data);
             if (strcmp(str, data) == 0)
             {
@@ -755,12 +757,12 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
             return NULL;
         }
     }
-        Circle *circle = createCircleObject(1, 2, 3, " ");
-    addComponent(list, CIRC, circle );
-   
+       
     
-    // Circle *circle = list -> circles -> head -> data;
-    //  printf("%f\n", circle -> r);
+        Attribute *attribute = createAttribute("viewBox", "0 0 63 64");
+
+    setAttribute(list, SVG_IMAGE, 0, attribute);   
+
 
     xmlFreeDoc(doc);
     xmlCleanupParser();
@@ -779,8 +781,6 @@ If  the  attribute  with  the  specified  name  does  not
  element, append the new attribute to that list."
 
 */
-
-
 void setAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribute *newAttribute)
 {
 
@@ -820,6 +820,7 @@ void setAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribut
 
     if (elemType == SVG_IMAGE)
     {
+       isFound = writeSVGAttribute(image -> otherAttributes, SVG_IMAGE, 0, newAttribute);
         //Will always have a 0 index
         //OtherAttributes
     }
@@ -833,6 +834,7 @@ void setAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribut
     
 
 }
+
 /*
 "If the attribute with the specified name exists in the otherAttributes
 list of the relevant element, update the value on the
@@ -858,6 +860,7 @@ bool setGroupAttribute(SVGimage *image, elementType elemType, int elemIndex, Att
              
                   if (i == elemIndex)
                   {
+                      
                    isFound = writeSVGAttribute(group -> otherAttributes,GROUP, elemIndex, newAttribute);
                   }
             
@@ -1002,7 +1005,7 @@ bool setRectAttribute(SVGimage *image, elementType elemType, int elemIndex, Attr
         }
       else  if (strcmp(newAttribute->name, "width") == 0 && i == elemIndex)
         {
-           
+            
                 rect->width = atof(newAttribute->value);
             isFound = true;
 
@@ -1025,6 +1028,7 @@ bool setRectAttribute(SVGimage *image, elementType elemType, int elemIndex, Attr
     }
     return isFound;
 }
+
 bool validateSVGimage(SVGimage *doc, char *schemaFile)
 {
   
@@ -1886,30 +1890,24 @@ void insertGroup(void *data, xmlNode *cur_node, int version)
     attr = cur_node->properties;
     if (attr != NULL)
     {
-        //  printf("not null");
-        snapshot = attr->children;
-        getAttrValue = (char *)snapshot->content;
-        getAttrName = (char *)attr->name;
+      
+           
+           for (attr = cur_node->properties; attr != NULL; attr = attr->next)
+           {
+               //  printf("not null");
+                     snapshot = attr->children;
+                     getAttrValue = (char *)snapshot->content;
+                     getAttrName = (char *)attr->name;
+                     //check for duplicatates
+                   Attribute *attribute = createAttribute(getAttrName, getAttrValue);
+               printf("\n\n%s", attr -> name);
+                   insertBack(group->otherAttributes, attribute);
+               
+           }
     }
     
-
-    for (attr = cur_node->properties; attr != NULL; attr = attr->next)
-    {
-    
-        if (version == 0 )
-        {
-        
-            Attribute *attribute = createAttribute(getAttrName, getAttrValue);
-            
-            insertBack(group->otherAttributes, attribute);
-        }
-        if (version == 1)
-        {
-            Attribute *attribute = createAttribute(getAttrName, getAttrValue);
-
-            insertBack(group->otherAttributes, attribute);
-        }
-    }
+   
+    printf("END");
 
     //9
     long nodeCounter = xmlChildElementCount(cur_node);
@@ -2784,3 +2782,4 @@ bool isProperlySpaced(char *value)
     return true;
 }
  */
+
