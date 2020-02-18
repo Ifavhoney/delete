@@ -1080,7 +1080,7 @@ bool setRectAttribute(SVGimage *image, elementType elemType, int elemIndex, Attr
     }
     return isFound;
 }
-
+//Validates an SVGimage by checking if it's too SVG Standard
 bool validateSVGimage(SVGimage *doc, char *schemaFile)
 {
   
@@ -1208,10 +1208,8 @@ void addComponent(SVGimage* image, elementType type, void* newElement){
  
  */
 
-//make sure to validate for lengths are too long
-//TEST FOR EMPTY TAGS
-//do we need to validate the write?
-//XMLDocPtr for writing docs
+//Uses writeSVGimage function
+//No validation appears in this function
 xmlDocPtr buildTree(SVGimage *image)
 {
     xmlDocPtr doc = NULL;
@@ -1337,7 +1335,7 @@ void createRect(xmlNodePtr root_element, List *tempList)
         if (rect != NULL)
         {
             xmlNodePtr cur_child = xmlNewChild(root_element, NULL, BAD_CAST "rect", NULL);
-            if (strlen(rect->units) > 1)
+            if (strlen(rect->units) > 1 || strcmp(rect -> units, "%") == 0)
             {
                 //RETURNS AN XML NODE PTR
 
@@ -1390,8 +1388,7 @@ void createCircle(xmlNodePtr root_element, List *tempList)
         if (circle != NULL)
         {
             xmlNodePtr cur_child = xmlNewChild(root_element, NULL, BAD_CAST "circle", NULL);
-            if (strlen(circle->units) > 1)
-            {
+  if (strlen(circle->units) > 1 || strcmp(circle -> units, "%") == 0)            {
                 //RETURNS AN XML NODE PTR
 
                 //two decimal points
