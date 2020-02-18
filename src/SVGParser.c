@@ -663,7 +663,7 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
        
     
       
-         printf("%s",circleToJSON(list -> circles -> head -> data));
+         printf("%s",groupToJSON(list -> groups -> head -> data));
 
 
     xmlFreeDoc(doc);
@@ -711,6 +711,20 @@ char *attrToJSON(const Attribute *a)
     char *jsonString = malloc(strlen(a->value) + strlen(a->name) + MAXLENGTH);
     sprintf(jsonString, "{\"name\":\"%s\",\"value\":\"%s\"}", a->name, a->value);
     return jsonString;
+}
+char* groupToJSON(const Group *g){
+    if (g == NULL)
+       {
+           char *temp = malloc(10);
+           strcpy(temp, "{}");
+           return temp;
+       }
+       char *jsonString = malloc(sizeof(char) + MAXLENGTH);
+       jsonString[0] = '\0';
+    int children = getLength(g -> circles) + getLength(g -> rectangles) + getLength(g ->paths) + getLength(g -> groups);
+      sprintf(jsonString, "{\"children\":%d,\"numAttr\":%d}",children,getLength(g -> otherAttributes) );
+    return jsonString;
+
 }
 char* circleToJSON(const Circle *c){
     if (c == NULL)
