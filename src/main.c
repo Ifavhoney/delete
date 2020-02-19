@@ -13,7 +13,7 @@ int main(int argc, const char *argv[])
 {
     // Everts's microsystem.
      SVGimage *image = NULL;
-    image = createSVGimage("quad01_A2.svg");
+    image = createValidSVGimage("quad01_A2.svg", "svg.xsd");
     
     validateSVGimage(image, "svg.xsd");
     

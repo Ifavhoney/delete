@@ -665,9 +665,19 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
        
     
       
-         printf("%s",groupToJSON(list -> groups -> head -> data));
+         /*
 
-
+5.4: Updating an existing attribute of an SVGimage ("width", in otherAttributes)
+          */
+   
+   /*
+    Attribute *attribute = createAttribute("width", "1");
+    setAttribute(list, 0, -1, attribute);
+    */
+    Rectangle *rect = list -> rectangles -> head -> data;
+    char *test =  attrListToJSON(rect -> otherAttributes);
+    printf("%s,", test);
+    free(test);
     xmlFreeDoc(doc);
     xmlCleanupParser();
     return list;
@@ -691,7 +701,7 @@ char *SVGtoJSON(const SVGimage *imge)
     List *getPath = getPaths((SVGimage *)imge);
     List *getGroup = getGroups((SVGimage *)imge);
 
-    sprintf(jsonString, "{\"numRect\":%d,\"numCirc\":%d,\"numPaths\":%d, \"numGroups\":%d}", getLength(getRect), getLength(getCirc), getLength(getPath), getLength(getGroup));
+    sprintf(jsonString, "{\"numRect\":%d,\"numCirc\":%d,\"numPaths\":%d,\"numGroups\":%d}", getLength(getRect), getLength(getCirc), getLength(getPath), getLength(getGroup));
 
     freeList(getRect);
     freeList(getCirc);
@@ -840,17 +850,63 @@ char *pathListToJSON(const List *list)
 }
 
 char* attrListToJSON(const List *list){
-    return NULL;
+ if (list == NULL)
+    {
+        char *temp = malloc(10);
+        strcpy(temp, "[]");
+        return temp;
+    }
+    ListIterator iter = createIterator((List *)list);
+       void *elem;
+       char *jsonToPath = malloc(MAXLENGTH + 1);
+       jsonToPath[0] = '\0';
+       strcat(jsonToPath, "[");
+       int i = 0;
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+
+        Attribute *p = (Attribute *)elem;
+
+        if (i > 0 && i <= list->length)
+        {
+            strcat(jsonToPath, ",");
+        }
+
+        char *value = attrToJSON(p);
+        strcat(jsonToPath, value);
+        i++;
+        free(value);
+    }
+    strcat(jsonToPath, "]");
+    return jsonToPath;
+
 }
 char* circListToJSON(const List *list){
-    return NULL;
-}
+ if (list == NULL)
+    {
+        char *temp = malloc(10);
+        strcpy(temp, "[]");
+        return temp;
+    }
+    return NULL;}
 char* rectListToJSON(const List *list){
+ if (list == NULL)
+    {
+        char *temp = malloc(10);
+        strcpy(temp, "[]");
+        return temp;
+    }
     return NULL;
-}
+    }
 char* groupListToJSON(const List *list){
+  if (list == NULL)
+    {
+        char *temp = malloc(10);
+        strcpy(temp, "[]");
+        return temp;
+    }
     return NULL;
-}
+    }
 /*
 "If the attribute with the specified name exists in the otherAttributes
 list of the relevant element, update the value on the
@@ -868,11 +924,17 @@ void setAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribut
     printf("length: %d\n", length);
      */
      bool isFound = false;
-     if(newAttribute == NULL){
+     
+     if(newAttribute == NULL || image == NULL){
          return;
      }
-
-    if (image == NULL || elemIndex < 0  || elemType < 0)
+     
+     if (elemType == SVG_IMAGE)
+    {
+       isFound = writeSVGAttribute(image -> otherAttributes, SVG_IMAGE, 0, newAttribute);
+        printf("%s", newAttribute -> value);
+    }
+    if (elemIndex < 0  || elemType < 0)
     {
         printf("here");
 
@@ -897,12 +959,6 @@ void setAttribute(SVGimage *image, elementType elemType, int elemIndex, Attribut
         isFound = setGroupAttribute(image, GROUP, elemIndex, newAttribute);
     }
 
-    if (elemType == SVG_IMAGE)
-    {
-       isFound = writeSVGAttribute(image -> otherAttributes, SVG_IMAGE, 0, newAttribute);
-        //Will always have a 0 index
-        //OtherAttributes
-    }
     
 
     if(isFound == true){
@@ -1147,7 +1203,6 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
  xmlFreeDoc(docs);
     xmlCleanupParser();
              bool valid = true;
-            List *otherAttributes = NULL;
        
         valid = isValidSVGTag(image->otherAttributes);
             
@@ -2904,3 +2959,4 @@ bool isProperlySpaced(char *value)
 }
  */
 
+    
