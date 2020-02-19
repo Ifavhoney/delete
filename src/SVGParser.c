@@ -610,7 +610,8 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     //Initialize Our tempData - we'll be reusing this memory, modifying the data
     xmlDoc *doc = NULL;
     if(fileName == NULL || schemaFile == NULL){
-        printf("nulll!!!\n");
+    
+        printf("nulll!!! %s\n", fileName);
 
         return NULL;
     }
@@ -671,13 +672,10 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
           */
    
    /*
-    Attribute *attribute = createAttribute("width", "1");
-    setAttribute(list, 0, -1, attribute);
     */
-    Rectangle *rect = list -> rectangles -> head -> data;
-    char *test =  attrListToJSON(rect -> otherAttributes);
-    printf("%s,", test);
-    free(test);
+//Attribute *attribute = createAttribute("width", "2");
+
+
     xmlFreeDoc(doc);
     xmlCleanupParser();
     return list;
@@ -731,7 +729,7 @@ char* groupToJSON(const Group *g){
            strcpy(temp, "{}");
            return temp;
        }
-       char *jsonString = malloc(sizeof(char) + MAXLENGTH);
+       char *jsonString = malloc(sizeof(char) + MAXLENGTH * MAXLENGTH * MAXLENGTH);
        jsonString[0] = '\0';
     int children = getLength(g -> circles) + getLength(g -> rectangles) + getLength(g ->paths) + getLength(g -> groups);
       sprintf(jsonString, "{\"children\":%d,\"numAttr\":%d}",children,getLength(g -> otherAttributes) );
@@ -826,7 +824,7 @@ char *pathListToJSON(const List *list)
     }
     ListIterator iter = createIterator((List *)list);
     void *elem;
-    char *jsonToPath = malloc(MAXLENGTH + 1);
+    char *jsonToPath = malloc(MAXLENGTH * MAXLENGTH  * MAXLENGTH + 1);
     jsonToPath[0] = '\0';
     strcat(jsonToPath, "[");
     int i = 0;
@@ -858,7 +856,7 @@ char* attrListToJSON(const List *list){
     }
     ListIterator iter = createIterator((List *)list);
        void *elem;
-       char *jsonToPath = malloc(MAXLENGTH + 1);
+       char *jsonToPath = malloc(MAXLENGTH * MAXLENGTH + 1);
        jsonToPath[0] = '\0';
        strcat(jsonToPath, "[");
        int i = 0;
@@ -888,7 +886,29 @@ char* circListToJSON(const List *list){
         strcpy(temp, "[]");
         return temp;
     }
-    return NULL;}
+    ListIterator iter = createIterator((List *)list);
+         void *elem;
+         char *jsonToPath = malloc(MAXLENGTH * MAXLENGTH + 1);
+         jsonToPath[0] = '\0';
+         strcat(jsonToPath, "[");
+         int i = 0;
+      while ((elem = nextElement(&iter)) != NULL)
+      {
+          Circle *p = (Circle *)elem;
+
+          if (i > 0 && i <= list->length)
+          {
+              strcat(jsonToPath, ",");
+          }
+
+          char *value = circleToJSON(p);
+          strcat(jsonToPath, value);
+          i++;
+          free(value);
+      }
+      strcat(jsonToPath, "]");
+      return jsonToPath;
+}
 char* rectListToJSON(const List *list){
  if (list == NULL)
     {
@@ -896,16 +916,64 @@ char* rectListToJSON(const List *list){
         strcpy(temp, "[]");
         return temp;
     }
-    return NULL;
+    ListIterator iter = createIterator((List *)list);
+       void *elem;
+       char *jsonToPath = malloc(MAXLENGTH * MAXLENGTH + 1);
+       jsonToPath[0] = '\0';
+       strcat(jsonToPath, "[");
+       int i = 0;
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+        Rectangle *p = (Rectangle *)elem;
+
+        if (i > 0 && i <= list->length)
+        {
+            strcat(jsonToPath, ",");
+        }
+
+        char *value = rectToJSON(p);
+        strcat(jsonToPath, value);
+        i++;
+        free(value);
+    }
+    strcat(jsonToPath, "]");
+    
+    return jsonToPath;
     }
 char* groupListToJSON(const List *list){
-  if (list == NULL)
+    if (list == NULL)
     {
         char *temp = malloc(10);
         strcpy(temp, "[]");
         return temp;
     }
-    return NULL;
+  ListIterator iter = createIterator((List *)list);
+     void *elem;
+     char *jsonToPath = malloc(MAXLENGTH * MAXLENGTH + 1);
+     jsonToPath[0] = '\0';
+     strcat(jsonToPath, "[");
+     int i = 0;
+  while ((elem = nextElement(&iter)) != NULL)
+  {
+      
+      Group *p = (Group *)elem;
+      
+
+
+      if (i > 0 && i <= list->length)
+      {
+          strcat(jsonToPath, ",");
+      }
+
+      char *value = groupToJSON(p);
+      strcat(jsonToPath, value);
+      i++;
+      free(value);
+  }
+  strcat(jsonToPath, "]");
+
+  return jsonToPath;
+    
     }
 /*
 "If the attribute with the specified name exists in the otherAttributes
@@ -1265,24 +1333,29 @@ bool validateSVGimage(SVGimage *doc, char *schemaFile)
 }
 void addComponent(SVGimage* image, elementType type, void* newElement){
    
-    if(image == NULL){
+    if(image == NULL || (type < 1 && type >3)){
         return;
     }
     if(type == CIRC){
         Circle *circle = (Circle *)newElement;
         if(circle != NULL){
+            printf("CIRCLE HEREEE");
             insertBack(image -> circles, circle );
         }
     }
     if(type == PATH){
         Path *path = (Path *)newElement;
                if(path != NULL){
+                               printf("PATH HEREEE");
+
                    insertBack(image -> paths, path );
                }
     }
     if(type == RECT){
         Rectangle *rect = (Rectangle *)newElement;
                if(rect != NULL){
+                               printf("RECT HEREEE");
+
                    insertBack(image -> rectangles, rect );
                }
 
@@ -1603,6 +1676,7 @@ bool isValidGroupTag(List *tempList, SVGimage *image)
     {
         return false;
     }
+    
     
     return valid;
 }
@@ -2704,9 +2778,12 @@ void deletePath(void *data)
     {
         return;
     }
+
     Path *this = data;
+    
     free(this->data);
-    freeList(this->otherAttributes);
+
+   freeList(this->otherAttributes);
     free(this);
 }
 char *pathToString(void *data)
