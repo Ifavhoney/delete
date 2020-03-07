@@ -75,10 +75,14 @@ app.get('/uploads/:name', function (req, res) {
 //******************** Your code goes here ******************** 
 
 
+
+/*
 //FFI
 let sharedLibrary = ffi.Library("./parser/bin/libsvgparse.so", {
   "createSVGChar": ["string", ["string", "string"]],
 });
+*/
+
 
 
 app.get('/someendpoint', function (req, res) {
@@ -88,9 +92,13 @@ app.get('/someendpoint', function (req, res) {
   });
 });
 
-app.get('/cool', function (req, res) {
+app.get('/filelog', function (req, res) {
   res.sendFile(path.join(__dirname + '/public/index.html'));
 });
+app.get('/svgViewPanel', function (req, res) {
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
+
 
 
 app.get('/getListOfFiles', function (req, res) {

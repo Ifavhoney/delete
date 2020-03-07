@@ -26,8 +26,23 @@ $(document).ready(function () {
     }
     */
 
-    let _Home = ["File Log Pannel", "SVG View Pannel", "Additional functionality"];
-    let _FileLog;
+    let _Home = [{ name: "File Log Pannel", href: "/fileLog" },
+    { name: "SVG View Pannel", href: "/fileLog" },
+    { name: "Additional functionality", href: "/fileLog" }];
+    let _FileLog = {
+        thead: [{ image: "image", width: "20%" }, { fileName: "File name", width: "20%" }
+            , { fileSize: "File size", width: "10%" }, { numRect: "Number of rectangles", width: "10%" },
+        { numRect: "Number of circles", width: "10%" },
+        { numRect: "Number of paths", width: "10%" },
+        { numRect: "Number of groups", width: "10%" },
+        ],
+        tBody: [{ image: "../uploads" }, { fileName: "File name" }
+            , { fileSize: "File size" }, { numRect: "Number of rectangles" },
+        { numRect: "Number of circles" },
+        { numRect: "Number of paths" },
+        { numRect: "Number of groups" },
+        ],
+    };
 
     // On page-load AJAX Example
     $.ajax({
@@ -60,32 +75,104 @@ $(document).ready(function () {
         {
             type: 'get',
             dataType: 'html',
-            url: '/',
+            url: '/fileLog',
             data: {
             },
+            //Use only for send
             success: function (data) {
+                var link = document.getElementById('home');
+                link.style.display = 'none'; //or
+                let tHeadDoc = null;
                 //Type object of <Key, object>
-                /*
-                let addresses = [];
-                for (let i = 0; i < data.stylist_1.length; i++) {
-                    //Adding to array
-                    addresses.push(data.stylist_1[i]);
-                    let temp = document.createElement("div");
-                    temp.innerHTML = addresses[i].Address;
-                    document.getElementById("home").appendChild(temp);
+                for (let i = 0; i < _FileLog.thead.length; i++) {
+                    const element = _FileLog[i];
+                    let head = document.getElementById("fileLog");
+                    if (i == 0) {
+                        let temp = document.createElement("div");
+                        temp.className = "center-screen"
+                        let tempDoc = head.appendChild(temp);
+
+                        let table = document.createElement("table");
+                        table.className = "table table-bordered table-lg bg-light";
+                        let tableDoc = tempDoc.appendChild(table);
+
+                        let tHead = document.createElement("thead");
+                        tHeadDoc = tableDoc.appendChild(tHead);
+
+                    }
+                    //get tab
+                    let tr = document.createElement("tr");
+                    let trDoc = tHeadDoc.appendChild(tr);
+                    let th = document.createElement("th");
+                    th.style = element
+
+
                 }
-                console.log("addresses")
-                */
 
-
-
-
+                console.log("Hello");
             },
             fail: (error) => {
+
                 console.log("error!!!");
             }
 
         });
+
+
+    $.ajax(
+
+        {
+            type: 'get',
+            dataType: 'html',
+            url: '/',
+            data: {
+            },
+            //Use only for send
+            success: function (data) {
+
+                var link = document.getElementById('home');
+                let tBodyDoc = null;
+                //Type object of <Key, object>
+                for (let i = 0; i < _Home.length; i++) {
+                    const element = _Home[i];
+                    let head = document.getElementById("home");
+                    if (i == 0) {
+                        let temp = document.createElement("div");
+                        temp.className = "center-screen"
+                        let tempDoc = head.appendChild(temp);
+
+                        let table = document.createElement("table");
+                        table.className = "table table-striped table-dark";
+                        let tableDoc = tempDoc.appendChild(table);
+
+                        let tbody = document.createElement("tbody");
+                        tBodyDoc = tableDoc.appendChild(tbody);
+
+                    }
+                    //get tab
+                    let tr = document.createElement("tr");
+                    tr.setAttribute("class", "d-flex justify-content-center p-5");
+                    let trDoc = tBodyDoc.appendChild(tr);
+                    let td = document.createElement("td");
+                    let tdDoc = trDoc.appendChild(td);
+                    let a = document.createElement("a");
+                    a.href = element.href;
+                    //do something if clicked remove state of screen
+                    a.innerHTML = element.name;
+
+                    tdDoc.appendChild(a);
+
+                }
+
+
+            },
+            fail: (error) => {
+
+                console.log("error!!!");
+            }
+
+        });
+
 
     // Event listener form example , we can use this instead explicitly listening for events
     // No redirects if possible
