@@ -14,10 +14,12 @@ app.use(express.static(path.join(__dirname + '/uploads')));
 
 // Minimization
 const fs = require('fs');
+
 const JavaScriptObfuscator = require('javascript-obfuscator');
 
 // Important, pass in port as in `npm run dev 1234`, do not change
 const portNum = process.argv[2];
+
 
 // Send HTML at root, do not change
 app.get('/', function (req, res) {
@@ -72,16 +74,39 @@ app.get('/uploads/:name', function (req, res) {
 
 //******************** Your code goes here ******************** 
 
-//Sample endpoint
-app.get('/fileLogPanel', function (req, res) {
-  res.sendFile(path.join(__dirname + '/public/fileLogPanel.html'));
+
+//FFI
+let sharedLibrary = ffi.Library("./parser/bin/libsvgparse.so", {
+  "createSVGChar": ["string", ["string", "string"]],
 });
+
+
 app.get('/someendpoint', function (req, res) {
   let retStr = req.query.name1 + " " + req.query.name2;
   res.send({
     foo: retStr
   });
 });
+
+app.get('/cool', function (req, res) {
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
+
+
+app.get('/getListOfFiles', function (req, res) {
+
+  fs.readdir(path.join(__dirname + '/uploads'),
+    function (err, items) {
+
+      console.log("in app.js " + items);
+      //sends to the client (index.js)
+      res.send({
+        listFiles: items
+      });
+    });
+});
+
+
 
 app.listen(portNum);
 console.log('Running app at localhost: ' + portNum);
