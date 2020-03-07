@@ -1,34 +1,12 @@
 // Put all onload AJAX calls here, and event listeners
 $(document).ready(function () {
 
-    /*
-    let x = {
-        "stylist_1": [{
-            "Address": "1 Stn Main",
-            "Phone": "403-990-9033"
-        }, {
-            "Address": "474 Cirrus Rd",
-            "Phone": "403-995-3243"
-        }, {
-            "Address": "1591 Stn St",
-            "Phone": "403-982-8893"
-        }],
-        "stylist_2": [{
-            "Address": "219 Welch Blvd",
-            "Phone": "587-436-3171"
-        }, {
-            "Address": "374 Main Rd",
-            "Phone": "587-315-9431"
-        }, {
-            "Address": "564 Main Rd",
-            "Phone": "403-938-9983"
-        }]
-    }
-    */
 
-    let _Home = [{ name: "File Log Pannel", href: "/fileLog" },
-    { name: "SVG View Pannel", href: "/fileLog" },
+
+    let _Home = [{ name: "File Log Pannel", href: "#fileLog" },
+    { name: "SVG View Pannel", href: "" },
     { name: "Additional functionality", href: "/fileLog" }];
+    /*
     let _FileLog = {
         thead: [{ image: "image", width: "20%" }, { fileName: "File name", width: "20%" }
             , { fileSize: "File size", width: "10%" }, { numRect: "Number of rectangles", width: "10%" },
@@ -43,6 +21,7 @@ $(document).ready(function () {
         { numRect: "Number of groups" },
         ],
     };
+    */
 
     // On page-load AJAX Example
     $.ajax({
@@ -75,63 +54,15 @@ $(document).ready(function () {
         {
             type: 'get',
             dataType: 'html',
-            url: '/fileLog',
-            data: {
-            },
-            //Use only for send
-            success: function (data) {
-                var link = document.getElementById('home');
-                link.style.display = 'none'; //or
-                let tHeadDoc = null;
-                //Type object of <Key, object>
-                for (let i = 0; i < _FileLog.thead.length; i++) {
-                    const element = _FileLog[i];
-                    let head = document.getElementById("fileLog");
-                    if (i == 0) {
-                        let temp = document.createElement("div");
-                        temp.className = "center-screen"
-                        let tempDoc = head.appendChild(temp);
-
-                        let table = document.createElement("table");
-                        table.className = "table table-bordered table-lg bg-light";
-                        let tableDoc = tempDoc.appendChild(table);
-
-                        let tHead = document.createElement("thead");
-                        tHeadDoc = tableDoc.appendChild(tHead);
-
-                    }
-                    //get tab
-                    let tr = document.createElement("tr");
-                    let trDoc = tHeadDoc.appendChild(tr);
-                    let th = document.createElement("th");
-                    th.style = element
-
-
-                }
-
-                console.log("Hello");
-            },
-            fail: (error) => {
-
-                console.log("error!!!");
-            }
-
-        });
-
-
-    $.ajax(
-
-        {
-            type: 'get',
-            dataType: 'html',
             url: '/',
             data: {
             },
             //Use only for send
             success: function (data) {
 
-                var link = document.getElementById('home');
+
                 let tBodyDoc = null;
+
                 //Type object of <Key, object>
                 for (let i = 0; i < _Home.length; i++) {
                     const element = _Home[i];
@@ -157,13 +88,13 @@ $(document).ready(function () {
                     let tdDoc = trDoc.appendChild(td);
                     let a = document.createElement("a");
                     a.href = element.href;
-                    //do something if clicked remove state of screen
+                    //do something if clicked remove state of screen ... or not cuz they might refresh
+                    //look at the href if
                     a.innerHTML = element.name;
 
                     tdDoc.appendChild(a);
 
                 }
-
 
             },
             fail: (error) => {
@@ -172,7 +103,54 @@ $(document).ready(function () {
             }
 
         });
+    /*
+$.ajax(
 
+    {
+        type: 'get',
+        dataType: 'html',
+        url: '/fileLog',
+        data: {
+        },
+        //Use only for send
+        success: function (data) {
+            let tHeadDoc = null;
+            //Type object of <Key, object>
+            for (let i = 0; i < _FileLog.thead.length; i++) {
+                const element = _FileLog[i];
+                let head = document.getElementById("fileLog");
+                if (i == 0) {
+                    let temp = document.createElement("div");
+                    temp.className = "center-screen"
+                    let tempDoc = head.appendChild(temp);
+
+                    let table = document.createElement("table");
+                    table.className = "table table-bordered table-lg bg-light";
+                    let tableDoc = tempDoc.appendChild(table);
+
+                    let tHead = document.createElement("thead");
+                    tHeadDoc = tableDoc.appendChild(tHead);
+
+                }
+                //get tab
+                let tr = document.createElement("tr");
+                let trDoc = tHeadDoc.appendChild(tr);
+                let th = document.createElement("th");
+                th.style = element
+
+
+            }
+
+            console.log("Hello");
+        },
+        fail: (error) => {
+
+            console.log("error!!!");
+        }
+
+    });
+
+*/
 
     // Event listener form example , we can use this instead explicitly listening for events
     // No redirects if possible

@@ -27,7 +27,67 @@
 <body>
 
     <div id="home"></div>
-    <div id="filelog"></div>
+
+
+    <div id="fileLog"></div>
+
+    <div class="center-screen">
+
+        <table class="table table-bordered table-lg bg-light">
+            <thead>
+                <tr>
+
+                    <th style="width: 20%">Image </br>
+                        (click to download)</br></br>
+
+                    </th>
+
+                    <th style="width: 20%;">File name</br>
+                        (click to download)</br></br>
+                    </th>
+                    <th style="width: 10%;">File size</br>
+                        </br></br>
+                    </th>
+                    <th style="width: 10%">Number of rectangles</br></br>
+                    </th>
+                    <th style="width:  10%">Number of circles </br></br></th>
+                    <th style="width:  10%">Number of paths</br></br></th>
+                    <th style="width:  10%">Number of groups</br></br></th>
+
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <th scope=" row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                    <td>@mdo</td>
+                    <td>@mdo</td>
+                    <td>@mdo</td>
+
+                </tr>
+
+
+            </tbody>
+        </table>
+    </div>
+
+    <div class="btn-holder">
+
+        <form ref="upload" id="upload" enctype="multipart/form-data" method="post" action="/upload">
+            Select a file: <input id="file_input" type="file" name="file_input">
+            <input id="file_input" type="file" name="file_input">
+            <br>
+
+            <button id="upload" type='submit' class="btn btn-info">Upload File </button>
+        </form>
+    </div>
+
+
+
+
+
 
 
     <!-- Leave me at the bottom of body -->

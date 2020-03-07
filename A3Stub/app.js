@@ -48,9 +48,9 @@ app.post('/upload', function (req, res) {
     return res.status(400).send('No files were uploaded.');
   }
 
-  let uploadFile = req.files.uploadFile;
-
+  let uploadFile = req.files.file_input;
   // Use the mv() method to place the file somewhere on your server
+
   uploadFile.mv('uploads/' + uploadFile.name, function (err) {
     if (err) {
       return res.status(500).send(err);
@@ -85,6 +85,8 @@ let sharedLibrary = ffi.Library("./parser/bin/libsvgparse.so", {
 
 
 
+let screen = [0, 1, 2, 3, 4, 5];
+
 app.get('/someendpoint', function (req, res) {
   let retStr = req.query.name1 + " " + req.query.name2;
   res.send({
@@ -95,8 +97,10 @@ app.get('/someendpoint', function (req, res) {
 app.get('/filelog', function (req, res) {
   res.sendFile(path.join(__dirname + '/public/index.html'));
 });
+
 app.get('/svgViewPanel', function (req, res) {
   res.sendFile(path.join(__dirname + '/public/index.html'));
+  console.log("hmm");
 });
 
 
