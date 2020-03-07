@@ -606,17 +606,21 @@ SVGimage *createSVGimage(char *fileName)
 }
 
 char *createSVGChar(char *filename,char *schemaFile){
-   SVGimage *doc = createValidSVGimage(filename, schemaFile );
+   SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
    if(doc == NULL){
+
        return NULL;
+
    }
-   bool isValid = validateSVGimage(doc, schemaFile);
+
+   bool isValid = validateSVGimage(doc, "../svg.xsd");
+
    if(isValid == true){
        printf("valid SVG\n");
        return SVGtoJSON(doc);
    }
    else{
-              printf("valid SVG\n");
+              printf("22222valid SVG\n");
 
        return NULL;
    }

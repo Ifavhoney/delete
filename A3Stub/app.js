@@ -47,17 +47,33 @@ app.post('/upload', function (req, res) {
   if (!req.files) {
     return res.status(400).send('No files were uploaded.');
   }
-
+  if (req.files == null) {
+    console.log("null");
+  }
   let uploadFile = req.files.file_input;
+
   // Use the mv() method to place the file somewhere on your server
+  if (uploadFile != null) {
 
-  uploadFile.mv('uploads/' + uploadFile.name, function (err) {
-    if (err) {
-      return res.status(500).send(err);
-    }
 
-    res.redirect('/');
-  });
+    uploadFile.mv('uploads/' + uploadFile.name, function (err) {
+      if (err) {
+        return res.status(500).send(err);
+      }
+      //write in here
+
+
+      res.redirect('/');
+    });
+  }
+
+
+
+  else {
+    console.log("empty file");
+
+  }
+
 });
 
 //Respond to GET requests for files in the uploads/ directory
@@ -67,7 +83,6 @@ app.get('/uploads/:name', function (req, res) {
       res.sendFile(path.join(__dirname + '/uploads/' + req.params.name));
     } else {
       console.log('Error in file downloading route: ' + err);
-      res.send('');
     }
   });
 });
@@ -75,17 +90,13 @@ app.get('/uploads/:name', function (req, res) {
 //******************** Your code goes here ******************** 
 
 
+//Shared library is how you communicate with the backend
+//CreateSVGChar Returns num rects, paths, circles, groups
+let sharedLibrary = ffi.Library("./parser/bin/libsvgparse.so",
+  {
+    "createSVGChar": ["string", ["string", "string"]],
+  });
 
-/*
-//FFI
-let sharedLibrary = ffi.Library("./parser/bin/libsvgparse.so", {
-  "createSVGChar": ["string", ["string", "string"]],
-});
-*/
-
-
-
-let screen = [0, 1, 2, 3, 4, 5];
 
 app.get('/someendpoint', function (req, res) {
   let retStr = req.query.name1 + " " + req.query.name2;
@@ -94,23 +105,14 @@ app.get('/someendpoint', function (req, res) {
   });
 });
 
-app.get('/filelog', function (req, res) {
-  res.sendFile(path.join(__dirname + '/public/index.html'));
-});
-
-app.get('/svgViewPanel', function (req, res) {
-  res.sendFile(path.join(__dirname + '/public/index.html'));
-  console.log("hmm");
-});
-
 
 
 app.get('/getListOfFiles', function (req, res) {
 
+  //gets list of files
   fs.readdir(path.join(__dirname + '/uploads'),
     function (err, items) {
 
-      console.log("in app.js " + items);
       //sends to the client (index.js)
       res.send({
         listFiles: items
@@ -118,6 +120,15 @@ app.get('/getListOfFiles', function (req, res) {
     });
 });
 
+app.get("/getSVGParser", function (req, res) {
+  //From ajax client
+  let value = path.join(__dirname + "/uploads/" + req.query.fileName);
+  console.log(value);
+  let jsonValue = sharedLibrary.createSVGChar(value, "null");
+  //console.log("jsonValue" + jsonValue);
+  //Sends back to ajax client
+  res.send({ jsonData: jsonValue });
+})
 
 
 app.listen(portNum);
