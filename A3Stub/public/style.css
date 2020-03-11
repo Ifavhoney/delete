@@ -25,6 +25,18 @@ thead tr th{
   justify-content: flex-end;
   display: flex;
 }
+#fileLog{
+        background-color:bisque;
+}
+#scroll{
+    height :  1000px;
+    overflow: auto;
+    border-collapse: collapse;
+    background-color: rgb(233, 198, 198);
+    text-align: center;
+}
+
+
 
 .center-screen {
   display: flex;

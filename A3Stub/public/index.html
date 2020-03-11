@@ -29,13 +29,13 @@
     <div id="home"></div>
 
 
-    <div id="fileLog"></div>
+    <div id="fileLog">
 
-    <div class="center-screen">
+        <div id="scroll">
 
-        <table id="fileLogTable" class="table table-bordered table-lg bg-light">
+            <table id="fileLogTable" class="table table-bordered table-lg bg-light">
 
-            <thead>
+
                 <tr>
 
                     <th style="width: 20%">Image </br>
@@ -56,29 +56,84 @@
                     <th style="width:  10%">Number of groups</br></br></th>
 
                 </tr>
-            </thead>
+            </table>
+        </div>
 
-        </table>
     </div>
-
     <div class="btn-holder">
 
         <form ref="upload" id="upload" enctype="multipart/form-data" method="post" action="/upload">
-            Select a file: <input id="file_input" type="file" name="file_input">
-            <br>
+            Select a file: <input id="fileInput" type="file" name="fileInput">
 
+            <br>
             <button id="upload" type='submit' class="btn btn-info">Upload File </button>
         </form>
     </div>
+    </div>
 
+    <div id="fileDropDown" class="dropdown m-5">
+        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            SVG Images
+        </a>
 
+        <div id="panelDropDown" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        </div>
 
+    </div>
 
+    <div class="center-screen">
+        <table style="margin: 0;padding: 0" id="titleDesc" class="table table-bordered table-lg bg-light">
+            <div style="overflow-x:auto;">
+                <thead>
+                    <tr>
+                        <th colspan="2">Handle</th>
+                    </tr>
+                    <tr>
+                        <th style="width: 30%">Title</th>
+                        <th colspan="2">Description</th>
+                    </tr>
 
+                </thead>
+                <tbody>
+                    <td style="width: 30%"">
+                        Title's information
+                    </td>
+                    <td colspan=" 2">
+                        Description information
+                    </td>
+                </tbody>
+            </div>
+        </table>
+
+        <table style="margin: 0;padding: 0" id="fileDropDownData" class="table table-bordered table-lg bg-light">
+            <thead>
+                <th>Component</th>
+                <th style="width:60%">Summary</th>
+                <th>Other attributes</th>
+            </thead>
+            <tbody>
+                <td>
+                    Rectangle
+                </td>
+                <td>
+                    dATA
+                </td>
+                <td>
+                    CAN
+                </td>
+            </tbody>
+
+    </div>
+    </table>
+
+    </div>
 
 
     <!-- Leave me at the bottom of body -->
-    <script src="/index.js"></script>
+    <script src="/index.js">
+
+    </script>
 </body>
 
 </html>

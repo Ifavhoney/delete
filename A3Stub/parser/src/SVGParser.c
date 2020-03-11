@@ -68,6 +68,13 @@ bool setGroupAttribute(SVGimage *image, elementType elemType, int elemIndex, Att
 bool writeSVGAttribute(void *list, elementType elemType, int elemIndex, Attribute *newAttribute);
 //Part3
 char *createSVGChar(char *filename, char *schemaFile);
+char *titleDescToJson(SVGimage *img);
+char *rectViewPanelToJSON(char *filename, char *schemaFile);
+char *circViewPanelToJSON(char *filename, char *schemaFile);
+char *pathViewPanelToJSON(char *filename, char *schemaFile);
+char *groupViewPanelToJSON(char *filename, char *schemaFile);
+
+char *titleDescViewPanelToJSON(char *filename, char *schemaFile);
 
 int hasAttribute(List *otherAttributes)
 {
@@ -616,15 +623,154 @@ char *createSVGChar(char *filename,char *schemaFile){
    bool isValid = validateSVGimage(doc, "../svg.xsd");
 
    if(isValid == true){
-       printf("valid SVG\n");
        return SVGtoJSON(doc);
    }
    else{
-              printf("22222valid SVG\n");
 
        return NULL;
    }
+}
 
+char *titleDescViewPanelToJSON(char *filename, char *schemaFile){
+    printf("here?");
+    //change after;
+  // SVGimage *doc = createValidSVGimage(filename, "svg.xsd" );
+
+SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+      if(doc == NULL){
+
+       return NULL;
+   }
+  //  bool isValid = validateSVGimage(doc, "svg.xsd");
+  bool isValid = validateSVGimage(doc, "../svg.xsd");
+   if(isValid == true){
+      // printf("HI %s\t\n", pathListToJSON(doc ->paths));
+       char *value = titleDescToJson(doc);
+       deleteSVGimage(doc);
+       return value;
+   }
+
+   else{
+       deleteSVGimage(doc);
+
+return NULL;
+   }
+
+
+}
+
+
+char *pathViewPanelToJSON(char *filename, char *schemaFile){
+        //change after;
+
+        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+          if(doc == NULL){
+
+           return NULL;
+       }
+       bool isValid = validateSVGimage(doc, "../svg.xsd");
+       if(isValid == true){
+          // printf("HI %s\t\n", pathListToJSON(doc ->paths));
+           char *value = pathListToJSON(doc -> paths);
+           deleteSVGimage(doc);
+           return value;
+       }
+
+       else{
+           deleteSVGimage(doc);
+
+    return NULL;
+       }
+    
+}
+char *groupViewPanelToJSON(char *filename, char *schemaFile){
+        //change after;
+
+        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+          if(doc == NULL){
+
+           return NULL;
+       }
+       bool isValid = validateSVGimage(doc, "../svg.xsd");
+       if(isValid == true){
+          // printf("HI %s\t\n", pathListToJSON(doc ->paths));
+           char *value = groupListToJSON(doc -> groups);
+           deleteSVGimage(doc);
+
+           return value;
+       }
+
+       else{
+           deleteSVGimage(doc);
+
+    return NULL;
+       }
+    
+}
+char *circViewPanelToJSON(char *filename, char *schemaFile){
+        //change after;
+
+        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+          if(doc == NULL){
+
+           return NULL;
+       }
+       bool isValid = validateSVGimage(doc, "../svg.xsd");
+       if(isValid == true){
+          // printf("HI %s\t\n", pathListToJSON(doc ->paths));
+           char *value = circListToJSON(doc -> circles);
+
+           deleteSVGimage(doc);
+
+           return value;
+       }
+
+       else{
+           deleteSVGimage(doc);
+
+    return NULL;
+       }
+    
+}
+
+char *rectViewPanelToJSON(char *filename, char *schemaFile){
+        //change after;
+
+        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+          if(doc == NULL){
+
+           return NULL;
+       }
+       bool isValid = validateSVGimage(doc, "../svg.xsd");
+       if(isValid == true){
+          // printf("HI %s\t\n", pathListToJSON(doc ->paths));
+           char *value = rectListToJSON(doc ->rectangles);
+           deleteSVGimage(doc);
+
+
+           return value;
+       }
+
+       else{
+           deleteSVGimage(doc);
+    return NULL;
+       }
+    
+}
+
+
+char *titleDescToJson(SVGimage *imge){
+    if (imge == NULL)
+      {
+          char *temp = malloc(10);
+          strcpy(temp, "{}");
+          return temp;
+      }
+
+      char *jsonString = malloc(sizeof(char) + MAXLENGTH);
+    
+      sprintf(jsonString, "{\"title\":\"%s\",\"desc\":\"%s\"}", imge ->title, imge ->description);
+    return jsonString;
 }
 
 //Got this from prof
@@ -699,13 +845,13 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     */
 //Attribute *attribute = createAttribute("width", "2");
 
-
     xmlFreeDoc(doc);
     xmlCleanupParser();
     return list;
 
     //Returns the pointer of type SVGimage containing all data
 }
+
 
 
 char *SVGtoJSON(const SVGimage *imge)
