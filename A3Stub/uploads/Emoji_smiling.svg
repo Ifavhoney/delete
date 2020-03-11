@@ -1,5 +1,22 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" enable-background="new 0 0 64 64">
     <circle cx="32" cy="32" r="30" fill="#ffdd67"/>
+        <circle cx="13.2cm" cy="36" r="8" opacity=".8"/>
+        <circle cx="13.2cm" cy="36" r="8" opacity=".8"/>
+        <circle cx="13.2" cy="36" r="8" opacity=".8"/>
+        <circle cx="13.2" cy="36" r="8" opacity=".8"/>
+        <circle cx="13.2" cy="36" r="8" opacity=".8"/>
+        <circle cx="13.2" cy="36" r="8" opacity=".8"/>
+  <rect x="1cm" y="1cm" width="19cm" height="15cm"
+        fill="none" stroke="blue" stroke-width="1" />  <rect x="1cm" y="1cm" width="19cm" height="15cm"
+        fill="none" stroke="blue" stroke-width="1" />
+        <circle cx="13.2" cy="36" r="8" opacity=".8"/>
+        <circle cx="13.2" cy="36" r="8" opacity=".8"/>
+        <circle cx="13.2" cy="36" r="8" opacity=".8"/>
+        <circle cx="13.2" cy="36" r="8" opacity=".8"/>
+        <circle cx="13.2" cy="36" r="8" opacity=".8"/>
+        <circle cx="13.2" cy="36" r="8" opacity=".8"/>
+        <circle cx="13.2" cy="36" r="8" opacity=".8"/>
+
     <g fill="#ff717f">
         <circle cx="50.8" cy="36" r="8" opacity=".8"/>
         <circle cx="13.2" cy="36" r="8" opacity=".8"/>

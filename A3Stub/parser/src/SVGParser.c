@@ -74,7 +74,8 @@ char *circViewPanelToJSON(char *filename, char *schemaFile);
 char *pathViewPanelToJSON(char *filename, char *schemaFile);
 char *groupViewPanelToJSON(char *filename, char *schemaFile);
 
-char *titleDescViewPanelToJSON(char *filename, char *schemaFile);
+char *descViewPanelToString(char *filename, char *schemaFile);
+char *titleViewPanelToString(char *filename, char *schemaFile);
 
 int hasAttribute(List *otherAttributes)
 {
@@ -631,21 +632,52 @@ char *createSVGChar(char *filename,char *schemaFile){
    }
 }
 
-char *titleDescViewPanelToJSON(char *filename, char *schemaFile){
-    printf("here?");
+char* descViewPanelToString(char *filename, char *schemaFile){
     //change after;
-  // SVGimage *doc = createValidSVGimage(filename, "svg.xsd" );
+// SVGimage *doc = createValidSVGimage(filename, "svg.xsd" );
 
 SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
       if(doc == NULL){
 
        return NULL;
    }
-  //  bool isValid = validateSVGimage(doc, "svg.xsd");
-  bool isValid = validateSVGimage(doc, "../svg.xsd");
+ // bool isValid = validateSVGimage(doc, "svg.xsd");
+    bool isValid = validateSVGimage(doc, "../svg.xsd");
    if(isValid == true){
       // printf("HI %s\t\n", pathListToJSON(doc ->paths));
-       char *value = titleDescToJson(doc);
+       char *value = malloc(strlen(doc -> description) + 1);
+       strcpy(value, doc -> description);
+
+       deleteSVGimage(doc);
+       return value;
+   }
+
+   else{
+       deleteSVGimage(doc);
+
+return NULL;
+   }
+
+
+}
+
+
+char* titleViewPanelToString(char *filename, char *schemaFile){
+    //change after;
+    //SVGimage *doc = createValidSVGimage(filename, "svg.xsd" );
+
+SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+      if(doc == NULL){
+
+       return NULL;
+   }
+ // bool isValid = validateSVGimage(doc, "svg.xsd");
+bool isValid = validateSVGimage(doc, "../svg.xsd");
+   if(isValid == true){
+      // printf("HI %s\t\n", pathListToJSON(doc ->paths));
+       char *value = malloc(strlen(doc -> title) + 1);
+       strcpy(value, doc -> title);
+
        deleteSVGimage(doc);
        return value;
    }

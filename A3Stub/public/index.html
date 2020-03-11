@@ -28,37 +28,37 @@
 
     <div id="home"></div>
 
+    <div id="center-screen">
 
-    <div id="fileLog">
-
-        <div id="scroll">
-
-            <table id="fileLogTable" class="table table-bordered table-lg bg-light">
+        <div id="fileLog">
+            <div id="scroll">
+                <table id="fileLogTable" class="table table-bordered table-lg bg-light">
 
 
-                <tr>
+                    <tr>
 
-                    <th style="width: 20%">Image </br>
-                        (click to download)</br></br>
+                        <th style="width: 20%">Image </br>
+                            (click to download)</br></br>
 
-                    </th>
+                        </th>
 
-                    <th style="width: 20%;">File name</br>
-                        (click to download)</br></br>
-                    </th>
-                    <th style="width: 10%;">File size</br>
-                        </br></br>
-                    </th>
-                    <th style="width: 10%">Number of rectangles</br></br>
-                    </th>
-                    <th style="width:  10%">Number of circles </br></br></th>
-                    <th style="width:  10%">Number of paths</br></br></th>
-                    <th style="width:  10%">Number of groups</br></br></th>
+                        <th style="width: 20%;">File name</br>
+                            (click to download)</br></br>
+                        </th>
+                        <th style="width: 10%;">File size</br>
+                            </br></br>
+                        </th>
+                        <th style="width: 10%">Number of rectangles</br></br>
+                        </th>
+                        <th style="width:  10%">Number of circles </br></br></th>
+                        <th style="width:  10%">Number of paths</br></br></th>
+                        <th style="width:  10%">Number of groups</br></br></th>
 
-                </tr>
-            </table>
+                    </tr>
+                </table>
+            </div>
+
         </div>
-
     </div>
     <div class="btn-holder">
 
@@ -87,7 +87,7 @@
             <div style="overflow-x:auto;">
                 <thead>
                     <tr>
-                        <th colspan="2">Handle</th>
+                    <img id = "imagePanel">
                     </tr>
                     <tr>
                         <th style="width: 30%">Title</th>
@@ -96,24 +96,20 @@
 
                 </thead>
                 <tbody>
-                    <td style="width: 30%"">
+                    <td id="titlePanel" style="width: 30%"">
                         Title's information
                     </td>
-                    <td colspan=" 2">
+                    <td id ="descPanel" colspan=" 2">
                         Description information
                     </td>
                 </tbody>
             </div>
         </table>
 
-        <table style="margin: 0;padding: 0" id="fileDropDownData" class="table table-bordered table-lg bg-light">
-            <thead>
-                <th>Component</th>
-                <th style="width:60%">Summary</th>
-                <th>Other attributes</th>
-            </thead>
-            <tbody>
-                <td>
+        <table id="panelDetails" style="margin: 0;padding: 0" id="fileDropDownData"
+            class="table table-bordered table-lg bg-light">
+            <tbody >
+                <td class="">
                     Rectangle
                 </td>
                 <td>
@@ -122,7 +118,15 @@
                 <td>
                     CAN
                 </td>
+
             </tbody>
+            <thead>
+                <th id="">Component</th>
+                <th style="width:60%">Summary</th>
+                <th>Other attributes</th>
+            </thead>
+
+
 
     </div>
     </table>

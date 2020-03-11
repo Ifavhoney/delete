@@ -125,43 +125,11 @@ let sharedLibrary = ffi.Library("./parser/bin/libsvgparse.so",
     "circViewPanelToJSON": ["string", ["string", "string"]],
     "pathViewPanelToJSON": ["string", ["string", "string"]],
     "groupViewPanelToJSON": ["string", ["string", "string"]],
-    "titleDescViewPanelToJSON": ["string", ["string", "string"]],
+    "titleViewPanelToString": ["string", ["string", "string"]],
+    "descViewPanelToString": ["string", ["string", "string"]],
+
 
   });
-
-app.get("/fileDropDown", function (req, res) {
-  fs.readdir(path.join(__dirname + '/uploads'), (err, files) => {
-    files.forEach(file => {
-      // console.log(file);
-    });
-    res.send({ files: files });
-  });
-
-})
-
-
-app.get("/getViewParser:name", function (req, res) {
-
-  //From ajax client
-  let value = path.join(__dirname + "/uploads/" + req.params.name);
-  //console.log(value);
-
-  //Returns the number for rects, circles, paths, and groups, 
-  let jsonCircValue = sharedLibrary.circViewPanelToJSON(value, "null");
-  let jsonPathValue = sharedLibrary.pathViewPanelToJSON(value, "null");
-  let jsonRectValue = sharedLibrary.rectViewPanelToJSON(value, "null");
-  let jsonGroupValue = sharedLibrary.groupViewPanelToJSON(value, "null");
-
-  //Sends back that information
-
-  res.send({
-    jsonCircValue: jsonCircValue,
-    jsonPathValue: jsonPathValue,
-    jsonRectValue: jsonRectValue,
-    jsonGroupValue: jsonGroupValue,
-  });
-
-})
 
 app.get('/someendpoint', function (req, res) {
   let retStr = req.query.name1 + " " + req.query.name2;
@@ -218,6 +186,55 @@ app.get("/getSVGParser", function (req, res) {
 
     res.send({ jsonData: jsonValue });
   }
+})
+
+
+
+app.get("/fileDropDown", function (req, res) {
+  //Returns the number for rects, circles, paths, and groups, 
+
+  fs.readdir(path.join(__dirname + '/uploads'), (err, files) => {
+    let i = 0;
+    files.forEach(file => {
+
+      let jsonValue = sharedLibrary.createSVGChar(path.join(__dirname + '/uploads/' + file), "null");
+
+      if (jsonValue == null) {
+        files.splice(i, 1);
+
+      }
+      i++;
+    });
+    // console.log()
+    res.send({ files: files });
+  });
+
+})
+
+//gets the data
+app.get("/getViewParser", function (req, res) {
+
+  //From ajax client
+  let value = path.join(__dirname + "/uploads/" + req.query.name);
+  //Returns the number for rects, circles, paths, and groups, 
+  let jsonCircValue = sharedLibrary.circViewPanelToJSON(value, "null");
+  let jsonPathValue = sharedLibrary.pathViewPanelToJSON(value, "null");
+  let jsonRectValue = sharedLibrary.rectViewPanelToJSON(value, "null");
+  let jsonGroupValue = sharedLibrary.groupViewPanelToJSON(value, "null");
+  let jsonTitle = sharedLibrary.titleViewPanelToString(value, "null");
+  let jsonDesc = sharedLibrary.descViewPanelToString(value, "null");
+
+  //Sends back that information
+
+  res.send({
+    jsonCircValue: jsonCircValue,
+    jsonPathValue: jsonPathValue,
+    jsonRectValue: jsonRectValue,
+    jsonGroupValue: jsonGroupValue,
+    jsonTitle: jsonTitle,
+    jsonDesc: jsonDesc,
+  });
+
 })
 
 

@@ -153,6 +153,110 @@ $(document).ready(function () {
 
                 }
 
+                $('.dropdown-item').click(function (e) {
+                    let item = $(this).text();
+                    e.preventDefault();
+
+                    $.ajax({
+                        type: 'get',            //Request type
+                        dataType: 'json',       //Data type - we will use JSON for almost everything 
+                        url: '/getViewParser',   //The server endpoint we are connecting to
+                        data: {
+                            name: item,
+                        },
+                        success: function (data) {
+
+
+                            /*
+                            <rect>
+                        <circle>
+                            <path>
+                                <g>
+*/
+                            let jsonTitle = data.jsonTitle;
+                            let jsonDesc = data.jsonDesc;
+
+                            let jsonRect = JSON.parse(data.jsonRectValue);
+                            let jsonCirc = JSON.parse(data.jsonCircValue);
+                            let jsonPath = JSON.parse(data.jsonPathValue);
+                            let jsonGroup = JSON.parse(data.jsonGroupValue);
+                            let titlePanel = document.getElementById("titlePanel")
+                            titlePanel.innerHTML = jsonTitle;
+                            let descPanel = document.getElementById("descPanel")
+                            descPanel.innerHTML = jsonDesc;
+
+                            let imagePanel = document.getElementById("imagePanel")
+                            imagePanel.src = "../uploads/" + item;
+                            imagePanel.width = "800"
+                            //  imagePanel.height = "800"
+
+
+                            let table = document.getElementById("panelDetails");
+                            //Returns a type nodelist
+
+                            let nodes = table.getElementsByTagName("tbody");
+                            if (nodes.length > 0) {
+                                for (var i = 0, len = nodes.length; i != len; ++i) {
+                                    nodes[0].parentNode.removeChild(nodes[0]);
+                                }
+                            }
+                            console.log(table.getElementsByTagName("tbody"));
+
+                            for (let index = 0; index < jsonRect.length; index++) {
+                                let tBody = document.createElement("tbody");
+                                let table_td1 = document.createElement("td");
+                                table_td1.innerHTML = "Rectangle " + (index + 1);
+                                let table_td2 = document.createElement("td");
+                                let units = jsonRect[index]["units"];
+                                if (units.length == 0) {
+                                    units = "";
+                                }
+                                table_td2.innerHTML = "Upper left corner: " + "x = " + jsonRect[index]["x"] + units + ", "
+                                    + "y = " + jsonRect[index]["y"] + units + "</br>" + "Width: " + jsonRect[index]["w"] + units + ", "
+                                    + "Height: " + jsonRect[index]["h"] + units
+
+                                let table_td3 = document.createElement("td");
+                                table_td3.innerHTML = jsonRect[index]["numAttr"]
+                                let tbody_doc = table.appendChild(tBody);
+                                tbody_doc.appendChild(table_td1);
+                                tbody_doc.appendChild(table_td2);
+                                tbody_doc.appendChild(table_td3);
+                            }
+                            //Circ
+
+                            for (let index = 0; index < jsonCirc.length; index++) {
+                                let tBody = document.createElement("tbody");
+                                let table_td1 = document.createElement("td");
+                                table_td1.innerHTML = "Circle " + (index + 1);
+                                let table_td2 = document.createElement("td");
+                                let units = jsonCirc[index]["units"];
+                                if (units.length < 2) {
+                                    units = "";
+                                }
+                                table_td2.innerHTML = "Centre: " + "x = " + jsonCirc[index]["cx"] + units + ", "
+                                    + "y = " + jsonCirc[index]["cy"] + units + ", " + "radius = " + jsonCirc[index]["r"] + units
+
+                                let table_td3 = document.createElement("td");
+                                table_td3.innerHTML = jsonCirc[index]["numAttr"]
+                                let tbody_doc = table.appendChild(tBody);
+                                tbody_doc.appendChild(table_td1);
+                                tbody_doc.appendChild(table_td2);
+                                tbody_doc.appendChild(table_td3);
+                            }
+
+                            /*
+                                                        console.log(jsonRect);
+                                                        console.log(jsonCirc);
+                                                        console.log(jsonPath);
+                                                        console.log(jsonGroup);
+                            
+                            */
+                        },
+                        fail: function (data) {
+
+                        }
+                    })
+                });
 
             }
         },
@@ -162,23 +266,7 @@ $(document).ready(function () {
     })
 
 
-    $.ajax({
-        type: 'get',            //Request type
-        dataType: 'json',       //Data type - we will use JSON for almost everything 
-        url: '/getViewParser:name',   //The server endpoint we are connecting to
-        data: {
 
-        },
-        success: function (data) {
-            $('.dropdown-item').click(function () {
-                var selText = $(this).text();
-                console.log(selText);
-            });
-        },
-        fail: function (data) {
-
-        }
-    })
 
 
 
