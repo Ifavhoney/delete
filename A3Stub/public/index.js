@@ -244,10 +244,39 @@ $(document).ready(function () {
                                 tbody_doc.appendChild(table_td3);
                             }
 
+
+                            for (let index = 0; index < jsonPath.length; index++) {
+                                let tBody = document.createElement("tbody");
+                                let table_td1 = document.createElement("td");
+                                table_td1.innerHTML = "Path " + (index + 1);
+                                let table_td2 = document.createElement("td");
+                                table_td2.innerHTML = "path data = " + jsonPath[index]["d"];
+                                let table_td3 = document.createElement("td");
+                                table_td3.innerHTML = jsonPath[index]["numAttr"]
+                                let tbody_doc = table.appendChild(tBody);
+                                tbody_doc.appendChild(table_td1);
+                                tbody_doc.appendChild(table_td2);
+                                tbody_doc.appendChild(table_td3);
+                            }
+
+
+                            for (let index = 0; index < jsonGroup.length; index++) {
+                                let tBody = document.createElement("tbody");
+                                let table_td1 = document.createElement("td");
+                                table_td1.innerHTML = "Group " + (index + 1);
+                                let table_td2 = document.createElement("td");
+
+                                table_td2.innerHTML = (jsonGroup[index]["children"]) + (jsonGroup[index]["children"] == 0 ? " child element" : " child elements")
+                                let table_td3 = document.createElement("td");
+                                table_td3.innerHTML = jsonGroup[index]["numAttr"]
+                                let tbody_doc = table.appendChild(tBody);
+                                tbody_doc.appendChild(table_td1);
+                                tbody_doc.appendChild(table_td2);
+                                tbody_doc.appendChild(table_td3);
+                            }
                             /*
                                                         console.log(jsonRect);
                                                         console.log(jsonCirc);
-                                                        console.log(jsonPath);
                                                         console.log(jsonGroup);
                             
                             */
