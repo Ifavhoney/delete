@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>SVG Image Viewer</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="CHANGE ME">
+    <meta name="keywords" content="CHANGE ME">
+    <meta name="author" content="CHANGE ME">
+    <!-- Load jquery, bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js"
+        integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+        integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+        crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+        integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+        crossorigin="anonymous"></script>
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="/style.css">
+    <!-- Custom CSS End -->
+</head>
+
+<body>
+
+    <div id="home"></div>
+
+    <div id="center-screen">
+
+        <div id="fileLog">
+            <div id="scroll">
+                <table id="fileLogTable" class="table table-bordered table-lg bg-light">
+
+
+                    <tr>
+
+                        <th style="width: 20%">Image </br>
+                            (click to download)</br></br>
+
+                        </th>
+
+                        <th style="width: 20%;">File name</br>
+                            (click to download)</br></br>
+                        </th>
+                        <th style="width: 10%;">File size</br>
+                            </br></br>
+                        </th>
+                        <th style="width: 10%">Number of rectangles</br></br>
+                        </th>
+                        <th style="width:  10%">Number of circles </br></br></th>
+                        <th style="width:  10%">Number of paths</br></br></th>
+                        <th style="width:  10%">Number of groups</br></br></th>
+
+                    </tr>
+                </table>
+            </div>
+
+        </div>
+    </div>
+    <div class="btn-holder">
+
+        <form ref="upload" id="upload" enctype="multipart/form-data" method="post" action="/upload">
+            Select a file: <input id="fileInput" type="file" name="fileInput">
+
+            <br>
+            <button id="upload" type='submit' class="btn btn-info">Upload File </button>
+        </form>
+    </div>
+    </div>
+
+  <div style ="background-color:rgb(211, 231, 231)">
+  </br>
+</br>
+  <div id="fileDropDown" class="dropdown m-5">
+        <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
+            aria-haspopup="true" aria-expanded="false">
+            SVG Images
+        </a>
+
+        <div id="panelDropDown" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        </div>
+
+    </div>
+    <div class="center-screen" >
+                    <div id="scroll" style = "background-color:white">
+
+        <table style="margin: 0;padding: 0" id="titleDesc" class="table table-bordered table-lg bg-light">
+            <div>
+                <thead >
+                    <tr>
+                    <img id = "imagePanel">
+                    </tr>
+                    <tr>
+                        <th style="width: 30%">Title</th>
+                        <th colspan="2">Description</th>
+                    </tr>
+
+                </thead>
+                <tbody>
+                    <td id="titlePanel" style="width: 30%"">
+                        Title's information
+                    </td>
+                    <td id ="descPanel" colspan=" 2">
+                        Description information
+                    </td>
+                </tbody>
+            </div>
+        </table>
+
+        <table id="panelDetails" style="margin: 0;padding: 0" id="fileDropDownData"
+            class="table table-bordered table-lg bg-light">
+            <tbody >
+                <td class="">
+                    Select a file!
+                </td>
+                <td>
+                    Select a file!
+                </td>
+                <td>
+                    Select a file!!
+                </td>
+
+            </tbody>
+            <thead>
+                <th id="">Component</th>
+                <th style="width:60%">Summary</th>
+                <th>Other attributes</th>
+            </thead>
+
+
+
+    </div>
+    </table>
+
+    </div>
+      </div>
+
+    
+
+
+              <div class="center-screen" >
+<form ref="editFileNamex" id="editFileName" enctype="multipart/form-data" method="post" action="/editFileName">
+  <div class="row">
+   <div class="col">
+      <input type="text" class="form-control" id ="title" maxlength="64" placeholder="title" name = "title">
+    </div>
+    <div class="col">
+      <input type="text" class="form-control"  id ="description" maxlength="64" placeholder="description" name = "description">
+    </div>
+
+  </div>
+  <div class = "mt-4">
+    <button id="editFileNamex" type='submit' class="btn btn-warning">Edit SVG </button>
+  </div>
+
+</form>
+
+      <div id = "panelEditRect" style = "display: block;" >
+
+<form ref="editRect" id="editRect" enctype="multipart/form-data" method="post" action="/editRect">
+  <div class="row">
+    <div class="col">
+      <input type="text" class="form-control" placeholder="x" name = "x">
+    </div>
+    <div class="col">
+      <input type="text" class="form-control" placeholder="y"  name = "y">
+    </div>
+     <div class="col">
+      <input type="text" class="form-control" placeholder="width" name = "width">
+    </div>
+    <div class="col">
+      <input type="text" class="form-control" placeholder="height" name ="height">
+    </div>
+     <div class="col">
+      <input type="text" class="form-control" placeholder="units" name ="units">
+    </div>
+  </div>
+  <div class = "mt-4">
+    <button id="editRectx" type='submit' class="btn btn-warning">Edit SVG </button>
+  </div>
+
+</form>
+
+</div>
+      <div id = "panelEditCirc">
+
+<form ref="editCirc" id="editCirc" enctype="multipart/form-data" method="post" action="/editCirc">
+  <div class="row">
+    <div class="col">
+      <input type="text" class="form-control" placeholder="cx" name = "cx">
+    </div>
+    <div class="col">
+      <input type="text" class="form-control" placeholder="cy"  name = "cy">
+    </div>
+     <div class="col">
+      <input type="text" class="form-control" placeholder="r" name = "r">
+    </div>
+    <div class="col">
+      <input type="text" class="form-control" placeholder="units" name ="units">
+    </div>
+  </div>
+  <div class = "mt-4">
+    <button id="editCircx" type='submit' class="btn btn-warning">Edit SVG </button>
+
+  </div>
+
+</form>
+</div>
+
+<form ref="editPath" id="editPath" enctype="multipart/form-data" method="post" action="/editPath">
+  <div class="row">
+   <div class="col-6">
+      <input type="text" class="form-control" placeholder="data" name ="data">
+    </div>
+    <div class="col-6">
+      <input type="text" class="form-control" placeholder="otherAttributes" name = "otherAttributes">
+    </div>
+
+  <div class = "mt-4">
+    <button id="editPathx" type='submit' class="btn btn-warning">Edit SVG </button>
+  </div>
+
+</form>
+
+
+
+              </div>
+
+<form ref="editGroup" id="editGroup" enctype="multipart/form-data" method="post" action="/editGroup">
+  <div class="row">
+       <div class="col-12">
+      <input type="text" class="form-control" placeholder="otherAttributes" name ="otherAttributes">
+    </div>
+    
+  </div>
+
+  <div class = "mt-4">
+    <button id="editGroup" type='submit' class="btn btn-warning">Edit SVG </button>
+  </div>
+
+</form>
+
+
+      </div>
+              <div class="center-screen" >
+
+                <form ref="createSVG" id="createSVG" enctype="multipart/form-data" method="post" action="/createSVG">
+  <div class="row">
+       <div class="col-12">
+      <input type="text" class="form-control" placeholder="createSVG" name ="createSVG">
+    </div>
+    
+  </div>
+   <div class = "mt-4">
+    <button id="createSVG" type='submit' class="btn btn-warning">Edit SVG </button>
+  </div>
+
+</form>
+
+                </div>
+
+
+
+          
+
+              </br>
+          <div class="container">
+  <div class="row">
+    <div class="col">
+         <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Add Shape
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item" href="#">Emoji_smiling.svg</a>
+    <a class="dropdown-item" href="#">Emoji_poop.svg</a>
+  </div>
+</div>
+    </div>
+    <div class="col">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+    </div>
+
+    <div class="col">
+       <div class="col">
+      <input type="text" class="form-control" placeholder="Units"  name = "Units">
+    </div>
+     <div class="col">
+      <input type="text" class="form-control" placeholder="otherAttributes" name = "otherAttributes">
+    </div>
+    </div>
+    <div class="col">
+    </div>
+  </div>
+</div>
+    
+            </br>
+                
+
+      
+
+
+    <!-- Leave me at the bottom of body -->
+    <script src="/index.js">
+
+    </script>
+</body>
+
+</html>
