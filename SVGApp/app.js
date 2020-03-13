@@ -146,30 +146,26 @@ app.get("/downloadFile", function (req, res) {
   res.send({ jsonValue });
 });
 
-app.post('/editFileName', function (req, res) {
+app.get('/editFileName', function (req, res) {
 
 
-  let editTitle = req.body.titl;
-  let editDescription = req.body.desc;
+  let editTitle = req.query.fileTitle;
+  let editDescription = req.query.fileDescription;
   let fileName = req.query.fname;
 
-  console.log(editTitle + " " + editDescription);
-  /*
-  // 
-  */
+  console.log(editTitle + " " + fileName);
+
   console.log(fileName);
-  let jsonValue = sharedLibrary.updateTilteDesc(path.join(__dirname + '/uploads/' + "rects.svg"), "editTitle", "editDescription");
+  let jsonValue = sharedLibrary.updateTilteDesc(path.join(__dirname + '/uploads/' + fileName), editTitle, editDescription);
   let message;
   if (jsonValue == true) {
     message = "success";
   }
   else {
     message = "fail"
-    console.log("?????" + message);
 
   }
-  //res.send({ title: editTitle, description: editDescription, message: message });
-
+  res.send({ message: message });
 
 
 })

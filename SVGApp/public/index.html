@@ -87,7 +87,7 @@
     <div class="center-screen" >
                     <div id="scroll" style = "background-color:white">
 
-        <table style="margin: 0;padding: 0" id="titleDesc" class="table table-bordered table-lg bg-light">
+        <table style="margin: 0;padding: 0" id="titleDesc" name ="" class="table table-bordered table-lg bg-light">
             <div>
                 <thead >
                     <tr>
@@ -142,13 +142,13 @@
 
 
               <div class="center-screen" >
-<form ref="editFileNamex" id="editFileName" enctype="multipart/form-data" method="post" action="/editFileName">
+<form ref="editFileNamex" id="editFileName" enctype="multipart/form-data" method="get" action="/editFileName">
   <div class="row">
    <div class="col">
-      <input type="text" class="form-control" id ="title" maxlength="64" placeholder="title" name = "title">
+      <input type="text" class="form-control" id ="title" maxlength="64" placeholder="title" name = "fileTitle">
     </div>
     <div class="col">
-      <input type="text" class="form-control"  id ="description" maxlength="64" placeholder="description" name = "description">
+      <input type="text" class="form-control"  id ="description" maxlength="64" placeholder="description" name = "fileDescription">
     </div>
 
   </div>

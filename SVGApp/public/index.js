@@ -534,22 +534,23 @@ $(document).ready(function () {
                                 let title = document.getElementById("title").value;
                                 let description = document.getElementById("description").value;
 
-
-
-                                console.log(input);
                                 $.ajax({
-                                    type: 'POST',            //Request type
+                                    type: 'GET',            //Request type
                                     dataType: 'json',       //Data type - we will use JSON for almost everything 
                                     url: '/editFileName',   //The server endpoint we are connecting to
                                     data: {
-                                        'fname': text,
-                                        'titl': title,
-                                        'desc': description
+                                        fname: item,
+                                        fileTitle: title,
+                                        fileDescription: description
+
                                     },
                                     success: function (data) {
 
-                                        if (input.length < 1 || description.length < 1) {
+                                        if (title.length < 1 || description.length < 1) {
                                             alert("Too short!")
+                                        }
+                                        else {
+                                            alert("Success!")
                                         }
 
 
@@ -560,6 +561,7 @@ $(document).ready(function () {
                                     }
                                 });
                                 e.preventDefault();
+
 
                             })
 
