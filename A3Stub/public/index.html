@@ -71,7 +71,10 @@
     </div>
     </div>
 
-    <div id="fileDropDown" class="dropdown m-5">
+  <div style ="background-color:rgb(211, 231, 231)">
+  </br>
+</br>
+  <div id="fileDropDown" class="dropdown m-5">
         <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown"
             aria-haspopup="true" aria-expanded="false">
             SVG Images
@@ -81,8 +84,7 @@
         </div>
 
     </div>
-
-    <div class="center-screen" style ="background-color:rgb(211, 231, 231)">
+    <div class="center-screen" >
                     <div id="scroll" style = "background-color:white">
 
         <table style="margin: 0;padding: 0" id="titleDesc" class="table table-bordered table-lg bg-light">
@@ -134,6 +136,174 @@
     </table>
 
     </div>
+      </div>
+
+    
+
+
+              <div class="center-screen" >
+<form ref="editFileNamex" id="editFileName" enctype="multipart/form-data" method="post" action="/editFileName">
+  <div class="row">
+   <div class="col">
+      <input type="text" class="form-control" id ="title" maxlength="64" placeholder="title" name = "title">
+    </div>
+    <div class="col">
+      <input type="text" class="form-control"  id ="description" maxlength="64" placeholder="description" name = "description">
+    </div>
+
+  </div>
+  <div class = "mt-4">
+    <button id="editFileNamex" type='submit' class="btn btn-warning">Edit SVG </button>
+  </div>
+
+</form>
+
+      <div id = "panelEditRect" style = "display: block;" >
+
+<form ref="editRect" id="editRect" enctype="multipart/form-data" method="post" action="/editRect">
+  <div class="row">
+    <div class="col">
+      <input type="text" class="form-control" placeholder="x" name = "x">
+    </div>
+    <div class="col">
+      <input type="text" class="form-control" placeholder="y"  name = "y">
+    </div>
+     <div class="col">
+      <input type="text" class="form-control" placeholder="width" name = "width">
+    </div>
+    <div class="col">
+      <input type="text" class="form-control" placeholder="height" name ="height">
+    </div>
+     <div class="col">
+      <input type="text" class="form-control" placeholder="units" name ="units">
+    </div>
+  </div>
+  <div class = "mt-4">
+    <button id="editRectx" type='submit' class="btn btn-warning">Edit SVG </button>
+  </div>
+
+</form>
+
+</div>
+      <div id = "panelEditCirc">
+
+<form ref="editCirc" id="editCirc" enctype="multipart/form-data" method="post" action="/editCirc">
+  <div class="row">
+    <div class="col">
+      <input type="text" class="form-control" placeholder="cx" name = "cx">
+    </div>
+    <div class="col">
+      <input type="text" class="form-control" placeholder="cy"  name = "cy">
+    </div>
+     <div class="col">
+      <input type="text" class="form-control" placeholder="r" name = "r">
+    </div>
+    <div class="col">
+      <input type="text" class="form-control" placeholder="units" name ="units">
+    </div>
+  </div>
+  <div class = "mt-4">
+    <button id="editCircx" type='submit' class="btn btn-warning">Edit SVG </button>
+
+  </div>
+
+</form>
+</div>
+
+<form ref="editPath" id="editPath" enctype="multipart/form-data" method="post" action="/editPath">
+  <div class="row">
+   <div class="col-6">
+      <input type="text" class="form-control" placeholder="data" name ="data">
+    </div>
+    <div class="col-6">
+      <input type="text" class="form-control" placeholder="otherAttributes" name = "otherAttributes">
+    </div>
+
+  <div class = "mt-4">
+    <button id="editPathx" type='submit' class="btn btn-warning">Edit SVG </button>
+  </div>
+
+</form>
+
+
+
+              </div>
+
+<form ref="editGroup" id="editGroup" enctype="multipart/form-data" method="post" action="/editGroup">
+  <div class="row">
+       <div class="col-12">
+      <input type="text" class="form-control" placeholder="otherAttributes" name ="otherAttributes">
+    </div>
+    
+  </div>
+
+  <div class = "mt-4">
+    <button id="editGroup" type='submit' class="btn btn-warning">Edit SVG </button>
+  </div>
+
+</form>
+
+
+      </div>
+              <div class="center-screen" >
+
+                <form ref="createSVG" id="createSVG" enctype="multipart/form-data" method="post" action="/createSVG">
+  <div class="row">
+       <div class="col-12">
+      <input type="text" class="form-control" placeholder="createSVG" name ="createSVG">
+    </div>
+    
+  </div>
+   <div class = "mt-4">
+    <button id="createSVG" type='submit' class="btn btn-warning">Edit SVG </button>
+  </div>
+
+</form>
+
+                </div>
+
+
+
+          
+
+              </br>
+          <div class="container">
+  <div class="row">
+    <div class="col">
+         <div class="dropdown">
+  <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Add Shape
+  </button>
+  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+    <a class="dropdown-item" href="#">Emoji_smiling.svg</a>
+    <a class="dropdown-item" href="#">Emoji_poop.svg</a>
+  </div>
+</div>
+    </div>
+    <div class="col">
+    </div>
+  </div>
+  <div class="row">
+    <div class="col">
+    </div>
+
+    <div class="col">
+       <div class="col">
+      <input type="text" class="form-control" placeholder="Units"  name = "Units">
+    </div>
+     <div class="col">
+      <input type="text" class="form-control" placeholder="otherAttributes" name = "otherAttributes">
+    </div>
+    </div>
+    <div class="col">
+    </div>
+  </div>
+</div>
+    
+            </br>
+                
+
+      
 
 
     <!-- Leave me at the bottom of body -->

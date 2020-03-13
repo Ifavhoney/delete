@@ -76,7 +76,12 @@ char *groupViewPanelToJSON(char *filename, char *schemaFile);
 
 char *descViewPanelToString(char *filename, char *schemaFile);
 char *titleViewPanelToString(char *filename, char *schemaFile);
-
+char *rectViewPanelAttrToJSON(char *filename, char *schemaFile);
+char *circViewPanelAttrToJSON(char *filename, char *schemaFile);
+char *pathViewPanelAttrToJSON(char *filename, char *schemaFile);
+char *groupViewPanelAttrToJSON(char *filename, char *schemaFile);
+SVGimage* JSONtoSVG(char *fileName, const char* svgString);
+bool updateTilteDesc(char *fileName, char* title, char *description);
 int hasAttribute(List *otherAttributes)
 {
     if (otherAttributes->length == 0)
@@ -631,6 +636,27 @@ char *createSVGChar(char *filename,char *schemaFile){
        return NULL;
    }
 }
+ 
+bool updateTilteDesc(char *fileName, char* title, char *description){
+SVGimage *doc = createValidSVGimage(fileName, "../svg.xsd" );
+   if(doc == NULL){
+
+       return NULL;
+
+   }
+    
+   bool isValid = validateSVGimage(doc, "../svg.xsd");
+    strcpy(doc -> title, title );
+    strcpy(doc -> description, description);
+   if(isValid == true){
+        writeSVGimage(doc, fileName);
+       return true;
+   }
+   else{
+
+       return NULL;
+   }
+}
 
 char* descViewPanelToString(char *filename, char *schemaFile){
     //change after;
@@ -775,8 +801,14 @@ char *rectViewPanelToJSON(char *filename, char *schemaFile){
        }
        bool isValid = validateSVGimage(doc, "../svg.xsd");
        if(isValid == true){
+           
           // printf("HI %s\t\n", pathListToJSON(doc ->paths));
            char *value = rectListToJSON(doc ->rectangles);
+         
+           
+           
+         
+           
            deleteSVGimage(doc);
 
 
@@ -787,6 +819,161 @@ char *rectViewPanelToJSON(char *filename, char *schemaFile){
            deleteSVGimage(doc);
     return NULL;
        }
+    
+}
+
+
+char *circViewPanelAttrToJSON(char *filename, char *schemaFile){
+        //change after;
+
+        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+          if(doc == NULL){
+
+           return NULL;
+       }
+    ListIterator iter = createIterator((List *)doc -> circles);
+       void *elem;
+       char *jsonToPath = malloc(MAXLENGTH * MAXLENGTH + 1);
+       jsonToPath[0] = '\0';
+       int i = 0;
+    strcat(jsonToPath, "{");
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+        Circle *p = (Circle *)elem;
+        char temp[32];
+        if (i > 0 && i <= doc -> circles -> length)
+                        {
+                                  strcat(jsonToPath, ",");
+                              }
+        sprintf(temp, "\"Circle%d\":", i+1);
+        strcat(jsonToPath, temp);
+    
+        char *value = attrListToJSON(p -> otherAttributes);
+        strcat(jsonToPath, value);
+    
+     
+        i++;
+
+       
+    }
+    strcat(jsonToPath, "}");
+    deleteSVGimage(doc);
+    return jsonToPath;
+    
+}
+
+char *groupViewPanelAttrToJSON(char *filename, char *schemaFile){
+        //change after;
+
+        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+          if(doc == NULL){
+
+           return NULL;
+       }
+    ListIterator iter = createIterator((List *)doc -> groups);
+       void *elem;
+       char *jsonToPath = malloc(MAXLENGTH * MAXLENGTH + 1);
+       jsonToPath[0] = '\0';
+       int i = 0;
+    strcat(jsonToPath, "{");
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+        Group *p = (Group *)elem;
+        char temp[32];
+        if (i > 0 && i <= doc -> groups -> length)
+                        {
+                                  strcat(jsonToPath, ",");
+                              }
+        sprintf(temp, "\"Group%d\":", i+1);
+        strcat(jsonToPath, temp);
+    
+        char *value = attrListToJSON(p -> otherAttributes);
+        strcat(jsonToPath, value);
+    
+     
+        i++;
+
+       
+    }
+    strcat(jsonToPath, "}");
+    deleteSVGimage(doc);
+    return jsonToPath;
+    
+}
+char *pathViewPanelAttrToJSON(char *filename, char *schemaFile){
+        //change after;
+
+        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+          if(doc == NULL){
+
+           return NULL;
+       }
+    ListIterator iter = createIterator((List *)doc -> paths);
+       void *elem;
+       char *jsonToPath = malloc(MAXLENGTH * MAXLENGTH + 1);
+       jsonToPath[0] = '\0';
+       int i = 0;
+    strcat(jsonToPath, "{");
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+        Path *p = (Path *)elem;
+        char temp[32];
+        if (i > 0 && i <= doc -> paths -> length)
+                        {
+                                  strcat(jsonToPath, ",");
+                              }
+        sprintf(temp, "\"Path%d\":", i+1);
+        strcat(jsonToPath, temp);
+    
+        char *value = attrListToJSON(p -> otherAttributes);
+        strcat(jsonToPath, value);
+    
+     
+        i++;
+
+       
+    }
+    strcat(jsonToPath, "}");
+    deleteSVGimage(doc);
+    return jsonToPath;
+    
+}
+char *rectViewPanelAttrToJSON(char *filename, char *schemaFile){
+        //change after;
+
+        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+          if(doc == NULL){
+
+           return NULL;
+       }
+    ListIterator iter = createIterator((List *)doc -> rectangles);
+       void *elem;
+       char *jsonToPath = malloc(MAXLENGTH * MAXLENGTH + 1);
+       jsonToPath[0] = '\0';
+       int i = 0;
+    strcat(jsonToPath, "{");
+    while ((elem = nextElement(&iter)) != NULL)
+    {
+        Rectangle *p = (Rectangle *)elem;
+        char temp[32];
+        if (i > 0 && i <= doc -> rectangles -> length)
+                        {
+                                  strcat(jsonToPath, ",");
+                              }
+        sprintf(temp, "\"Rectangle%d\":", i+1);
+        strcat(jsonToPath, temp);
+    
+        char *value = attrListToJSON(p -> otherAttributes);
+        strcat(jsonToPath, value);
+    
+     
+        i++;
+
+       
+    }
+    strcat(jsonToPath, "}");
+    deleteSVGimage(doc);
+    return jsonToPath;
     
 }
 
@@ -884,7 +1071,88 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     //Returns the pointer of type SVGimage containing all data
 }
 
+SVGimage* JSONtoSVG(char *fileName, const char* svgString){
+    
+    if(svgString == NULL){
+        return NULL;
+    }
+    
+    SVGimage *image = initializeObjects();
+    strcpy(image -> description, "");
+    if(strstr("title:", svgString) == 0 && strstr("desc:", svgString) == 0){
+        int i = 10;
+        int index = 0;
+        while (true) {
+            char json = svgString[i];
+            if(json == 34){
+                
+                         break;
+                     }
+            image -> title[index] = json;
+         
+            i++;
+            index++;
+            
 
+        }
+        image -> title[i+1] = '\0';
+
+        while (true) {
+            if(i == strlen(svgString)){
+                break;
+            }
+            char json = svgString[i];
+                       if(json == ':'){
+                           break;
+                       }
+            i++;
+        }
+
+        index = 0;
+        i = i+2;
+     while (true) {
+         char json = svgString[i];
+         if(json == 34){
+                      break;
+                  }
+         image -> description[index] = json;
+
+      
+         i++;
+         index++;
+         
+
+     }
+        if(strstr("title", svgString) != 0){
+            
+        }
+    
+        image -> description[index+1] = '\0';
+        
+        strcpy(image -> namespace, "http://www.w3.org/2000/svg ");
+        printf("%s", image -> namespace);
+        printf("%s\n", image -> title);
+        printf("%s", image -> description);
+        bool valid = validateSVGimage(image, "../svg.xsd");
+        if(valid == true){
+            writeSVGimage(image, fileName);
+        }
+        return image;
+    }
+
+    return NULL;
+    //{"title":"titleVal","descr":"descrVal"}
+
+  // http://  www.w3.org/2000/svg
+}
+
+bool svgDownloadFile(char *fileName, char *svgString){
+    SVGimage *image =  JSONtoSVG(fileName, svgString);
+    if(image == NULL){
+        return false;
+    }
+    return true;
+}
 
 char *SVGtoJSON(const SVGimage *imge)
 {
@@ -894,6 +1162,7 @@ char *SVGtoJSON(const SVGimage *imge)
         strcpy(temp, "{}");
         return temp;
     }
+     
 
     char *jsonString = malloc(sizeof(char) + MAXLENGTH);
     List *getRect = getRects((SVGimage *)imge);
@@ -920,7 +1189,7 @@ char *attrToJSON(const Attribute *a)
         return temp;
     }
     
-    char *jsonString = malloc(strlen(a->value) + strlen(a->name) + MAXLENGTH);
+    char *jsonString = malloc( MAXLENGTH);
     sprintf(jsonString, "{\"name\":\"%s\",\"value\":\"%s\"}", a->name, a->value);
     return jsonString;
 }
@@ -972,6 +1241,7 @@ char* rectToJSON(const Rectangle *r){
     }
     char *jsonString = malloc(sizeof(char) + MAXLENGTH);
     jsonString[0] = '\0';
+    
    /* {"x":1,"y":2,"w":19,"h":15,"numAttr":3,"units":"cm"}
     */
     

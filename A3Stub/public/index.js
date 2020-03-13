@@ -1,6 +1,12 @@
 // Put all onload AJAX calls here, and event listeners
 //Called anytime there's a reload
 
+//Create a file
+
+//Get data from user
+
+//then 
+
 
 $(document).ready(function () {
     //Search the list of files of uploads
@@ -15,6 +21,9 @@ $(document).ready(function () {
     let _Home = [{ name: "File Log Pannel", href: "#fileLog" },
     { name: "SVG View Pannel", href: "#fileDropDown" },
     { name: "Additional functionality", href: "/fileLog" }];
+
+
+    //
 
     // On page-load AJAX Example
     $.ajax({
@@ -58,6 +67,8 @@ $(document).ready(function () {
                     console.log(text);
                 }
                 let tBodyDoc = null;
+
+
 
                 //Type object of <Key, object>
                 for (let i = 0; i < _Home.length; i++) {
@@ -135,6 +146,7 @@ $(document).ready(function () {
     */
 
 
+
     $.ajax({
         type: 'get',            //Request type
         dataType: 'json',       //Data type - we will use JSON for almost everything 
@@ -142,21 +154,30 @@ $(document).ready(function () {
         data: {
         },
         success: function (data) {
+            //Gets the Dropdown to show files, knows through due our call with query 
             let dropDown = document.getElementById("panelDropDown");
             if (data.files != null) {
                 for (let i = 0; i < data.files.length; i++) {
                     let a = document.createElement("a");
                     a.href = "#";
-                    a.className = "dropdown-item";
+                    a.className = "dropdown-item file";
                     a.text = data.files[i];
                     dropDown.appendChild(a);
 
                 }
 
-                $('.dropdown-item').click(function (e) {
-                    let item = $(this).text();
+                let item = " ";
+                $('.file').click(function (e) {
+                    item = $(this).text();
                     e.preventDefault();
 
+                    document.getElementById("editFileName").style.display = "none";
+                    document.getElementById("editRect").style.display = "none";
+                    document.getElementById("editCirc").style.display = "none";
+                    document.getElementById("editPath").style.display = "none";
+
+                    document.getElementById("editGroup").style.display = "none";
+                    //Returns selected item on the dropdown
                     $.ajax({
                         type: 'get',            //Request type
                         dataType: 'json',       //Data type - we will use JSON for almost everything 
@@ -180,14 +201,32 @@ $(document).ready(function () {
                             let jsonCirc = JSON.parse(data.jsonCircValue);
                             let jsonPath = JSON.parse(data.jsonPathValue);
                             let jsonGroup = JSON.parse(data.jsonGroupValue);
+                            let jsonRectAttrValue = JSON.parse(data.jsonRectAttrValue);
+                            let jsonPathAttrValue = JSON.parse(data.jsonPathAttrValue);
+                            let jsonGroupAttrValue = JSON.parse(data.jsonGroupAttrValue);
+                            let jsonCircAttrValue = JSON.parse(data.jsonCircAttrValue);
+
+
                             let titlePanel = document.getElementById("titlePanel")
-                            titlePanel.innerHTML = jsonTitle;
+                            titlePanel.innerHTML = jsonTitle + "</br> ";
                             let descPanel = document.getElementById("descPanel")
-                            descPanel.innerHTML = jsonDesc;
+                            descPanel.innerHTML = jsonDesc + "</br> ";
+
+                            let editTitleDesc = document.createElement("button");
+                            editTitleDesc.id = "showFileName"
+                            editTitleDesc.type = "button";
+                            editTitleDesc.className = "showFileName btn btn-info";
+                            editTitleDesc.innerHTML = "Edit Title/Description";
+                            titlePanel.appendChild(editTitleDesc);
+
+                            descPanel.appendChild(editTitleDesc);
+
 
                             let imagePanel = document.getElementById("imagePanel")
                             imagePanel.src = "../uploads/" + item;
                             imagePanel.width = "800"
+                            imagePanel.height = "800"
+
                             //  imagePanel.height = "800"
 
 
@@ -200,6 +239,8 @@ $(document).ready(function () {
                                     nodes[0].parentNode.removeChild(nodes[0]);
                                 }
                             }
+
+                            //Iterate through to dynamically add to the list
                             console.log(table.getElementsByTagName("tbody"));
 
                             for (let index = 0; index < jsonRect.length; index++) {
@@ -216,13 +257,34 @@ $(document).ready(function () {
                                     + "Height: " + jsonRect[index]["h"] + units
 
                                 let table_td3 = document.createElement("td");
-                                table_td3.innerHTML = jsonRect[index]["numAttr"]
+                                table_td3.innerHTML = jsonRect[index]["numAttr"] + "</br>"
+                                let showButton = document.createElement("button");
+                                showButton.type = "button";
+                                showButton.className = "rectElement btn btn-primary";
+                                showButton.innerHTML = "Show Elements";
+
+
+
                                 let tbody_doc = table.appendChild(tBody);
+
                                 tbody_doc.appendChild(table_td1);
                                 tbody_doc.appendChild(table_td2);
-                                tbody_doc.appendChild(table_td3);
+                                let table_td3_doc = tbody_doc.appendChild(table_td3);
+
+
+                                if (jsonRect[index]["numAttr"] > 0) {
+                                    showButton.id = "Rectangle" + (index + 1);
+                                    table_td3.appendChild(showButton);
+
+                                }
+                                let editButton = document.createElement("button");
+                                editButton.id = "Rectangle" + (index + 1);
+                                editButton.type = "button";
+                                editButton.className = "editRectElement btn btn-warning";
+                                editButton.innerHTML = "Edit Elements";
+                                table_td3.appendChild(editButton);
+
                             }
-                            //Circ
 
                             for (let index = 0; index < jsonCirc.length; index++) {
                                 let tBody = document.createElement("tbody");
@@ -237,12 +299,29 @@ $(document).ready(function () {
                                     + "y = " + jsonCirc[index]["cy"] + units + ", " + "radius = " + jsonCirc[index]["r"] + units
 
                                 let table_td3 = document.createElement("td");
-                                table_td3.innerHTML = jsonCirc[index]["numAttr"]
+                                table_td3.innerHTML = jsonCirc[index]["numAttr"] + "</br>";
+                                let showButton = document.createElement("button");
+                                showButton.type = "button";
+                                showButton.className = "circElement btn btn-primary";
+                                showButton.innerHTML = "Show Elements";
                                 let tbody_doc = table.appendChild(tBody);
                                 tbody_doc.appendChild(table_td1);
                                 tbody_doc.appendChild(table_td2);
                                 tbody_doc.appendChild(table_td3);
+                                if (jsonCirc[index]["numAttr"] > 0) {
+                                    showButton.id = "Circle" + (index + 1);
+                                    table_td3.appendChild(showButton);
+
+                                }
+                                let editButton = document.createElement("button");
+                                editButton.id = "Circle" + (index + 1);
+                                editButton.type = "button";
+                                editButton.className = "editCircElement btn btn-warning";
+                                editButton.innerHTML = "Edit Elements";
+                                table_td3.appendChild(editButton);
+
                             }
+
 
 
                             for (let index = 0; index < jsonPath.length; index++) {
@@ -252,12 +331,33 @@ $(document).ready(function () {
                                 let table_td2 = document.createElement("td");
                                 table_td2.innerHTML = "path data = " + jsonPath[index]["d"];
                                 let table_td3 = document.createElement("td");
-                                table_td3.innerHTML = jsonPath[index]["numAttr"]
+                                table_td3.innerHTML = jsonPath[index]["numAttr"] + "</br>"
                                 let tbody_doc = table.appendChild(tBody);
+                                let showButton = document.createElement("button");
+                                showButton.type = "button";
+                                showButton.className = "pathElement btn btn-primary";
+                                showButton.innerHTML = "Show Elements";
+
                                 tbody_doc.appendChild(table_td1);
                                 tbody_doc.appendChild(table_td2);
                                 tbody_doc.appendChild(table_td3);
+                                if (jsonPath[index]["numAttr"] > 0) {
+                                    showButton.id = "Path" + (index + 1);
+                                    table_td3.appendChild(showButton);
+
+                                }
+                                let editButton = document.createElement("button");
+                                editButton.id = "Path" + (index + 1);
+                                editButton.type = "button";
+                                editButton.className = "editPathElement btn btn-warning";
+                                editButton.innerHTML = "Edit Elements";
+                                table_td3.appendChild(editButton);
+
+
                             }
+
+
+
 
 
                             for (let index = 0; index < jsonGroup.length; index++) {
@@ -268,12 +368,211 @@ $(document).ready(function () {
 
                                 table_td2.innerHTML = (jsonGroup[index]["children"]) + (jsonGroup[index]["children"] == 0 ? " child element" : " child elements")
                                 let table_td3 = document.createElement("td");
-                                table_td3.innerHTML = jsonGroup[index]["numAttr"]
+                                table_td3.innerHTML = jsonGroup[index]["numAttr"] + "</br>"
                                 let tbody_doc = table.appendChild(tBody);
+                                let showButton = document.createElement("button");
+                                showButton.type = "submit";
+                                showButton.className = "groupElement btn btn-primary";
+                                showButton.innerHTML = "Show Elements";
                                 tbody_doc.appendChild(table_td1);
                                 tbody_doc.appendChild(table_td2);
                                 tbody_doc.appendChild(table_td3);
+                                if (jsonGroup[index]["numAttr"] > 0) {
+                                    showButton.id = "Group" + (index + 1);
+                                    table_td3.appendChild(showButton);
+
+                                }
+                                let editButton = document.createElement("button");
+                                editButton.id = "Group" + (index + 1);
+                                editButton.type = "button";
+                                editButton.className = "editGroupElement btn btn-warning";
+                                editButton.innerHTML = "Edit Elements";
+                                table_td3.appendChild(editButton);
+
+
+
+
+
                             }
+
+                            $(".rectElement").click(function (e) {
+
+                                let button = document.getElementById(this.id);
+                                for (let index in jsonRectAttrValue[this.id]) {
+                                    let p = document.createElement("p");
+                                    p.innerHTML = "Name: " + jsonRectAttrValue[this.id][index]["name"] + "</br>" + "Value: " + jsonRectAttrValue[this.id][index]["value"];
+                                    button.appendChild(p);
+                                }
+                                alert("Success!");
+
+                                $(this).attr("disabled", "disabled");
+
+                                e.preventDefault();
+                            });
+
+
+
+                            $(".pathElement").click(function (e) {
+
+                                let button = document.getElementById(this.id);
+
+                                for (let index in jsonPathAttrValue[this.id]) {
+                                    let p = document.createElement("p");
+                                    p.innerHTML = "Name: " + jsonPathAttrValue[this.id][index]["name"] + "</br>" + "Value: " + jsonPathAttrValue[this.id][index]["value"];
+                                    button.appendChild(p);
+                                }
+                                alert("Success!");
+
+                                $(this).attr("disabled", "disabled");
+
+                                e.preventDefault();
+                            });
+
+
+                            $(".circElement").click(function (e) {
+
+                                let button = document.getElementById(this.id);
+                                for (let index in jsonCircAttrValue[this.id]) {
+                                    let p = document.createElement("p");
+                                    p.innerHTML = "Name: " + jsonCircAttrValue[this.id][index]["name"] + "</br>" + "Value: " + jsonCircAttrValue[this.id][index]["value"];
+                                    button.appendChild(p);
+                                }
+                                alert("Success!");
+
+                                $(this).attr("disabled", "disabled");
+
+                                e.preventDefault();
+                            });
+
+
+
+                            $(".groupElement").click(function (e) {
+
+                                let button = document.getElementById(this.id);
+                                for (let index in jsonGroupAttrValue[this.id]) {
+                                    let p = document.createElement("p");
+                                    p.innerHTML = "Name: " + jsonGroupAttrValue[this.id][index]["name"] + "</br>" + "Value: " + jsonGroupAttrValue[this.id][index]["value"];
+                                    button.appendChild(p);
+                                }
+                                alert("Success!");
+
+                                $(this).attr("disabled", "disabled");
+
+                                e.preventDefault();
+                            });
+
+
+                            $(".editGroupElement").click(function (e) {
+
+                                console.log(this.id);
+
+                                e.preventDefault();
+                            });
+
+                            $("#showFileName").click(function (e) {
+                                let showFile = document.getElementById("editFileName");
+                                if (showFile.style.display == "block") {
+                                    document.getElementById("editFileName").style.display = "none";
+
+                                }
+                                else {
+                                    document.getElementById("editFileName").style.display = "block";
+                                }
+
+                            });
+                            $(".editRectElement").click(function (e) {
+                                let showFile = document.getElementById("editRect");
+                                if (showFile.style.display == "none") {
+                                    document.getElementById("editRect").style.display = "block";
+                                }
+                                else {
+                                    document.getElementById("editRect").style.display = "none";
+                                }
+                            });
+                            //when this is pressed
+                            $(".editCircElement").click(function (e) {
+                                //dynamically add form
+                                let showFile = document.getElementById("editCirc");
+                                if (showFile.style.display == "none") {
+                                    document.getElementById("editCirc").style.display = "block";
+                                }
+                                else {
+                                    document.getElementById("editCirc").style.display = "none";
+                                }
+
+                            });
+
+                            //when this is pressed
+                            $(".editPathElement").click(function (e) {
+                                //dynamically add form
+                                console.log("hi");
+                                let showFile = document.getElementById("editPath");
+                                if (showFile.style.display == "none") {
+                                    document.getElementById("editPath").style.display = "block";
+                                }
+                                else {
+                                    document.getElementById("editPath").style.display = "none";
+                                }
+
+                            });
+                            //when this is pressed
+                            $(".editGroupElement").click(function (e) {
+                                //dynamically add form
+                                console.log("hi");
+                                let showFile = document.getElementById("editGroup");
+                                if (showFile.style.display == "none") {
+                                    document.getElementById("editGroup").style.display = "block";
+                                }
+                                else {
+                                    document.getElementById("editGroup").style.display = "none";
+                                }
+
+                            });
+
+
+                            $("#editFileNamex").on('click', (function (e) {
+                                let title = document.getElementById("title").value;
+                                let description = document.getElementById("description").value;
+
+
+
+                                console.log(input);
+                                $.ajax({
+                                    type: 'POST',            //Request type
+                                    dataType: 'json',       //Data type - we will use JSON for almost everything 
+                                    url: '/editFileName',   //The server endpoint we are connecting to
+                                    data: {
+                                        'fname': text,
+                                        'titl': title,
+                                        'desc': description
+                                    },
+                                    success: function (data) {
+
+                                        if (input.length < 1 || description.length < 1) {
+                                            alert("Too short!")
+                                        }
+
+
+
+                                    },
+                                    fail: function (data) {
+
+                                    }
+                                });
+                                e.preventDefault();
+
+                            })
+
+                            )
+
+
+
+
+
+
+
+
+
                             /*
                                                         console.log(jsonRect);
                                                         console.log(jsonCirc);
@@ -287,13 +586,17 @@ $(document).ready(function () {
                     })
                 });
 
+
+
+                //hide
+                ;
+
             }
         },
         fail: function (data) {
 
         }
     })
-
 
 
 
@@ -384,7 +687,7 @@ $(document).ready(function () {
                             table_tr.appendChild(table_td3);
 
                             let table_td4 = document.createElement("td");
-                            table_td4.innerHTML = snapshot["numRect"];
+                            table_td4.innersTML = snapshot["numRect"];
                             table_tr.appendChild(table_td4);
 
                             let table_td5 = document.createElement("td");

@@ -117,6 +117,8 @@ app.get('/uploads/:name', function (req, res) {
 //Shared library is how you communicate with the backend
 //CreateSVGChar Returns num rects, paths, circles, groups
 
+const bodyParser = require('body-parser');
+app.use(bodyParser.urlencoded({ extended: true }));
 
 let sharedLibrary = ffi.Library("./parser/bin/libsvgparse.so",
   {
@@ -127,9 +129,51 @@ let sharedLibrary = ffi.Library("./parser/bin/libsvgparse.so",
     "groupViewPanelToJSON": ["string", ["string", "string"]],
     "titleViewPanelToString": ["string", ["string", "string"]],
     "descViewPanelToString": ["string", ["string", "string"]],
+    "rectViewPanelAttrToJSON": ["string", ["string", "string"]],
+    "circViewPanelAttrToJSON": ["string", ["string", "string"]],
+    "pathViewPanelAttrToJSON": ["string", ["string", "string"]],
+    "groupViewPanelAttrToJSON": ["string", ["string", "string"]],
+    "updateTilteDesc": ["bool", ["string", "string", "string"]],
 
+
+    "svgDownloadFile": ["bool", ["string", "string"]],
 
   });
+
+app.get("/downloadFile", function (req, res) {
+
+  let jsonValue = sharedLibrary.svgDownloadFile(path.join(__dirname + '/uploads/' + req.query.title), req.query.json);
+  res.send({ jsonValue });
+});
+
+app.post('/editFileName', function (req, res) {
+
+
+  let editTitle = req.body.titl;
+  let editDescription = req.body.desc;
+  let fileName = req.query.fname;
+
+  console.log(editTitle + " " + editDescription);
+  /*
+  // 
+  */
+  console.log(fileName);
+  let jsonValue = sharedLibrary.updateTilteDesc(path.join(__dirname + '/uploads/' + "rects.svg"), "editTitle", "editDescription");
+  let message;
+  if (jsonValue == true) {
+    message = "success";
+  }
+  else {
+    message = "fail"
+    console.log("?????" + message);
+
+  }
+  //res.send({ title: editTitle, description: editDescription, message: message });
+
+
+
+})
+
 
 app.get('/someendpoint', function (req, res) {
   let retStr = req.query.name1 + " " + req.query.name2;
@@ -220,6 +264,10 @@ app.get("/getViewParser", function (req, res) {
   let jsonCircValue = sharedLibrary.circViewPanelToJSON(value, "null");
   let jsonPathValue = sharedLibrary.pathViewPanelToJSON(value, "null");
   let jsonRectValue = sharedLibrary.rectViewPanelToJSON(value, "null");
+  let jsonRectAttrValue = sharedLibrary.rectViewPanelAttrToJSON(value, "null");
+  let jsonCircAttrValue = sharedLibrary.circViewPanelAttrToJSON(value, "null");
+  let jsonPathAttrValue = sharedLibrary.pathViewPanelAttrToJSON(value, "null");
+  let jsonGroupAttrValue = sharedLibrary.groupViewPanelAttrToJSON(value, "null");
   let jsonGroupValue = sharedLibrary.groupViewPanelToJSON(value, "null");
   let jsonTitle = sharedLibrary.titleViewPanelToString(value, "null");
   let jsonDesc = sharedLibrary.descViewPanelToString(value, "null");
@@ -233,6 +281,11 @@ app.get("/getViewParser", function (req, res) {
     jsonGroupValue: jsonGroupValue,
     jsonTitle: jsonTitle,
     jsonDesc: jsonDesc,
+    jsonRectAttrValue: jsonRectAttrValue,
+    jsonCircAttrValue: jsonCircAttrValue,
+    jsonGroupAttrValue: jsonGroupAttrValue,
+    jsonPathAttrValue: jsonPathAttrValue
+
   });
 
 })

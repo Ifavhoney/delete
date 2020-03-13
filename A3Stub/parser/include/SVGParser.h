@@ -373,7 +373,6 @@ char* SVGtoJSON(const SVGimage* imge);
 *@return A newly allocated and initialized SVGimage struct
 *@param str - a pointer to a string
 **/
-SVGimage* JSONtoSVG(const char* svgString);
 
 /** Function to converting a JSON string into a Rectangle struct
 *@pre JSON string is not NULL
