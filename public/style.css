@@ -1,0 +1,81 @@
+html {
+    height: 100%;
+    min-height: 100%;
+    margin: 0 auto;
+    font-size: 16px;
+    background-color: #FFFFFF;
+}
+body {
+    height: 100%;
+    min-height: 100%;
+    line-height: 1.75;
+    background-color:beige;
+}
+
+/*Remove bootstrap restriction with spacing*/
+thead tr th{
+
+  padding-right: 0 !important;
+    padding-bottom: 0 !important;
+  padding-left: 0 !important;
+
+  margin: 0 !important;
+}
+.btn-holder {
+  justify-content: flex-end;
+  display: flex;
+}
+#fileLog{
+        background-color:bisque;
+}
+#scroll{
+    height :  1000px;
+    overflow: auto;
+    border-collapse: collapse;
+    background-color: rgb(233, 198, 198);
+    text-align: center;
+}
+
+
+
+.center-screen {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  min-height: 100vh;
+}
+a:link:hover {
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    transition: all 0.3s ease;
+    text-decoration: underline;
+    cursor: pointer;
+    cursor: hand;
+}
+input[type=submit], button {
+    cursor: pointer;
+    cursor: hand;
+}
+
+
+
+@media only screen  and (min-width : 1224px) {
+    html {
+        font-size: 14px !important;
+        width: 100% !important;
+    }
+}
+@media(max-width: 480px) {
+    html {
+        font-size: 12px !important;
+        width: 80% !important;
+    }
+}
+@media(max-width: 320px) {
+    html {
+        font-size: 12px !important;
+        width: 600% !important;
+    }
+}
