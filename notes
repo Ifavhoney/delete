@@ -1,0 +1,61 @@
+//FILE TABLE
+
+CREATE TABLE IF NOT EXISTS FILE (
+svg_id INT AUTO_INCREMENT,
+file_name VARCHAR(60) NOT NULL,
+file_title VARCHAR(256),
+file_description VARCHAR(256),
+n_rect INT NOT NULL,
+n_circ INT NOT NULL,
+n_path INT NOT NULL,
+n_group INT NOT NULL,
+creation_time DATETIME NOT NULL,
+file_size INT NOT NULL,
+  CONSTRAINT svg_id PRIMARY KEY (svg_id)
+);
+
+ INSERT INTO FILE ( file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time,file_size ) VALUES ('Emoji_poo.svg', 'emoji', 'super big',
+ 0,0,0,0,'2020-01-01 10:10:10', 20);
+
+//IMG_CHANGE
+CREATE TABLE IF NOT EXISTS IMG_CHANGE (
+change_id INT AUTO_INCREMENT,
+change_type VARCHAR(256) NOT NULL,
+change_summary VARCHAR(256) NOT NULL,
+change_time DATETIME NOT NULL,
+svg_id INT NOT NULL,
+  CONSTRAINT change_id PRIMARY KEY (change_id),
+FOREIGN KEY(svg_id) REFERENCES FILE(svg_id) ON DELETE CASCADE
+);
+
+ INSERT INTO IMG_CHANGE ( change_type, change_summary, change_time, svg_id ) VALUES ('Emoji_poo.svg', 'emoji','2020-01-01 10:10:10', 1);
+
+DELETE FROM FILE WHERE svg_id = 1;
+
+//DOWNLOAD
+CREATE TABLE IF NOT EXISTS DOWNLOAD (
+download_id INT AUTO_INCREMENT,
+d_descr VARCHAR(256),
+svg_id INT NOT NULL,
+  CONSTRAINT download_id PRIMARY KEY (download_id),
+FOREIGN KEY(svg_id) REFERENCES FILE(svg_id) ON DELETE CASCADE
+);
+
+ INSERT INTO DOWNLOAD (d_descr ) VALUES ('DESCRIPTIONNNN', 1);
+
+
+
+//Execute seems like a command that uses the query
+
+
+inserting 
+  let insRec = "INSERT INTO student (last_name, first_name, mark) VALUES ('Hugo','Victor','B+'),('Rudin','Walter','A-'),('Stevens','Richard','C')";
+await connection.execute(insRec);
+
+//Read
+const [rows1, fields1] = await connection.execute('SELECT * from `student` ORDER BY `last_name`');
+
+//Deletes all the rows
+await connection.execute("DELETE FROM student");
+
+
