@@ -32,12 +32,12 @@
   min-height: 100vh;
   padding: 20px;">
 
-       <form id = "formLogin" ref="formLogin" enctype="multipart/form-data" method="get" action="/login"  >
+       <form id = "formLogin" ref="formLogin"  method="post" action="/login"  >
       <input type="text"  name="username" placeholder="login" style ="text-align: center; display: inline-block; width:85%">
       <input type="text"  name="password" placeholder="password" style ="text-align: center; display: inline-block; width:85%">
             <input type="text" name="database" placeholder="database" style ="text-align: center; display: inline-block; width:85%">
 
-      <input type="submit" value="Log In" style ="text-align: center; display: inline-block; width:85%">
+      <input id = "postFormLogin" type="submit" value="Log In" style ="text-align: center; display: inline-block; width:85%">
     </form>
   </div>
 

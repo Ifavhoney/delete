@@ -151,40 +151,43 @@ let credentials = {
   database: "jnguessa"
 
 };
-app.get("/login", async function (req, res, next) {
-  let username = req.query.username;
-  let password = req.query.password;
-  let database = req.query.database;
-  let t = null;
+app.post("/login", async function (req, res, next) {
+  let username = req.body.username;
+  let password = req.body.password;
+  let database = req.body.database;
+  let message = null;
 
   if (username != null && password != null & database != null) {
     try {
-      t = await testConnection(username, password, database);
+      message = await testConnection(username, password, database);
       credentials = {
         host: 'dursley.socs.uoguelph.ca',
         user: username,
         password: password,
         database: database
+
       }
+      console.log("test" + message);
+
 
     }
     catch (e) {
-      t = "fail";
-      console.log("There has been an error:" + t);
+      message = "fail";
+      console.log("There has been an error:" + message);
     }
 
   }
+  //res.redirect("/login:" + message);
 
-  res.send({ message: t });
+  res.send(JSON.stringify({ message: message }));
+  console.log("comes here +" + message);
+
 
 })
-
 
 app.get("/storeFiles", async function (req, res, next) {
 
 
-
-  let fileName;
 
   fs.readdir(path.join(__dirname + '/uploads'), async (err, files) => {
     for (let i = 0; i < files.length; i++) {
@@ -192,37 +195,44 @@ app.get("/storeFiles", async function (req, res, next) {
       let connection;
       try {
 
-        connection = await mysql.createConnection(credentials);
 
-        //CLEARS ROWS
-        if (i == 0) {
-          await connection.execute("DELETE FROM FILE");
+        connection = await mysql.createConnection(credentials);
+        const [vRow, vField] = await connection.execute("select TABLE_NAME from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'FILE' ");
+        if (vRow.length != 0) {
+
+
+
+
+          let value = path.join(__dirname + "/uploads/" + files[i]);
+          let jsonTitle = sharedLibrary.titleViewPanelToString(value, "null");
+          let jsonDesc = sharedLibrary.descViewPanelToString(value, "null");
+          let jsonNums = JSON.parse(sharedLibrary.createSVGChar(value, "null"));
+          let size = Math.round((fs.statSync(value).size / 1024));
+
+          /*console.log("size: " + size);
+          console.log("(" + '\'' + files[i] + '\',\'' + jsonTitle + '\',\'' + jsonDesc + '\',' + jsonNums.numRect + ',' + jsonNums.numCirc + ',' + jsonNums.numPaths + ','
+          + jsonNums.numGroups + ");")
+          */
+          let date = new Date();
+          let cur_date = date.toISOString().slice(0, 10);
+          let time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+          let creation_time = cur_date + " " + time;
+
+          //Check for duplicates
+
+          const [rows1, fields1] = await connection.execute("SELECT * FROM FILE where file_name = 't.svg'");
+          let length = 0;
+          for (let row of rows1) {
+            length++;
+          }
+          if (length == 0) {
+            await connection.execute("INSERT INTO FILE(file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size) " +
+              "VALUES" + "(" + '\'' + files[i] + '\',\'' + jsonTitle + '\',\'' + jsonDesc + '\',' + jsonNums.numRect + ',' + jsonNums.numCirc + ',' + jsonNums.numPaths + ','
+              + jsonNums.numGroups + ',\'' + creation_time + '\',' + size + ");");
+          }
 
         }
-
-        let value = path.join(__dirname + "/uploads/" + files[i]);
-        let jsonTitle = sharedLibrary.titleViewPanelToString(value, "null");
-        let jsonDesc = sharedLibrary.descViewPanelToString(value, "null");
-        let jsonNums = JSON.parse(sharedLibrary.createSVGChar(value, "null"));
-        let size = Math.round((fs.statSync(value).size / 1024));
-
-        console.log("size: " + size);
-        console.log("(" + '\'' + files[i] + '\',\'' + jsonTitle + '\',\'' + jsonDesc + '\',' + jsonNums.numRect + ',' + jsonNums.numCirc + ',' + jsonNums.numPaths + ','
-          + jsonNums.numGroups + ");")
-        let date = new Date();
-        let cur_date = date.toISOString().slice(0, 10);
-        console.log(cur_date);
-        let time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
-        console.log(time);
-        let creation_time = cur_date + " " + time;
-        console.log(creation_time);
-
-        await connection.execute("INSERT INTO FILE(file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size) " +
-          "VALUES" + "(" + '\'' + files[i] + '\',\'' + jsonTitle + '\',\'' + jsonDesc + '\',' + jsonNums.numRect + ',' + jsonNums.numCirc + ',' + jsonNums.numPaths + ','
-          + jsonNums.numGroups + ',\'' + creation_time + '\',' + size + ");");
-
       }
-
       catch (e) {
         console.log("Query file error: " + e);
         return false;

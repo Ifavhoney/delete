@@ -8,10 +8,13 @@
 //then 
 
 
+
+
 $(document).ready(function () {
     //Search the list of files of uploads
 
     //Put that file into the c function
+
 
 
     $.ajax(
@@ -43,69 +46,79 @@ $(document).ready(function () {
             success: function (data) {
 
                 let body = document.getElementById("body");
-                body.style.display = "block";
+                body.style.display = "none";
 
-                $.ajax(
-
-                    {
-                        type: 'get',
-                        dataType: 'html',
-                        url: '/login',
-                        data: {
-                        },
-                        //Use only for send
-                        success: function (data) {
-
-                            console.log(data.message);
-
-
-                            if (data.text != null) {
-                                console.log(text);
-                            }
-                            let tBodyDoc = null;
+                let tBodyDoc = null;
 
 
 
-                            //Type object of <Key, object>
-                            for (let i = 0; i < _Home.length; i++) {
-                                const element = _Home[i];
-                                let head = document.getElementById("home");
-                                if (i == 0) {
-                                    let temp = document.createElement("div");
-                                    temp.className = "center-screen"
-                                    let tempDoc = head.appendChild(temp);
+                $('#formLogin').submit(function (e) {
+                    console.log("test");
+                    $.ajax(
 
-                                    let table = document.createElement("table");
-                                    table.className = "table table-striped table-dark";
-                                    let tableDoc = tempDoc.appendChild(table);
+                        {
+                            type: 'post',
+                            dataType: 'json',
+                            url: '/login',
+                            data: {
+                            },
+                            //Use only for send
+                            success: function (data) {
+                                console.log("Gets here")
 
-                                    let tbody = document.createElement("tbody");
-                                    tBodyDoc = tableDoc.appendChild(tbody);
+                                alert(data.message);
+                                console.log(data);
 
+
+                                if (data.text != null) {
+                                    console.log(text);
                                 }
-                                //get tab
-                                let tr = document.createElement("tr");
-                                tr.setAttribute("class", "d-flex justify-content-center p-5");
-                                let trDoc = tBodyDoc.appendChild(tr);
-                                let td = document.createElement("td");
-                                let tdDoc = trDoc.appendChild(td);
-                                let a = document.createElement("a");
-                                a.href = element.href;
-                                //do something if clicked remove state of screen ... or not cuz they might refresh
-                                //look at the href if
-                                a.innerHTML = element.name;
 
-                                tdDoc.appendChild(a);
+                            },
+                            fail: (error) => {
 
+                                console.log("error!!!");
                             }
 
-                        },
-                        fail: (error) => {
+                        });
+                    e.preventDefault();
+                });
 
-                            console.log("error!!!");
-                        }
 
-                    });
+
+                //Type object of <Key, object>
+                for (let i = 0; i < _Home.length; i++) {
+                    const element = _Home[i];
+                    let head = document.getElementById("home");
+                    if (i == 0) {
+                        let temp = document.createElement("div");
+                        temp.className = "center-screen"
+                        let tempDoc = head.appendChild(temp);
+
+                        let table = document.createElement("table");
+                        table.className = "table table-striped table-dark";
+                        let tableDoc = tempDoc.appendChild(table);
+
+                        let tbody = document.createElement("tbody");
+                        tBodyDoc = tableDoc.appendChild(tbody);
+
+                    }
+                    //get tab
+                    let tr = document.createElement("tr");
+                    tr.setAttribute("class", "d-flex justify-content-center p-5");
+                    let trDoc = tBodyDoc.appendChild(tr);
+                    let td = document.createElement("td");
+                    let tdDoc = trDoc.appendChild(td);
+                    let a = document.createElement("a");
+                    a.href = element.href;
+                    //do something if clicked remove state of screen ... or not cuz they might refresh
+                    //look at the href if
+                    a.innerHTML = element.name;
+
+                    tdDoc.appendChild(a);
+
+                }
+
             },
             fail: (error) => {
 
