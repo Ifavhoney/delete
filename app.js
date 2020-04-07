@@ -114,56 +114,6 @@ app.get('/uploads/:name', function (req, res) {
 });
 
 //******************** Your code goes here ******************** 
-
-//Database
-
-
-app.get('/asyncDB', async function (req, res, next) {
-  const mysql = require('mysql2/promise');
-
-  let dbConf =
-  {
-    host: 'dursley.socs.uoguelph.ca', user: 'jnguessa',
-    password: '1079936',
-    database: 'jnguessa'
-  };
-  let createTableFile = "CREATE TABLE IF NOT EXISTS FILE ( svg_id INT AUTO_INCREMENT, file_name VARCHAR(60) NOT NULL, file_title VARCHAR(256),file_description VARCHAR(256), n_rect INT NOT NULL, n_circ INT NOT NULL, n_path INT NOT NULL,      n_group INT NOT NULL,       creation_time DATETIME NOT NULL,       file_size INT NOT NULL,       CONSTRAINT svg_id PRIMARY KEY(svg_id));";
-  let createTableIMG_CHANGE = "CREATE TABLE IF NOT EXISTS IMG_CHANGE ( change_id INT AUTO_INCREMENT,change_type VARCHAR(256) NOT NULL, change_summary VARCHAR(256) NOT NULL, change_time DATETIME NOT NULL,svg_id INT NOT NULL,CONSTRAINT change_id PRIMARY KEY(change_id),      FOREIGN KEY(svg_id) REFERENCES FILE(svg_id) ON DELETE CASCADE);";
-  let createTableDownload = "CREATE TABLE IF NOT EXISTS DOWNLOAD (download_id INT AUTO_INCREMENT, d_descr VARCHAR(256),   svg_id INT NOT NULL,CONSTRAINT download_id PRIMARY KEY(download_id),  FOREIGN KEY(svg_id) REFERENCES FILE(svg_id) ON DELETE CASCADE);"
-  let connection;
-
-  try {
-    connection = await mysql.createConnection(dbConf);
-    await connection.execute(createTableFile);
-    await connection.execute(createTableIMG_CHANGE);
-    await connection.execute(createTableDownload);
-
-
-    //Run select query, wait for results
-    const [rows1, fields1] = await connection.execute("select TABLE_NAME from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'FILE' ");
-
-    /*
-    console.log("\nSorted by last name:");
-    for (let row of rows1) {
-      console.log("ID: " + row.id + " Last name: " + row.last_name + " First name: " + row.first_name + " mark: " + row.mark);
-    }
-*/
-
-  } catch (e) {
-    console.log("Query error: " + e);
-  }
-  finally {
-    connection.end();
-
-  }
-  //Returns rows & fields
-
-
-});
-
-
-
-
 //Shared library is how you communicate with the backend
 //CreateSVGChar Returns num rects, paths, circles, groups
 
@@ -189,6 +139,111 @@ let sharedLibrary = ffi.Library("libsvgparse.so",
     "svgDownloadFile": ["bool", ["string", "string"]],
 
   });
+
+
+const mysql = require('mysql2/promise');
+
+//Database
+let credentials = {
+  host: 'dursley.socs.uoguelph.ca',
+  user: "jnguessa",
+  password: "1079936",
+  database: "jnguessa"
+
+};
+app.get("/login", async function (req, res, next) {
+  let username = req.query.username;
+  let password = req.query.password;
+  let database = req.query.database;
+  let t = null;
+
+  if (username != null && password != null & database != null) {
+    try {
+      t = await testConnection(username, password, database);
+      credentials = {
+        host: 'dursley.socs.uoguelph.ca',
+        user: username,
+        password: password,
+        database: database
+      }
+
+    }
+    catch (e) {
+      t = "fail";
+      console.log("There has been an error:" + t);
+    }
+
+  }
+
+  res.send({ message: t });
+
+})
+
+
+app.get("/storeFiles", async function (req, res, next) {
+
+
+
+  let fileName;
+
+  fs.readdir(path.join(__dirname + '/uploads'), async (err, files) => {
+    for (let i = 0; i < files.length; i++) {
+
+      let connection;
+      try {
+
+        connection = await mysql.createConnection(credentials);
+
+        //CLEARS ROWS
+        if (i == 0) {
+          await connection.execute("DELETE FROM FILE");
+
+        }
+
+        let value = path.join(__dirname + "/uploads/" + files[i]);
+        let jsonTitle = sharedLibrary.titleViewPanelToString(value, "null");
+        let jsonDesc = sharedLibrary.descViewPanelToString(value, "null");
+        let jsonNums = JSON.parse(sharedLibrary.createSVGChar(value, "null"));
+        let size = Math.round((fs.statSync(value).size / 1024));
+
+        console.log("size: " + size);
+        console.log("(" + '\'' + files[i] + '\',\'' + jsonTitle + '\',\'' + jsonDesc + '\',' + jsonNums.numRect + ',' + jsonNums.numCirc + ',' + jsonNums.numPaths + ','
+          + jsonNums.numGroups + ");")
+        let date = new Date();
+        let cur_date = date.toISOString().slice(0, 10);
+        console.log(cur_date);
+        let time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+        console.log(time);
+        let creation_time = cur_date + " " + time;
+        console.log(creation_time);
+
+        await connection.execute("INSERT INTO FILE(file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size) " +
+          "VALUES" + "(" + '\'' + files[i] + '\',\'' + jsonTitle + '\',\'' + jsonDesc + '\',' + jsonNums.numRect + ',' + jsonNums.numCirc + ',' + jsonNums.numPaths + ','
+          + jsonNums.numGroups + ',\'' + creation_time + '\',' + size + ");");
+
+      }
+
+      catch (e) {
+        console.log("Query file error: " + e);
+        return false;
+      }
+      finally {
+        if (connection && connection.end) connection.end();
+      }
+    }
+
+
+  }
+
+
+  );
+
+
+
+
+});
+
+
 
 app.get("/downloadFile", function (req, res) {
 
@@ -335,6 +390,47 @@ app.get("/getViewParser", function (req, res) {
   });
 
 })
+
+
+let testConnection = async function (username, password, database) {
+  // '1079936',
+  let dbConf =
+  {
+    host: 'dursley.socs.uoguelph.ca', user: username,
+    password: password,
+    database: database
+  };
+  let createTableFile = "CREATE TABLE IF NOT EXISTS FILE ( svg_id INT AUTO_INCREMENT, file_name VARCHAR(60) NOT NULL, file_title VARCHAR(256),file_description VARCHAR(256), n_rect INT NOT NULL, n_circ INT NOT NULL, n_path INT NOT NULL,      n_group INT NOT NULL,       creation_time DATETIME NOT NULL,       file_size INT NOT NULL,       CONSTRAINT svg_id PRIMARY KEY(svg_id));";
+  let createTableIMG_CHANGE = "CREATE TABLE IF NOT EXISTS IMG_CHANGE ( change_id INT AUTO_INCREMENT,change_type VARCHAR(256) NOT NULL, change_summary VARCHAR(256) NOT NULL, change_time DATETIME NOT NULL,svg_id INT NOT NULL,CONSTRAINT change_id PRIMARY KEY(change_id),      FOREIGN KEY(svg_id) REFERENCES FILE(svg_id) ON DELETE CASCADE);";
+  let createTableDownload = "CREATE TABLE IF NOT EXISTS DOWNLOAD (download_id INT AUTO_INCREMENT, d_descr VARCHAR(256),   svg_id INT NOT NULL,CONSTRAINT download_id PRIMARY KEY(download_id),  FOREIGN KEY(svg_id) REFERENCES FILE(svg_id) ON DELETE CASCADE);"
+  let connection;
+  let result = "fail";
+  try {
+    connection = await mysql.createConnection(dbConf);
+    await connection.execute(createTableFile);
+    await connection.execute(createTableIMG_CHANGE);
+    await connection.execute(createTableDownload);
+
+
+    //Run select query, wait for results
+    const [rows1, fields1] = await connection.execute("select TABLE_NAME from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'FILE' ");
+
+    /*
+    console.log("\nSorted by last name:");
+    for (let row of rows1) {
+      console.log("ID: " + row.id + " Last name: " + row.last_name + " First name: " + row.first_name + " mark: " + row.mark);
+    }
+  */
+    result = "success";
+  } catch (e) {
+    result = "fail"
+    console.log("Query error: " + e);
+  }
+  finally {
+    connection.end();
+  }
+  return result;
+}
 
 
 app.listen(portNum);

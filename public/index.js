@@ -14,6 +14,108 @@ $(document).ready(function () {
     //Put that file into the c function
 
 
+    $.ajax(
+
+        {
+            type: 'get',
+            dataType: 'html',
+            url: '/storeFiles',
+            data: {
+            },
+            //Use only for send
+            success: function (data) {
+
+            },
+            fail: function (data) {
+
+            }
+        });
+
+    $.ajax(
+
+        {
+            type: 'get',
+            dataType: 'html',
+            url: '/',
+            data: {
+            },
+            //Use only for send
+            success: function (data) {
+
+                let body = document.getElementById("body");
+                body.style.display = "block";
+
+                $.ajax(
+
+                    {
+                        type: 'get',
+                        dataType: 'html',
+                        url: '/login',
+                        data: {
+                        },
+                        //Use only for send
+                        success: function (data) {
+
+                            console.log(data.message);
+
+
+                            if (data.text != null) {
+                                console.log(text);
+                            }
+                            let tBodyDoc = null;
+
+
+
+                            //Type object of <Key, object>
+                            for (let i = 0; i < _Home.length; i++) {
+                                const element = _Home[i];
+                                let head = document.getElementById("home");
+                                if (i == 0) {
+                                    let temp = document.createElement("div");
+                                    temp.className = "center-screen"
+                                    let tempDoc = head.appendChild(temp);
+
+                                    let table = document.createElement("table");
+                                    table.className = "table table-striped table-dark";
+                                    let tableDoc = tempDoc.appendChild(table);
+
+                                    let tbody = document.createElement("tbody");
+                                    tBodyDoc = tableDoc.appendChild(tbody);
+
+                                }
+                                //get tab
+                                let tr = document.createElement("tr");
+                                tr.setAttribute("class", "d-flex justify-content-center p-5");
+                                let trDoc = tBodyDoc.appendChild(tr);
+                                let td = document.createElement("td");
+                                let tdDoc = trDoc.appendChild(td);
+                                let a = document.createElement("a");
+                                a.href = element.href;
+                                //do something if clicked remove state of screen ... or not cuz they might refresh
+                                //look at the href if
+                                a.innerHTML = element.name;
+
+                                tdDoc.appendChild(a);
+
+                            }
+
+                        },
+                        fail: (error) => {
+
+                            console.log("error!!!");
+                        }
+
+                    });
+            },
+            fail: (error) => {
+
+                console.log("error!!!");
+            }
+
+        });
+
+
+
 
 
 
@@ -53,64 +155,6 @@ $(document).ready(function () {
     });
 
 
-    $.ajax(
-
-        {
-            type: 'get',
-            dataType: 'html',
-            url: '/',
-            data: {
-            },
-            //Use only for send
-            success: function (data) {
-                if (data.text != null) {
-                    console.log(text);
-                }
-                let tBodyDoc = null;
-
-
-
-                //Type object of <Key, object>
-                for (let i = 0; i < _Home.length; i++) {
-                    const element = _Home[i];
-                    let head = document.getElementById("home");
-                    if (i == 0) {
-                        let temp = document.createElement("div");
-                        temp.className = "center-screen"
-                        let tempDoc = head.appendChild(temp);
-
-                        let table = document.createElement("table");
-                        table.className = "table table-striped table-dark";
-                        let tableDoc = tempDoc.appendChild(table);
-
-                        let tbody = document.createElement("tbody");
-                        tBodyDoc = tableDoc.appendChild(tbody);
-
-                    }
-                    //get tab
-                    let tr = document.createElement("tr");
-                    tr.setAttribute("class", "d-flex justify-content-center p-5");
-                    let trDoc = tBodyDoc.appendChild(tr);
-                    let td = document.createElement("td");
-                    let tdDoc = trDoc.appendChild(td);
-                    let a = document.createElement("a");
-                    a.href = element.href;
-                    //do something if clicked remove state of screen ... or not cuz they might refresh
-                    //look at the href if
-                    a.innerHTML = element.name;
-
-                    tdDoc.appendChild(a);
-
-                }
-
-            },
-            fail: (error) => {
-
-                console.log("error!!!");
-            }
-
-        });
-
 
 
 
@@ -122,11 +166,11 @@ $(document).ready(function () {
         // e.preventDefault(); //Prevents from refreshing after the submit so i can show the information!
         $('#blah').html("Form has data: " + $('#entryBox').val());
         //Pass data to the Ajax call, so it gets passed to the server
-
+ 
         console.log("??");
-
-
-
+ 
+ 
+ 
         $.ajax({
             type: 'get',
             dataType: 'html',
@@ -135,11 +179,11 @@ $(document).ready(function () {
             },
             success: function (data) {
                 
-
-
+ 
+ 
             },
             fail: function (data) {
-
+ 
             }
         });
     });
