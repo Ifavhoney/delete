@@ -32,7 +32,7 @@
   min-height: 100vh;
   padding: 20px;">
 
-       <form id = "formLogin" ref="formLogin"  method="post" action="/login"  >
+       <form id = "formLogin" ref="formLogin" enctype="multipart/form-data" method="get" action="/login"  >
       <input type="text"  name="username" placeholder="login" style ="text-align: center; display: inline-block; width:85%">
       <input type="text"  name="password" placeholder="password" style ="text-align: center; display: inline-block; width:85%">
             <input type="text" name="database" placeholder="database" style ="text-align: center; display: inline-block; width:85%">
@@ -42,6 +42,8 @@
   </div>
 
 <article id ="body">
+  
+  <a class ="clicked" href="#">HI</a>
 
     <div id="home"></div>
 
@@ -312,7 +314,7 @@
       <input type="text" class="form-control" placeholder="otherAttributes" name = "otherAttributes">
     </div>
     </div>
-    <div class="col">
+    <div id = "s" class="col">
     </div>
   </div>
 </div>
@@ -320,12 +322,11 @@
             </br>
                 
 
-      
-
+  
 
     <!-- Leave me at the bottom of body -->
     <script src="/index.js">
-
+  
     </script>
 </article>
 </body>

@@ -10,10 +10,48 @@
 
 
 
+
+
+$('#formLogin').submit(function (e) {
+
+    $.ajax(
+
+        {
+            type: 'get',
+            dataType: 'json',
+            url: '/login',
+            data: {
+            },
+            //Use only for send
+            success: function (data) {
+                console.log("Gets here")
+
+                alert(data.message);
+                console.log(data);
+
+
+                if (data.text != null) {
+                    console.log(text);
+                }
+
+            },
+            fail: (error) => {
+
+                console.log("error!!!");
+            }
+
+        });
+    // e.preventDefault();
+
+});
+
+
+
 $(document).ready(function () {
     //Search the list of files of uploads
 
     //Put that file into the c function
+
 
 
 
@@ -34,6 +72,8 @@ $(document).ready(function () {
             }
         });
 
+
+
     $.ajax(
 
         {
@@ -46,43 +86,13 @@ $(document).ready(function () {
             success: function (data) {
 
                 let body = document.getElementById("body");
-                body.style.display = "none";
+                body.style.display = "block";
 
                 let tBodyDoc = null;
 
 
 
-                $('#formLogin').submit(function (e) {
-                    console.log("test");
-                    $.ajax(
 
-                        {
-                            type: 'post',
-                            dataType: 'json',
-                            url: '/login',
-                            data: {
-                            },
-                            //Use only for send
-                            success: function (data) {
-                                console.log("Gets here")
-
-                                alert(data.message);
-                                console.log(data);
-
-
-                                if (data.text != null) {
-                                    console.log(text);
-                                }
-
-                            },
-                            fail: (error) => {
-
-                                console.log("error!!!");
-                            }
-
-                        });
-                    e.preventDefault();
-                });
 
 
 
@@ -126,7 +136,6 @@ $(document).ready(function () {
             }
 
         });
-
 
 
 
@@ -728,6 +737,7 @@ $(document).ready(function () {
 
                             let table_td1_href = document.createElement("a");
                             table_td1_href.href = element;
+                            table_td1_href.setAttribute("class", "clicked");
                             table_td1_href.download = element;
 
                             table_img_doc = table_td1_doc.
@@ -736,7 +746,10 @@ $(document).ready(function () {
 
                             let table_td2 = document.createElement("td");
                             let table_td2_href = document.createElement("a");
-                            table_td2_href.href = element;
+                            table_td2_href.setAttribute("class", "clicked");
+
+                            table_td2_href.href = "#";
+
                             table_td2_href.download = element
                             table_td2_href.innerHTML = element;
                             table_td2_doc = table_tr.appendChild(table_td2).appendChild(table_td2_href);
@@ -782,6 +795,11 @@ $(document).ready(function () {
             console.log(error);
         }
     });
+    $(document).on('click', ".clicked", function () {
+        console.log("??");
+        //Your code
+    });
+
 });
 
 

@@ -151,10 +151,12 @@ let credentials = {
   database: "jnguessa"
 
 };
-app.post("/login", async function (req, res, next) {
-  let username = req.body.username;
-  let password = req.body.password;
-  let database = req.body.database;
+app.get("/login", async function (req, res, next) {
+  console.log("again");
+  let username = req.query.username;
+  let password = req.query.password;
+  let database = req.query.database;
+  console.log(username);
   let message = null;
 
   if (username != null && password != null & database != null) {
@@ -177,13 +179,16 @@ app.post("/login", async function (req, res, next) {
     }
 
   }
-  //res.redirect("/login:" + message);
-
-  res.send(JSON.stringify({ message: message }));
-  console.log("comes here +" + message);
-
+  console.log(message);
+  res.redirect("/");
+  // res.redirect("/login:" + message);
+  //res.send(JSON.stringify({ message: message }));
 
 })
+
+//every time the user clicks on the download link
+// for a file using the A3 interface, insert a recordintotheDOWNLOADtable.
+// Makesurethatthenewrecord'ssvg_idcorrectlyreferencestherelevantin the FILE table.
 
 app.get("/storeFiles", async function (req, res, next) {
 
