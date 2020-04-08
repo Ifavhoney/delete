@@ -289,13 +289,15 @@ app.post("/trackDownloads", async function (req, res, next) {
 
 });
 
-app.post("/downloadFile", function (req, res) {
+app.post("/downloadFile", async function (req, res) {
 
 
   let file = req.body.fileName;
   let title = req.body.title;
   let desc = req.body.description;
   file = file.trim();
+  title = title.trim();
+  desc = desc.trim();
   fs.readdir(path.join(__dirname + '/uploads'), async (err, files) => {
     let exists = false;
 
@@ -317,8 +319,10 @@ app.post("/downloadFile", function (req, res) {
       else {
 
 
+        console.log(title.length);
 
-        let jsonValue = sharedLibrary.svgDownloadFile(file + ".svg", json, title == null ? " " : title, desc == null ? " " : desc);
+
+        let jsonValue = sharedLibrary.svgDownloadFile(file + ".svg", json, title.length == 0 ? " " : title, desc.length == 0 ? " " : desc);
         if (jsonValue == true) {
 
           fs.rename(file + ".svg", "uploads/" + file + ".svg", function (err) {
