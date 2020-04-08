@@ -117,6 +117,19 @@ app.get('/uploads/:name', function (req, res) {
 //Shared library is how you communicate with the backend
 //CreateSVGChar Returns num rects, paths, circles, groups
 
+function getTime() {
+  let date = new Date();
+  let cur_date = date.toISOString().slice(0, 10);
+  let time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+  let creation_time = cur_date + " " + time;
+  return creation_time;
+}
+function getSize(file) {
+  let value = path.join(__dirname + "/uploads/" + file);
+  let size = Math.round((fs.statSync(value).size / 1024));
+  return size;
+}
+
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -320,9 +333,14 @@ app.post("/downloadFile", async function (req, res) {
 
 
         console.log(title.length);
+        if (title.length == 0) {
+          title = " ";
+        }
+        if (desc.length == 0) {
+          desc = " ";
+        }
 
-
-        let jsonValue = sharedLibrary.svgDownloadFile(file + ".svg", json, title.length == 0 ? " " : title, desc.length == 0 ? " " : desc);
+        let jsonValue = sharedLibrary.svgDownloadFile(file + ".svg", json, title, desc);
         if (jsonValue == true) {
 
           fs.rename(file + ".svg", "uploads/" + file + ".svg", function (err) {
@@ -331,21 +349,28 @@ app.post("/downloadFile", async function (req, res) {
           });
 
 
-          // let connection;
+          let connection;
           try {
-            // console.log(credentials);
-            /*
+
+
+            /*console.log("size: " + size);
+            console.log("(" + '\'' + files[i] + '\',\'' + jsonTitle + '\',\'' + jsonDesc + '\',' + jsonNums.numRect + ',' + jsonNums.numCirc + ',' + jsonNums.numPaths + ','
+            + jsonNums.numGroups + ");")
+            */
+
+
             connection = await mysql.createConnection(credentials);
             await connection.execute("INSERT INTO FILE(file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size) " +
-              "VALUES" + "(" + '\'' + files[i] + '\',\'' + jsonTitle + '\',\'' + jsonDesc + '\',' + jsonNums.numRect + ',' + jsonNums.numCirc + ',' + jsonNums.numPaths + ','
-              + jsonNums.numGroups + ',\'' + creation_time + '\',' + size + ");");
-              */
+              "VALUES" + "(" + '\'' + file + ".svg" + '\',\'' + title + '\',\'' + desc + '\',' + 0 + ',' + 0 + ',' + 0 + ','
+              + 0 + ',\'' + getTime() + '\',' + getSize(file + ".svg") + ");");
+
+            console.log('successfully added to database');
 
           } catch (e) {
-            //  console.log("Query file error: " + e);
+            console.log("Query file error: " + e);
 
           } finally {
-            //    if (connection && connection.end) connection.end();
+            if (connection && connection.end) connection.end();
 
           }
         }
@@ -408,6 +433,22 @@ app.get('/someendpoint', function (req, res) {
 
 app.get('/getListOfFiles', function (req, res) {
 
+
+  //gets list of files
+  fs.readdir(path.join(__dirname), (err, files) => {
+    //callback function
+    const kb = 1024;
+    let arr = [];
+    files.forEach(file => {
+      if (file == "my.svg") {
+        fs.unlinkSync("my.svg");
+      }
+    });
+
+  }
+
+  );
+
   //gets list of files
   fs.readdir(path.join(__dirname + '/uploads'), (err, files) => {
     //callback function
@@ -445,6 +486,8 @@ app.get("/getSVGParser", function (req, res) {
   if (jsonValue == null) {
     fs.unlinkSync(value)
   }
+
+
 
   //Sends back that information
   else {
