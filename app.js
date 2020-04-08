@@ -225,7 +225,7 @@ app.get("/storeFiles", async function (req, res, next) {
 
           //Check for duplicates
 
-          const [rows1, fields1] = await connection.execute("SELECT * FROM FILE where file_name = 't.svg'");
+          const [rows1, fields1] = await connection.execute("SELECT * FROM FILE where file_name = " + '\'' + files[i] + '\'');
           let length = 0;
           for (let row of rows1) {
             length++;
@@ -258,7 +258,9 @@ app.get("/storeFiles", async function (req, res, next) {
 
 });
 
+app.get("/trackDownloads", async function (req, res, next) {
 
+});
 
 app.get("/downloadFile", function (req, res) {
 

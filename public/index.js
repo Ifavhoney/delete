@@ -11,6 +11,27 @@
 
 
 
+function doSomethingOnClick(obj) {
+    alert(obj.download);
+    console.log(event.srcElement.href);
+
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/trackDownloads:',   //The server endpoint we are connecting to
+        data: {
+        },
+        success: function (data) {
+
+        },
+        fail: function (data) {
+
+        }
+    });
+
+
+}
 
 $('#formLogin').submit(function (e) {
 
@@ -19,7 +40,7 @@ $('#formLogin').submit(function (e) {
         {
             type: 'get',
             dataType: 'json',
-            url: '/login',
+            url: 'application/json',
             data: {
             },
             //Use only for send
@@ -669,10 +690,6 @@ $(document).ready(function () {
 
 
 
-
-
-
-
     $.ajax({
         type: 'get',            //Request type
         dataType: 'json',       //Data type - we will use JSON for almost everything 
@@ -737,8 +754,10 @@ $(document).ready(function () {
 
                             let table_td1_href = document.createElement("a");
                             table_td1_href.href = element;
-                            table_td1_href.setAttribute("class", "clicked");
                             table_td1_href.download = element;
+                            //  table_td1_href.innerHTML = element;
+
+                            table_td1_href.setAttribute("onclick", "doSomethingOnClick(this)");
 
                             table_img_doc = table_td1_doc.
                                 appendChild(table_td1_href).
@@ -746,12 +765,12 @@ $(document).ready(function () {
 
                             let table_td2 = document.createElement("td");
                             let table_td2_href = document.createElement("a");
-                            table_td2_href.setAttribute("class", "clicked");
-
-                            table_td2_href.href = "#";
+                            table_td2_href.href = element;
 
                             table_td2_href.download = element
                             table_td2_href.innerHTML = element;
+                            table_td2_href.setAttribute("onclick", "doSomethingOnClick(this)");
+
                             table_td2_doc = table_tr.appendChild(table_td2).appendChild(table_td2_href);
 
                             let table_td3 = document.createElement("td");
@@ -759,7 +778,7 @@ $(document).ready(function () {
                             table_tr.appendChild(table_td3);
 
                             let table_td4 = document.createElement("td");
-                            table_td4.innersTML = snapshot["numRect"];
+                            table_td4.innerHTML = snapshot["numRect"];
                             table_tr.appendChild(table_td4);
 
                             let table_td5 = document.createElement("td");
@@ -777,7 +796,6 @@ $(document).ready(function () {
 
                             //rects
 
-
                         },
                         fail: function (data) {
                         }
@@ -787,6 +805,8 @@ $(document).ready(function () {
 
 
                 }
+
+
             }
         },
         fail: function (error) {
@@ -795,10 +815,8 @@ $(document).ready(function () {
             console.log(error);
         }
     });
-    $(document).on('click', ".clicked", function () {
-        console.log("??");
-        //Your code
-    });
+
+
 
 });
 
