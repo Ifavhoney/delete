@@ -11,7 +11,7 @@ const app = express();
 const path = require("path");
 const fileUpload = require('express-fileupload');
 app.use(fileUpload());
-app.use(express.static(path.join(__dirname + '/uploads')));
+app.use(express.static(path.join(__dirname + '/uploads'), { dotfiles: 'allow' }));
 
 // Minimization
 const fs = require('fs');
@@ -136,7 +136,7 @@ let sharedLibrary = ffi.Library("libsvgparse.so",
     "updateTilteDesc": ["bool", ["string", "string", "string"]],
 
 
-    "svgDownloadFile": ["bool", ["string", "string"]],
+    "svgDownloadFile": ["bool", ["string", "string", "string", "string"]],
 
   });
 
@@ -293,7 +293,9 @@ app.post("/downloadFile", function (req, res) {
 
 
   let file = req.body.fileName;
-
+  let title = req.body.title;
+  let desc = req.body.description;
+  file = file.trim();
   fs.readdir(path.join(__dirname + '/uploads'), async (err, files) => {
     let exists = false;
 
@@ -308,23 +310,57 @@ app.post("/downloadFile", function (req, res) {
     if (exists == false) {
 
       let json = JSON.stringify({ "title": file, "desc": file });
-      let jsonValue = sharedLibrary.svgDownloadFile(file + ".svg", json);
-      if (jsonValue == true) {
-        console.log("Added file");
+
+      if ((file + ".svg" == ".svg") || file.indexOf(".svg") >= 0) {
+        console.log("not a valid svg");
       }
       else {
-        console.log("File not added");
+
+
+
+        let jsonValue = sharedLibrary.svgDownloadFile(file + ".svg", json, title == null ? " " : title, desc == null ? " " : desc);
+        if (jsonValue == true) {
+
+          fs.rename(file + ".svg", "uploads/" + file + ".svg", function (err) {
+            if (err) throw "unable to add " + file + ".svg" + " due to wrong format"
+            console.log('successly moved file to uploads folder');
+          });
+
+
+          // let connection;
+          try {
+            // console.log(credentials);
+            /*
+            connection = await mysql.createConnection(credentials);
+            await connection.execute("INSERT INTO FILE(file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size) " +
+              "VALUES" + "(" + '\'' + files[i] + '\',\'' + jsonTitle + '\',\'' + jsonDesc + '\',' + jsonNums.numRect + ',' + jsonNums.numCirc + ',' + jsonNums.numPaths + ','
+              + jsonNums.numGroups + ',\'' + creation_time + '\',' + size + ");");
+              */
+
+          } catch (e) {
+            //  console.log("Query file error: " + e);
+
+          } finally {
+            //    if (connection && connection.end) connection.end();
+
+          }
+        }
+
+
+        else {
+          console.log("File not added");
+        }
       }
-      fs.rename(file + ".svg", "uploads/" + file + ".svg", function (err) {
-        if (err) throw "unable to add " + file + ".svg" + "due to wrong format"
-        console.log('success');
-      });
+
+    }
+    else {
+      console.log("File already exists");
     }
   });
 
   /*
-  
-  
+   
+   
   */
   res.redirect("/")
 

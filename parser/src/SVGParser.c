@@ -80,7 +80,7 @@ char *rectViewPanelAttrToJSON(char *filename, char *schemaFile);
 char *circViewPanelAttrToJSON(char *filename, char *schemaFile);
 char *pathViewPanelAttrToJSON(char *filename, char *schemaFile);
 char *groupViewPanelAttrToJSON(char *filename, char *schemaFile);
-SVGimage* JSONtoSVG(char *fileName, const char* svgString);
+SVGimage* JSONtoSVG(char *fileName, const char* svgString, char *title, char *description);
 bool updateTilteDesc(char *fileName, char* title, char *description);
 int hasAttribute(List *otherAttributes)
 {
@@ -1071,7 +1071,7 @@ SVGimage *createValidSVGimage(char *fileName, char *schemaFile)
     //Returns the pointer of type SVGimage containing all data
 }
 
-SVGimage* JSONtoSVG(char *fileName, const char* svgString){
+SVGimage* JSONtoSVG(char *fileName, const char* svgString, char *title, char *description){
     
     if(svgString == NULL){
         return NULL;
@@ -1079,6 +1079,7 @@ SVGimage* JSONtoSVG(char *fileName, const char* svgString){
     
     SVGimage *image = initializeObjects();
     strcpy(image -> description, "");
+    
     if(strstr("title:", svgString) == 0 && strstr("desc:", svgString) == 0){
         int i = 10;
         int index = 0;
@@ -1088,14 +1089,13 @@ SVGimage* JSONtoSVG(char *fileName, const char* svgString){
                 
                          break;
                      }
-            image -> title[index] = json;
+         //   image -> title[index] = json;
          
             i++;
             index++;
             
 
         }
-        image -> title[i+1] = '\0';
 
         while (true) {
             if(i == strlen(svgString)){
@@ -1115,7 +1115,7 @@ SVGimage* JSONtoSVG(char *fileName, const char* svgString){
          if(json == 34){
                       break;
                   }
-         image -> description[index] = json;
+        // image -> description[index] = json;
 
       
          i++;
@@ -1127,9 +1127,10 @@ SVGimage* JSONtoSVG(char *fileName, const char* svgString){
             
         }
     
-        image -> description[index+1] = '\0';
         
         strcpy(image -> namespace, "http://www.w3.org/2000/svg");
+       strcpy(image -> title, title);
+       strcpy(image -> description, description);
        /*
         printf("%s", image -> namespace);
         printf("%s\n", image -> title);
@@ -1148,8 +1149,9 @@ SVGimage* JSONtoSVG(char *fileName, const char* svgString){
   // http://  www.w3.org/2000/svg
 }
 
-bool svgDownloadFile(char *fileName, char *svgString){
-    SVGimage *image =  JSONtoSVG(fileName, svgString);
+bool svgDownloadFile(char *fileName, char *svgString, char *title, char *description){
+    SVGimage *image =  JSONtoSVG(fileName, svgString, title, description);
+
     if(image == NULL){
         return false;
     }
