@@ -164,6 +164,7 @@ let sharedLibrary = ffi.Library("libsvgparse.so",
     "groupViewPanelAttrToJSON": ["string", ["string", "string"]],
     "updateTilteDesc": ["bool", ["string", "string", "string"]],
     "updateCirc": ["bool", ["string", "float", "float", "float", "string", "int"]],
+    "updateRect": ["bool", ["string", "float", "float", "float", "float", "string", "int"]],
 
 
 
@@ -472,8 +473,10 @@ app.get('/editFileName', async function (req, res) {
 
 })
 
-
+//Refresh to see changes
 app.get('/editCirc', async function (req, res) {
+  let fileName = parseFloat(req.query.fileName);
+
   let cy = parseFloat(req.query.cy);
   let cx = parseFloat(req.query.cx);
   let units = req.query.units;
@@ -542,10 +545,12 @@ app.get('/editCirc', async function (req, res) {
 
 })
 app.get('/editRect', async function (req, res) {
-  let x = req.query.x;
-  let y = req.query.y;
-  let width = req.query.width;
-  let height = req.query.height;
+  let fileName = parseFloat(req.query.fileName);
+
+  let x = parseFloat(req.query.x);
+  let y = parseFloat(req.query.y);
+  let width = parseFloat(req.query.width);
+  let height = parseFloat(req.query.height);
   let units = req.query.units;
 
   console.log(x + y + width + height + units);

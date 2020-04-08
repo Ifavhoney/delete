@@ -36,7 +36,8 @@ $("#editCircx").on('click', (function (e) {
     let y = document.getElementById("cy").value;
     let r = document.getElementById("r").value;
     let u = document.getElementById("c_units").value;
-    console.log(u);
+    let fileName = document.getElementById("imagePanel").getAttribute("alt");
+
     $.ajax({
         type: 'get',            //Request type
         dataType: 'json',       //Data type - we will use JSON for almost everything 
@@ -45,8 +46,8 @@ $("#editCircx").on('click', (function (e) {
             cx: x,
             cy: y,
             r: r,
-            units: u
-
+            units: u,
+            fileName: fileName
 
         },
         success: function (data) {
@@ -83,6 +84,7 @@ $("#editRectx").on('click', (function (e) {
     let width = document.getElementById("width").value;
     let height = document.getElementById("height").value;
     let u = document.getElementById("r_units").value;
+    let fileName = document.getElementById("imagePanel").getAttribute("alt");
 
     console.log(x);
     $.ajax({
@@ -94,7 +96,9 @@ $("#editRectx").on('click', (function (e) {
             y: y,
             width: width,
             height: height,
-            units: u
+            units: u,
+            fileName: fileName
+
 
 
         },
@@ -371,6 +375,7 @@ $(document).ready(function () {
                     let a = document.createElement("a");
                     a.href = "#";
                     a.className = "dropdown-item file";
+
                     a.text = data.files[i];
                     dropDown.appendChild(a);
 
@@ -378,6 +383,7 @@ $(document).ready(function () {
 
                 let item = " ";
                 $('.file').click(function (e) {
+
                     item = $(this).text();
                     e.preventDefault();
 
@@ -436,7 +442,7 @@ $(document).ready(function () {
                             imagePanel.src = "../uploads/" + item;
                             imagePanel.width = "800"
                             imagePanel.height = "800"
-
+                            imagePanel.alt = item;
                             //  imagePanel.height = "800"
 
 
