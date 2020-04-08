@@ -129,6 +129,22 @@ function getSize(file) {
   let size = Math.round((fs.statSync(value).size / 1024));
   return size;
 }
+async function getSVG_ID(connection, fileName) {
+  let svg_id = -1;
+  try {
+    //could use limit function too - optimize last
+    const [vRow, vCol] = await connection.execute("select * from FILE where file_name = " + '\'' + fileName + '\'');
+    for (const item of vRow) {
+      svg_id = item["svg_id"];
+      let d_descr = item["file_description"];
+    }
+  } catch (e) {
+    return -1;
+  }
+  return svg_id;
+
+
+}
 
 const bodyParser = require('body-parser');
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -396,20 +412,54 @@ app.post("/downloadFile", async function (req, res) {
   //res.send({ jsonValue });
 });
 
-app.get('/editFileName', function (req, res) {
+app.get('/editFileName', async function (req, res) {
 
 
-  let editTitle = req.query.fileTitle;
-  let editDescription = req.query.fileDescription;
+  let editTitle = req.query.fileTitle.trim();
+  let editDescription = req.query.fileDescription.trim();
   let fileName = req.query.fname;
+  if (editTitle.length == 0) {
+    editTitle = " ";
+  }
+  if (editDescription.length == 0) {
+    editDescription = " ";
+  }
+  // console.log(editTitle + " " + fileName);
 
-  console.log(editTitle + " " + fileName);
-
-  console.log(fileName);
+  //console.log(fileName);
   let jsonValue = sharedLibrary.updateTilteDesc(path.join(__dirname + '/uploads/' + fileName), editTitle, editDescription);
   let message;
+
+
   if (jsonValue == true) {
     message = "success";
+    let connection;
+
+    try {
+
+      // INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) VALUES('Emoji_poo.svg', 'emoji', '2020-01-01 10:10:10', 1);
+
+
+      console.log(credentials);
+      connection = await mysql.createConnection(credentials);
+      const svg_id = await getSVG_ID(connection, fileName)
+
+
+      await connection.execute("INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) " +
+        "VALUES" + "(" + '\'' + "Add/Edit" + '\',\'' + "Add/Edit Title&Description" + '\',\'' + getTime() + '\',' + svg_id + ");");
+
+      console.log('successfully added to database');
+
+
+
+    } catch (e) {
+      console.log("Query file error: " + e);
+
+    } finally {
+      if (connection && connection.end) connection.end();
+
+    }
+
   }
   else {
     message = "fail"

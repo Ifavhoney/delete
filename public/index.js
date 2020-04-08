@@ -44,13 +44,13 @@ $('#createSVG').submit(function (e) {
             },
             //Use only for send
             success: function (data) {
-                console.log("Gets here")
+                //   console.log("Gets here")
 
 
             },
             fail: (error) => {
 
-                console.log("error!!!");
+                //    console.log("error!!!");
             }
 
         });
