@@ -37,6 +37,10 @@ $("#editCircx").on('click', (function (e) {
     let r = document.getElementById("r").value;
     let u = document.getElementById("c_units").value;
     let fileName = document.getElementById("imagePanel").getAttribute("alt");
+    let className = document.getElementById("imagePanel").className;
+    //regex -1 for index
+    let index = (className.match(/\d+/g)[0]) - 1;
+
 
     $.ajax({
         type: 'get',            //Request type
@@ -47,7 +51,8 @@ $("#editCircx").on('click', (function (e) {
             cy: y,
             r: r,
             units: u,
-            fileName: fileName
+            fileName: fileName,
+            index: index
 
         },
         success: function (data) {
@@ -81,12 +86,16 @@ $("#editCircx").on('click', (function (e) {
 $("#editRectx").on('click', (function (e) {
     let x = document.getElementById("x").value;
     let y = document.getElementById("y").value;
+
     let width = document.getElementById("width").value;
     let height = document.getElementById("height").value;
+
     let u = document.getElementById("r_units").value;
     let fileName = document.getElementById("imagePanel").getAttribute("alt");
+    let className = document.getElementById("imagePanel").className;
+    //regex -1 for index
+    let index = (className.match(/\d+/g)[0]) - 1;
 
-    console.log(x);
     $.ajax({
         type: 'get',            //Request type
         dataType: 'json',       //Data type - we will use JSON for almost everything 
@@ -97,7 +106,8 @@ $("#editRectx").on('click', (function (e) {
             width: width,
             height: height,
             units: u,
-            fileName: fileName
+            fileName: fileName,
+            index: index
 
 
 
@@ -534,6 +544,7 @@ $(document).ready(function () {
                                 editButton.type = "button";
                                 editButton.className = "editCircElement btn btn-warning";
                                 editButton.innerHTML = "Edit Elements";
+
                                 table_td3.appendChild(editButton);
 
                             }
@@ -653,6 +664,7 @@ $(document).ready(function () {
                                     p.innerHTML = "Name: " + jsonCircAttrValue[this.id][index]["name"] + "</br>" + "Value: " + jsonCircAttrValue[this.id][index]["value"];
                                     button.appendChild(p);
                                 }
+
                                 alert("Success!");
 
                                 $(this).attr("disabled", "disabled");
@@ -697,6 +709,9 @@ $(document).ready(function () {
 
                             });
                             $(".editRectElement").click(function (e) {
+                                let select = document.getElementById("imagePanel");
+                                select.className = this.id;
+
                                 let showFile = document.getElementById("editRect");
                                 if (showFile.style.display == "none") {
                                     document.getElementById("editRect").style.display = "block";
@@ -707,6 +722,9 @@ $(document).ready(function () {
                             });
                             //when this is pressed
                             $(".editCircElement").click(function (e) {
+                                let select = document.getElementById("imagePanel");
+                                select.className = this.id;
+
                                 //dynamically show form
                                 let showFile = document.getElementById("editCirc");
                                 if (showFile.style.display == "none") {

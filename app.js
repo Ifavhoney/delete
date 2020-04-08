@@ -481,10 +481,10 @@ app.get('/editCirc', async function (req, res) {
   let cx = parseFloat(req.query.cx);
   let units = req.query.units;
   let r = parseFloat(req.query.r);
+  let index = req.query.index;
   //bool updateCirc(char *fileName, float cx, float cy, float r, char *units, int index);
 
-  console.log(cy + "\n" + cx + "\n" + "\n" + units + "\n" + r);
-  let jsonValue = sharedLibrary.updateCirc(path.join(__dirname + '/uploads/' + "Emoji_smiling.svg"), 0, 0, 0, "cm", 1);
+  let jsonValue = sharedLibrary.updateCirc(path.join(__dirname + '/uploads/' + fileName), 0, 0, 0, "cm", 1);
   //res.send({ message: "hi" });
   //console.log(cy);
   //res.redirect("/");
@@ -545,6 +545,7 @@ app.get('/editCirc', async function (req, res) {
 
 })
 app.get('/editRect', async function (req, res) {
+  /*
   let fileName = parseFloat(req.query.fileName);
 
   let x = parseFloat(req.query.x);
@@ -554,6 +555,7 @@ app.get('/editRect', async function (req, res) {
   let units = req.query.units;
 
   console.log(x + y + width + height + units);
+  */
 })
 app.get('/someendpoint', function (req, res) {
   let retStr = req.query.name1 + " " + req.query.name2;
