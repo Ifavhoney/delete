@@ -291,10 +291,12 @@ app.post("/trackDownloads", async function (req, res, next) {
 
 app.post("/downloadFile", function (req, res) {
 
-  console.log(req.body.fileName);
   let test = "{\"title\":\"title\",\"desc\":\"desc\"}";
-  let jsonValue = sharedLibrary.svgDownloadFile(req.body.fileName + ".svg", test);
-  res.send({ jsonValue });
+  let json = JSON.stringify({ "title": req.body.fileName, "desc": req.body.fileName });
+  sharedLibrary.svgDownloadFile(req.body.fileName + ".svg", json);
+  //res.sendFile(path.join(__dirname + '/uploads/' + req.body.fileName));
+
+  //res.send({ jsonValue });
 });
 
 app.get('/editFileName', function (req, res) {
