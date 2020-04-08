@@ -35,8 +35,8 @@ $("#editCircx").on('click', (function (e) {
     let x = document.getElementById("cx").value;
     let y = document.getElementById("cy").value;
     let r = document.getElementById("r").value;
-    let u = document.getElementById("units").value;
-    console.log(x);
+    let u = document.getElementById("c_units").value;
+    console.log(u);
     $.ajax({
         type: 'get',            //Request type
         dataType: 'json',       //Data type - we will use JSON for almost everything 
@@ -82,13 +82,13 @@ $("#editRectx").on('click', (function (e) {
     let y = document.getElementById("y").value;
     let width = document.getElementById("width").value;
     let height = document.getElementById("height").value;
-    let u = document.getElementById("units").value;
+    let u = document.getElementById("r_units").value;
 
     console.log(x);
     $.ajax({
         type: 'get',            //Request type
         dataType: 'json',       //Data type - we will use JSON for almost everything 
-        url: '/editRectx',   //The server endpoint we are connecting to
+        url: '/editRect',   //The server endpoint we are connecting to
         data: {
             x: x,
             y: y,

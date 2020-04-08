@@ -163,6 +163,8 @@ let sharedLibrary = ffi.Library("libsvgparse.so",
     "pathViewPanelAttrToJSON": ["string", ["string", "string"]],
     "groupViewPanelAttrToJSON": ["string", ["string", "string"]],
     "updateTilteDesc": ["bool", ["string", "string", "string"]],
+    "updateCirc": ["bool", ["string", "float", "float", "float", "string", "int"]],
+
 
 
     "svgDownloadFile": ["bool", ["string", "string", "string", "string"]],
@@ -472,12 +474,14 @@ app.get('/editFileName', async function (req, res) {
 
 
 app.get('/editCirc', async function (req, res) {
-  let cy = req.query.cy;
-  let cx = req.query.cx;
+  let cy = parseFloat(req.query.cy);
+  let cx = parseFloat(req.query.cx);
   let units = req.query.units;
-  let r = req.query.r;
+  let r = parseFloat(req.query.r);
+  //bool updateCirc(char *fileName, float cx, float cy, float r, char *units, int index);
 
-  console.log(cy + cx + units + r);
+  console.log(cy + "\n" + cx + "\n" + "\n" + units + "\n" + r);
+  let jsonValue = sharedLibrary.updateCirc(path.join(__dirname + '/uploads/' + "Emoji_smiling.svg"), 0, 0, 0, "cm", 1);
   //res.send({ message: "hi" });
   //console.log(cy);
   //res.redirect("/");
@@ -537,7 +541,15 @@ app.get('/editCirc', async function (req, res) {
 
 
 })
+app.get('/editRect', async function (req, res) {
+  let x = req.query.x;
+  let y = req.query.y;
+  let width = req.query.width;
+  let height = req.query.height;
+  let units = req.query.units;
 
+  console.log(x + y + width + height + units);
+})
 app.get('/someendpoint', function (req, res) {
   let retStr = req.query.name1 + " " + req.query.name2;
   res.send({

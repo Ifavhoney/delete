@@ -82,6 +82,8 @@ char *pathViewPanelAttrToJSON(char *filename, char *schemaFile);
 char *groupViewPanelAttrToJSON(char *filename, char *schemaFile);
 SVGimage* JSONtoSVG(char *fileName, const char* svgString, char *title, char *description);
 bool updateTilteDesc(char *fileName, char* title, char *description);
+bool updateCirc(char *fileName, float cx, float cy, float r, char *units, int index);
+bool updateRect(char *fileName, float x, float y, float width, float height, char *units, int index);
 int hasAttribute(List *otherAttributes)
 {
     if (otherAttributes->length == 0)
@@ -655,6 +657,88 @@ SVGimage *doc = createValidSVGimage(fileName, "../svg.xsd" );
    else{
 
        return NULL;
+   }
+}
+
+bool updateCirc(char *fileName, float cx, float cy, float r, char *units, int index){
+
+SVGimage *doc = createValidSVGimage(fileName, "../svg.xsd" );
+       if(doc == NULL || index >= doc -> circles -> length){
+        return false;
+    }
+   ListIterator iter = createIterator(doc->circles);
+         void *elem;
+         int i = 0;
+         while ((elem = nextElement(&iter)) != NULL)
+         {
+
+             Circle *c = (Circle *)elem;
+             if(i == index){
+                 
+                 c -> cx = cx;
+                 c -> cy = cy;
+                 c -> r = r;
+                 strcpy(c -> units, units);
+                 break;
+             }
+           
+             i++;
+         }
+     
+  
+    
+   bool isValid = validateSVGimage(doc, "../svg.xsd");
+  //  strcpy(doc -> title, title );
+   // strcpy(doc -> description, description);
+   if(isValid == true){
+        writeSVGimage(doc, fileName);
+       return true;
+   }
+   else{
+
+       return false;
+   }
+}
+
+bool updateRect(char *fileName, float x, float y, float width, float height, char *units, int index){
+
+SVGimage *doc = createValidSVGimage(fileName, "../svg.xsd" );
+    if(doc == NULL || index >= doc -> rectangles -> length){
+        return false;
+    }
+   ListIterator iter = createIterator(doc->rectangles);
+    
+         void *elem;
+         int i = 0;
+         while ((elem = nextElement(&iter)) != NULL)
+         {
+
+             Rectangle *c = (Rectangle *)elem;
+             if(i == index){
+                 
+                 c -> x = x;
+                 c -> y = y;
+                 c -> height= height;
+                 c -> width= width;
+                 strcpy(c -> units, units);
+                 break;
+             }
+           
+             i++;
+         }
+     
+  
+    
+   bool isValid = validateSVGimage(doc, "../svg.xsd");
+  //  strcpy(doc -> title, title );
+   // strcpy(doc -> description, description);
+   if(isValid == true){
+        writeSVGimage(doc, fileName);
+       return true;
+   }
+   else{
+
+       return false;
    }
 }
 
