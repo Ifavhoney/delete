@@ -471,6 +471,73 @@ app.get('/editFileName', async function (req, res) {
 })
 
 
+app.get('/editCirc', async function (req, res) {
+  let cy = req.query.cy;
+  let cx = req.query.cx;
+  let units = req.query.units;
+  let r = req.query.r;
+
+  console.log(cy + cx + units + r);
+  //res.send({ message: "hi" });
+  //console.log(cy);
+  //res.redirect("/");
+  /*
+  let editTitle = req.query.fileTitle.trim();
+  let editDescription = req.query.fileDescription.trim();
+  let fileName = req.query.fname;
+  if (editTitle.length == 0) {
+    editTitle = " ";
+  }
+  if (editDescription.length == 0) {
+    editDescription = " ";
+  }
+  // console.log(editTitle + " " + fileName);
+
+  //console.log(fileName);
+  let jsonValue = sharedLibrary.updateTilteDesc(path.join(__dirname + '/uploads/' + fileName), editTitle, editDescription);
+  let message;
+
+
+  if (jsonValue == true) {
+    message = "success";
+    let connection;
+
+    try {
+
+      // INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) VALUES('Emoji_poo.svg', 'emoji', '2020-01-01 10:10:10', 1);
+
+
+      console.log(credentials);
+      connection = await mysql.createConnection(credentials);
+      const svg_id = await getSVG_ID(connection, fileName)
+
+
+      await connection.execute("INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) " +
+        "VALUES" + "(" + '\'' + "Add/Edit" + '\',\'' + "Add/Edit Title&Description" + '\',\'' + getTime() + '\',' + svg_id + ");");
+
+      console.log('successfully added to database');
+
+
+
+    } catch (e) {
+      console.log("Query file error: " + e);
+
+    } finally {
+      if (connection && connection.end) connection.end();
+
+    }
+
+  }
+  else {
+    message = "fail"
+
+  }
+  res.send({ message: message });
+  */
+
+
+})
+
 app.get('/someendpoint', function (req, res) {
   let retStr = req.query.name1 + " " + req.query.name2;
   res.send({

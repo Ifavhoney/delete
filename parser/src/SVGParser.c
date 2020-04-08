@@ -1274,7 +1274,6 @@ char *pathToJSON(const Path *p)
     char *jsonString = malloc(sizeof(char) + MAXLENGTH);
     jsonString[0] = '\0';
 
-    printf("%s\n", p->data);
     if (strlen(p->data) > 64)
     {
         // char *trunc = malloc(sizeof(char) + 10000);

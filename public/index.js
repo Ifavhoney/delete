@@ -31,6 +31,103 @@ function getClick(obj) {
 }
 
 
+$("#editCircx").on('click', (function (e) {
+    let x = document.getElementById("cx").value;
+    let y = document.getElementById("cy").value;
+    let r = document.getElementById("r").value;
+    let u = document.getElementById("units").value;
+    console.log(x);
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/editCirc',   //The server endpoint we are connecting to
+        data: {
+            cx: x,
+            cy: y,
+            r: r,
+            units: u
+
+
+        },
+        success: function (data) {
+            //   alert("hi");
+            /*
+            if (title.length < 1 || description.length < 1) {
+                alert("Too short!")
+            }
+            else {
+                alert("Success!")
+            }
+            */
+
+
+
+
+        },
+        fail: function (data) {
+
+        }
+    });
+
+
+
+    e.preventDefault();
+
+})
+
+);
+
+$("#editRectx").on('click', (function (e) {
+    let x = document.getElementById("x").value;
+    let y = document.getElementById("y").value;
+    let width = document.getElementById("width").value;
+    let height = document.getElementById("height").value;
+    let u = document.getElementById("units").value;
+
+    console.log(x);
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/editRectx',   //The server endpoint we are connecting to
+        data: {
+            x: x,
+            y: y,
+            width: width,
+            height: height,
+            units: u
+
+
+        },
+        success: function (data) {
+            //   alert("hi");
+            /*
+            if (title.length < 1 || description.length < 1) {
+                alert("Too short!")
+            }
+            else {
+                alert("Success!")
+            }
+            */
+
+
+
+
+        },
+        fail: function (data) {
+
+        }
+    });
+
+
+
+    e.preventDefault();
+
+})
+
+);
+
+
+
 $('#createSVG').submit(function (e) {
     console.log("createSVG")
 
@@ -604,10 +701,11 @@ $(document).ready(function () {
                             });
                             //when this is pressed
                             $(".editCircElement").click(function (e) {
-                                //dynamically add form
+                                //dynamically show form
                                 let showFile = document.getElementById("editCirc");
                                 if (showFile.style.display == "none") {
                                     document.getElementById("editCirc").style.display = "block";
+
                                 }
                                 else {
                                     document.getElementById("editCirc").style.display = "none";

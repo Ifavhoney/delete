@@ -160,7 +160,7 @@
 
 
               <div class="center-screen" >
-<form ref="editFileNamex" id="editFileName" enctype="multipart/form-data" method="get" action="/editFileName">
+<form ref="editFileNamex" id="editFileName" enctype="multipart/form-data" method="post" action="/editFileName">
   <div class="row">
    <div class="col">
       <input type="text" class="form-control" id ="title" maxlength="64" placeholder="title" name = "fileTitle">
@@ -178,22 +178,22 @@
 
       <div id = "panelEditRect" style = "display: block;" >
 
-<form ref="editRect" id="editRect" enctype="multipart/form-data" method="post" action="/editRect">
+<form ref="editRect" id="editRect" enctype="multipart/form-data" method="get" action="/editRect">
   <div class="row">
     <div class="col">
-      <input type="text" class="form-control" placeholder="x" name = "x">
+      <input type="text" class="form-control" placeholder="x" id = "x">
     </div>
     <div class="col">
-      <input type="text" class="form-control" placeholder="y"  name = "y">
+      <input type="text" class="form-control" placeholder="y"  id = "y">
     </div>
      <div class="col">
-      <input type="text" class="form-control" placeholder="width" name = "width">
+      <input type="text" class="form-control" placeholder="width" id = "width">
     </div>
     <div class="col">
-      <input type="text" class="form-control" placeholder="height" name ="height">
+      <input type="text" class="form-control" placeholder="height" id ="height">
     </div>
      <div class="col">
-      <input type="text" class="form-control" placeholder="units" name ="units">
+      <input type="text" class="form-control" placeholder="units" id ="units">
     </div>
   </div>
   <div class = "mt-4">
@@ -205,19 +205,19 @@
 </div>
       <div id = "panelEditCirc">
 
-<form ref="editCirc" id="editCirc" enctype="multipart/form-data" method="post" action="/editCirc">
+<form ref="editCirc" id="editCirc" enctype="multipart/form-data" method="get" action="/editCirc">
   <div class="row">
     <div class="col">
-      <input type="text" class="form-control" placeholder="cx" name = "cx">
+      <input type="text" class="form-control" placeholder="cx"  id ="cx" name = "cx">
     </div>
     <div class="col">
-      <input type="text" class="form-control" placeholder="cy"  name = "cy">
+      <input type="text" class="form-control" placeholder="cy"  id ="cy" name = "cy">
     </div>
      <div class="col">
-      <input type="text" class="form-control" placeholder="r" name = "r">
+      <input type="text" class="form-control" placeholder="r"  id ="r"name = "r">
     </div>
     <div class="col">
-      <input type="text" class="form-control" placeholder="units" name ="units">
+      <input type="text" class="form-control" placeholder="units" id ="units" name ="units">
     </div>
   </div>
   <div class = "mt-4">
@@ -260,6 +260,7 @@
   </div>
 
 </form>
+
 
 
       </div>
