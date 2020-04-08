@@ -291,10 +291,42 @@ app.post("/trackDownloads", async function (req, res, next) {
 
 app.post("/downloadFile", function (req, res) {
 
-  let test = "{\"title\":\"title\",\"desc\":\"desc\"}";
-  let json = JSON.stringify({ "title": req.body.fileName, "desc": req.body.fileName });
-  sharedLibrary.svgDownloadFile(req.body.fileName + ".svg", json);
-  //res.sendFile(path.join(__dirname + '/uploads/' + req.body.fileName));
+
+  let file = req.body.fileName;
+
+  fs.readdir(path.join(__dirname + '/uploads'), async (err, files) => {
+    let exists = false;
+
+    for (let i = 0; i < files.length; i++) {
+      if (files[i] == file + ".svg") {
+        exists = true;
+        break;
+
+      }
+
+    }
+    if (exists == false) {
+
+      let json = JSON.stringify({ "title": file, "desc": file });
+      let jsonValue = sharedLibrary.svgDownloadFile(file + ".svg", json);
+      if (jsonValue == true) {
+        console.log("Added file");
+      }
+      else {
+        console.log("File not added");
+      }
+      fs.rename(file + ".svg", "uploads/" + file + ".svg", function (err) {
+        if (err) throw "unable to add " + file + ".svg" + "due to wrong format"
+        console.log('success');
+      });
+    }
+  });
+
+  /*
+  
+  
+  */
+  res.redirect("/")
 
   //res.send({ jsonValue });
 });
