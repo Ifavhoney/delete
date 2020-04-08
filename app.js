@@ -244,6 +244,7 @@ app.get("/storeFiles", async function (req, res, next) {
       }
       finally {
         if (connection && connection.end) connection.end();
+
       }
     }
 
@@ -258,7 +259,33 @@ app.get("/storeFiles", async function (req, res, next) {
 
 });
 
-app.get("/trackDownloads", async function (req, res, next) {
+app.post("/trackDownloads", async function (req, res, next) {
+  let fileName = req.body.fileName;
+  let connection;
+  try {
+
+
+    connection = await mysql.createConnection(credentials);
+    const [vRow, vField] = await connection.execute("select * from FILE where file_name = " + '\'' + fileName + '\'');
+    let svg_id = 1;
+    let d_descr = " ";
+    for (const item of vRow) {
+      svg_id = item["svg_id"];
+      d_descr = item["file_description"];
+      console.log(d_descr);
+    }
+    await connection.execute
+      ("INSERT INTO DOWNLOAD (d_descr, svg_id) VALUES(" + '\'' + d_descr + '\', ' + svg_id + ");");
+
+
+
+  } catch (e) {
+    console.log("Query file error: " + e);
+
+  } finally {
+    if (connection && connection.end) connection.end();
+
+  }
 
 });
 

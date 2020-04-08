@@ -11,17 +11,14 @@
 
 
 
-function doSomethingOnClick(obj) {
+function getClick(obj) {
+
     alert(obj.download);
-    console.log(event.srcElement.href);
-
-
     $.ajax({
-        type: 'get',            //Request type
+        type: 'post',            //Request type
         dataType: 'json',       //Data type - we will use JSON for almost everything 
-        url: '/trackDownloads:',   //The server endpoint we are connecting to
-        data: {
-        },
+        url: '/trackDownloads',   //The server endpoint we are connecting to
+        data: { fileName: obj.download },
         success: function (data) {
 
         },
@@ -32,6 +29,41 @@ function doSomethingOnClick(obj) {
 
 
 }
+
+
+$('#createSVG').submit(function (e) {
+
+    $.ajax(
+
+        {
+            type: 'get',
+            dataType: 'json',
+            url: 'application/json',
+            data: {
+            },
+            //Use only for send
+            success: function (data) {
+                console.log("Gets here")
+
+                alert(data.message);
+                console.log(data);
+
+
+                if (data.text != null) {
+                    console.log(text);
+                }
+
+            },
+            fail: (error) => {
+
+                console.log("error!!!");
+            }
+
+        });
+    // e.preventDefault();
+
+});
+
 
 $('#formLogin').submit(function (e) {
 
@@ -757,7 +789,7 @@ $(document).ready(function () {
                             table_td1_href.download = element;
                             //  table_td1_href.innerHTML = element;
 
-                            table_td1_href.setAttribute("onclick", "doSomethingOnClick(this)");
+                            table_td1_href.setAttribute("onclick", "getClick(this)");
 
                             table_img_doc = table_td1_doc.
                                 appendChild(table_td1_href).
@@ -769,7 +801,7 @@ $(document).ready(function () {
 
                             table_td2_href.download = element
                             table_td2_href.innerHTML = element;
-                            table_td2_href.setAttribute("onclick", "doSomethingOnClick(this)");
+                            table_td2_href.setAttribute("onclick", "getClick(this)");
 
                             table_td2_doc = table_tr.appendChild(table_td2).appendChild(table_td2_href);
 
