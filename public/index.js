@@ -32,26 +32,20 @@ function getClick(obj) {
 
 
 $('#createSVG').submit(function (e) {
+    console.log("createSVG")
 
     $.ajax(
 
         {
-            type: 'get',
+            type: 'post',
             dataType: 'json',
-            url: 'application/json',
+            url: '/downloadFile',
             data: {
             },
             //Use only for send
             success: function (data) {
                 console.log("Gets here")
 
-                alert(data.message);
-                console.log(data);
-
-
-                if (data.text != null) {
-                    console.log(text);
-                }
 
             },
             fail: (error) => {
@@ -72,7 +66,7 @@ $('#formLogin').submit(function (e) {
         {
             type: 'get',
             dataType: 'json',
-            url: 'application/json',
+            url: '/storeFiles',
             data: {
             },
             //Use only for send

@@ -1129,10 +1129,12 @@ SVGimage* JSONtoSVG(char *fileName, const char* svgString){
     
         image -> description[index+1] = '\0';
         
-        strcpy(image -> namespace, "http://www.w3.org/2000/svg ");
+        strcpy(image -> namespace, "http://www.w3.org/2000/svg");
+       /*
         printf("%s", image -> namespace);
         printf("%s\n", image -> title);
         printf("%s", image -> description);
+        */
         bool valid = validateSVGimage(image, "../svg.xsd");
         if(valid == true){
             writeSVGimage(image, fileName);
