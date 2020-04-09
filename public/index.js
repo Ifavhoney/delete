@@ -223,7 +223,6 @@ $("#editRectx").on('click', (function (e) {
 
 
 $('#createSVG').submit(function (e) {
-    console.log("createSVG")
 
     $.ajax(
 
@@ -272,7 +271,7 @@ $('#postFormLogin').on("click", (function (e) {
 
                 let login = document.getElementById("login");
                 login.style.display = "none";
-                cruds = true;
+                creds = true;
             }
 
             //   alert("hi");
@@ -310,6 +309,26 @@ $(document).ready(function () {
 
     //Put that file into the c function
 
+
+
+
+    $.ajax(
+
+        {
+            type: 'get',
+            dataType: 'json',
+            url: '/displayStatus',
+            data: {
+            },
+            //Use only for send
+            success: function (data) {
+            },
+            fail: (error) => {
+
+            }
+
+        });
+    // e.preventDefault();
 
 
 

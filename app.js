@@ -185,6 +185,7 @@ let credentials = {
 };
 
 app.get('/clearData', async function (req, res) {
+  let message = null;
   let connection;
   try {
 
@@ -193,7 +194,36 @@ app.get('/clearData', async function (req, res) {
 
     //Check for duplicates
 
-    const [rows1, fields1] = await connection.execute("SELECT * FROM FILE where file_name = " + '\'' + files[i] + '\'');
+    await connection.execute("DELETE FROM IMG_CHANGE");
+    await connection.execute("DELETE FROM DOWNLOAD");
+    await connection.execute("DELETE FROM FILE");
+
+    message = "success";
+  }
+  catch (e) {
+    message = "fail";
+  }
+  finally {
+    if (connection && connection.end) connection.end();
+
+  }
+  res.send({ message: message });
+});
+
+
+app.get('/displayStatus', async function (req, res) {
+  let message = null;
+  let connection;
+  let fileCount = 0;
+  let downloadCount = 0;
+  let changeCount = 0;
+  try {
+
+
+    connection = await mysql.createConnection(credentials);
+
+    //Check for duplicates
+
 
 
     message = "success";
@@ -326,6 +356,7 @@ app.get("/trackDownloads", async function (req, res, next) {
 
 
     connection = await mysql.createConnection(credentials);
+    console.log(fileName);
     const [vRow, vField] = await connection.execute("select * from FILE where file_name = " + '\'' + fileName + '\'');
     let svg_id = 1;
     let d_descr = " ";
@@ -340,7 +371,7 @@ app.get("/trackDownloads", async function (req, res, next) {
 
     message = "success";
   } catch (e) {
-    message = "fail";
+    message = "fail, either you didnt store files or incorrect credentials";
 
     console.log("Query file error: " + e);
 

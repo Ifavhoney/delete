@@ -36,6 +36,19 @@ thead tr th{
     text-align: center;
 }
 
+#item1 { grid-area: one; }
+#item2 { grid-area: two; }
+#item3 { grid-area: three; }
+
+.grid-container {
+            background-color: rgb(255, 249, 249);
+
+  display: grid;
+  grid-template-areas:
+    'one two three';
+  grid-gap: 10px;
+  width: 100%;
+}
 
 
 .center-screen {
