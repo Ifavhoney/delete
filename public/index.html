@@ -55,12 +55,12 @@
 
                     <tr>
 
-                        <th style="width: 20%">Image </br>
+                        <th style="width: 20%; Color: rgb(20, 161, 150)">Image </br>
                             (click to download)</br></br>
 
                         </th>
 
-                        <th style="width: 20%;">File name</br>
+                        <th style="width: 20%;  Color: rgb(20, 161, 150)">File name</br>
                             (click to download)</br></br>
                         </th>
                         <th style="width: 10%;">File size</br>
@@ -145,7 +145,7 @@
             <thead>
                 <th id="">Component</th>
                 <th style="width:60%">Summary</th>
-                <th>Other attributes</th>
+                <th>Other attributes (Below, refresh upon submitting form)</th>
             </thead>
 
 
@@ -160,21 +160,33 @@
 
 
               <div class="center-screen" >
-<form ref="editFileNamex" id="editFileName" enctype="multipart/form-data" method="post" action="/editFileName">
+      <div id="editFileName">
+<form ref="editFileNameTitlex" id="editFileNameTitle" enctype="multipart/form-data" method="post" action="/editFileNameTitle">
   <div class="row">
-   <div class="col">
       <input type="text" class="form-control" id ="title" maxlength="64" placeholder="title" name = "fileTitle">
-    </div>
-    <div class="col">
-      <input type="text" class="form-control"  id ="description" maxlength="64" placeholder="description" name = "fileDescription">
-    </div>
+          <button id="editFileNameTitlex" type='submit' class="btn btn-info">Edit Title (A4)</button>
 
   </div>
   <div class = "mt-4">
-    <button id="editFileNamex" type='submit' class="btn btn-warning">Edit SVG </button>
   </div>
 
 </form>
+
+<form ref="editFileNameDescx" id="editFileNameDesc" enctype="multipart/form-data" method="post" action="/editFileNameDesc">
+  <div class="row">
+      <input type="text" class="form-control"  id ="description" maxlength="64" placeholder="description" name = "fileDescription">
+       <button id="editFileNameDescx" type='submit' class="btn btn-info">Edit Desc (A4)</button>
+
+  </div>
+  <div class = "mt-4">
+  </div>
+
+</form>
+
+      </div>
+
+
+
 
       <div id = "panelEditRect" style = "display: block;" >
 
@@ -197,7 +209,7 @@
     </div>
   </div>
   <div class = "mt-4">
-    <button id="editRectx" type='submit' class="btn btn-warning">Edit SVG </button>
+    <button id="editRectx" type='submit' class="btn btn-info">Edit Rectangle(A4)</button>
   </div>
 
 </form>
@@ -222,7 +234,7 @@
     </div>
   </div>
   <div class = "mt-4">
-    <button id="editCircx" type='submit' class="btn btn-warning">Edit SVG </button>
+    <button id="editCircx" type='submit' class="btn btn-info">Edit Circle (A4)</button>
 
   </div>
 
@@ -279,7 +291,7 @@
   </div>
   
   <div class = "mt-4">
-    <button type='submit' class="btn btn-warning">Create SVG </button>
+    <button type='submit' class="btn btn-info">Create File (A4)</button>
   </div>
 
 </form>

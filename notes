@@ -29,6 +29,7 @@ FOREIGN KEY(svg_id) REFERENCES FILE(svg_id) ON DELETE CASCADE
 );
 
  INSERT INTO IMG_CHANGE ( change_type, change_summary, change_time, svg_id ) VALUES ('Emoji_poo.svg', 'emoji','2020-01-01 10:10:10', 1);
+update IMG_CHANGE SET change_summary = "NO" where svg_id = 1;
 
 DELETE FROM FILE WHERE svg_id = 1;
 

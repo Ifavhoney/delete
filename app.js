@@ -415,27 +415,30 @@ app.post("/downloadFile", async function (req, res) {
   //res.send({ jsonValue });
 });
 
-app.get('/editFileName', async function (req, res) {
+app.get('/editFileNameTitle', async function (req, res) {
 
 
   let editTitle = req.query.fileTitle.trim();
-  let editDescription = req.query.fileDescription.trim();
+
+  /*let editDescription = req.query.fileDescription.trim();
+  if (editDescription.length == 0) {
+    editDescription = " ";
+  }
+  */
   let fileName = req.query.fname;
   if (editTitle.length == 0) {
     editTitle = " ";
   }
-  if (editDescription.length == 0) {
-    editDescription = " ";
-  }
+
   // console.log(editTitle + " " + fileName);
 
   //console.log(fileName);
-  let jsonValue = sharedLibrary.updateTilteDesc(path.join(__dirname + '/uploads/' + fileName), editTitle, editDescription);
+  let jsonValue = sharedLibrary.updateTilteDesc(path.join(__dirname + '/uploads/' + fileName), editTitle, " ");
   let message;
 
 
   if (jsonValue == true) {
-    message = "success";
+    message = "success please refresh";
     let connection;
 
     try {
@@ -449,14 +452,13 @@ app.get('/editFileName', async function (req, res) {
 
 
       await connection.execute("INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) " +
-        "VALUES" + "(" + '\'' + "Add/Edit" + '\',\'' + "Add/Edit Title&Description" + '\',\'' + getTime() + '\',' + svg_id + ");");
+        "VALUES" + "(" + '\'' + "Edit" + '\',\'' + "Edit Title" + '\',\'' + getTime() + '\',' + svg_id + ");");
 
-      console.log('successfully added to database');
-
-
+      await connection.execute("update FILE SET file_size =" + getSize(fileName) + " where svg_id = " + svg_id + ";");
 
     } catch (e) {
       console.log("Query file error: " + e);
+      message = "fail"
 
     } finally {
       if (connection && connection.end) connection.end();
@@ -465,7 +467,6 @@ app.get('/editFileName', async function (req, res) {
 
   }
   else {
-    message = "fail"
 
   }
   res.send({ message: message });
@@ -473,40 +474,27 @@ app.get('/editFileName', async function (req, res) {
 
 })
 
-//Refresh to see changes
-app.get('/editCirc', async function (req, res) {
-  let fileName = parseFloat(req.query.fileName);
 
-  let cy = parseFloat(req.query.cy);
-  let cx = parseFloat(req.query.cx);
-  let units = req.query.units;
-  let r = parseFloat(req.query.r);
-  let index = req.query.index;
-  //bool updateCirc(char *fileName, float cx, float cy, float r, char *units, int index);
+app.get('/editFileNameDesc', async function (req, res) {
 
-  let jsonValue = sharedLibrary.updateCirc(path.join(__dirname + '/uploads/' + fileName), 0, 0, 0, "cm", 1);
-  //res.send({ message: "hi" });
-  //console.log(cy);
-  //res.redirect("/");
-  /*
-  let editTitle = req.query.fileTitle.trim();
+
+
   let editDescription = req.query.fileDescription.trim();
-  let fileName = req.query.fname;
-  if (editTitle.length == 0) {
-    editTitle = " ";
-  }
   if (editDescription.length == 0) {
     editDescription = " ";
   }
+
   // console.log(editTitle + " " + fileName);
 
   //console.log(fileName);
-  let jsonValue = sharedLibrary.updateTilteDesc(path.join(__dirname + '/uploads/' + fileName), editTitle, editDescription);
+  let fileName = req.query.fname;
+
+  let jsonValue = sharedLibrary.updateTilteDesc(path.join(__dirname + '/uploads/' + fileName), " ", editDescription);
   let message;
 
 
   if (jsonValue == true) {
-    message = "success";
+    message = "success please refresh";
     let connection;
 
     try {
@@ -520,15 +508,74 @@ app.get('/editCirc', async function (req, res) {
 
 
       await connection.execute("INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) " +
-        "VALUES" + "(" + '\'' + "Add/Edit" + '\',\'' + "Add/Edit Title&Description" + '\',\'' + getTime() + '\',' + svg_id + ");");
+        "VALUES" + "(" + '\'' + "Edit" + '\',\'' + "Edit Description" + '\',\'' + getTime() + '\',' + svg_id + ");");
 
-      console.log('successfully added to database');
+      await connection.execute("update FILE SET file_size =" + getSize(fileName) + " where svg_id = " + svg_id + ";");
 
 
 
     } catch (e) {
       console.log("Query file error: " + e);
+      message = "fail";
+    } finally {
+      if (connection && connection.end) connection.end();
 
+    }
+
+  }
+  else {
+    message = "fail";
+
+  }
+  res.send({ message: message });
+
+
+})
+
+
+//Refresh to see changes
+app.get('/editCirc', async function (req, res) {
+  let fileName = req.query.fileName;
+
+  let cy = parseFloat(req.query.cy);
+  let cx = parseFloat(req.query.cx);
+  let units = req.query.units.trim();
+  let r = parseFloat(req.query.r);
+  let index = req.query.index;
+  //bool updateCirc(char *fileName, float cx, float cy, float r, char *units, int index);
+  console.log(cy + "\n" + cy + "\n" + units + "\n" + r + "\n" + index);
+  if (units.length == 0) {
+    units = " ";
+  }
+  let jsonValue = sharedLibrary.updateCirc(path.join(__dirname + '/uploads/' + fileName), cx, cy, r, units, index);
+
+  let message;
+
+
+  if (jsonValue == true) {
+    let connection;
+
+    try {
+
+      // INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) VALUES('Emoji_poo.svg', 'emoji', '2020-01-01 10:10:10', 1);
+
+
+      console.log(credentials);
+      connection = await mysql.createConnection(credentials);
+      const svg_id = await getSVG_ID(connection, fileName)
+
+
+      await connection.execute("INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) " +
+        "VALUES" + "(" + '\'' + "Edit" + '\',\'' + "Edit Circle @ index: " + index.toString() + '\',\'' + getTime() + '\',' + svg_id + ");");
+
+      console.log('successfully added to database');
+
+      message = "success please refresh";
+
+
+    } catch (e) {
+      console.log("Query file error: " + e);
+      message = "fail";
     } finally {
       if (connection && connection.end) connection.end();
 
@@ -540,7 +587,7 @@ app.get('/editCirc', async function (req, res) {
 
   }
   res.send({ message: message });
-  */
+
 
 
 })

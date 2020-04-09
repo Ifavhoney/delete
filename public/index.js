@@ -56,6 +56,8 @@ $("#editCircx").on('click', (function (e) {
 
         },
         success: function (data) {
+            alert(data.message);
+
             //   alert("hi");
             /*
             if (title.length < 1 || description.length < 1) {
@@ -442,7 +444,7 @@ $(document).ready(function () {
                             editTitleDesc.id = "showFileName"
                             editTitleDesc.type = "button";
                             editTitleDesc.className = "showFileName btn btn-info";
-                            editTitleDesc.innerHTML = "Edit Title/Description";
+                            editTitleDesc.innerHTML = "Edit Title/Description (A4)";
                             titlePanel.appendChild(editTitleDesc);
 
                             descPanel.appendChild(editTitleDesc);
@@ -506,8 +508,8 @@ $(document).ready(function () {
                                 let editButton = document.createElement("button");
                                 editButton.id = "Rectangle" + (index + 1);
                                 editButton.type = "button";
-                                editButton.className = "editRectElement btn btn-warning";
-                                editButton.innerHTML = "Edit Elements";
+                                editButton.className = "editRectElement btn btn-info";
+                                editButton.innerHTML = "Edit Elements (A4)";
                                 table_td3.appendChild(editButton);
 
                             }
@@ -542,8 +544,8 @@ $(document).ready(function () {
                                 let editButton = document.createElement("button");
                                 editButton.id = "Circle" + (index + 1);
                                 editButton.type = "button";
-                                editButton.className = "editCircElement btn btn-warning";
-                                editButton.innerHTML = "Edit Elements";
+                                editButton.className = "editCircElement btn btn-info";
+                                editButton.innerHTML = "Edit Elements (A4)";
 
                                 table_td3.appendChild(editButton);
 
@@ -765,29 +767,50 @@ $(document).ready(function () {
                             });
 
 
-                            $("#editFileNamex").on('click', (function (e) {
+                            $("#editFileNameTitlex").on('click', (function (e) {
                                 let title = document.getElementById("title").value;
+
+                                $.ajax({
+                                    type: 'GET',            //Request type
+                                    dataType: 'json',       //Data type - we will use JSON for almost everything 
+                                    url: '/editFileNameTitle',   //The server endpoint we are connecting to
+                                    data: {
+                                        fname: item,
+                                        fileTitle: title,
+
+                                    },
+                                    success: function (data) {
+                                        alert(data.message);
+
+
+                                    },
+                                    fail: function (data) {
+
+                                    }
+                                });
+                                e.preventDefault();
+
+
+                            })
+
+                            )
+
+                            $("#editFileNameDescx").on('click', (function (e) {
+
                                 let description = document.getElementById("description").value;
 
                                 $.ajax({
                                     type: 'GET',            //Request type
                                     dataType: 'json',       //Data type - we will use JSON for almost everything 
-                                    url: '/editFileName',   //The server endpoint we are connecting to
+                                    url: '/editFileNameDesc',   //The server endpoint we are connecting to
                                     data: {
                                         fname: item,
-                                        fileTitle: title,
                                         fileDescription: description
 
                                     },
                                     success: function (data) {
 
-                                        if (title.length < 1 || description.length < 1) {
-                                            alert("Too short!")
-                                        }
-                                        else {
-                                            alert("Success!")
-                                        }
-
+                                        alert(data.message);
 
 
                                     },
