@@ -285,7 +285,10 @@
 
 
       </div>
-              <div class="center-screen" >
+       <div class="grid-container">
+    
+      <div id="item1">
+    <div class="center-screen" >
 
                 <form ref="createSVG" id = "createSVG" enctype="multipart/form-data" method="post" action="/downloadFile">
   <div class="row">
@@ -305,29 +308,50 @@
 </form>
 
                 </div>
+                    </div>
+       <div id="item2">
+          
 
-                    <div class="center-screen-right" >
+                    <div class="center-screen" >
 
                 <form ref="formClear" id = "formClear" enctype="multipart/form-data" method="get" action="/clearData">
        <button type='submit' id = "clearData" class="btn btn-info">Clear Data (A4)</button>
 </form>
 
                 </div>
-
-
-    <div class="grid-container">
-      <div id="item1">
-        <div id = "fileCount"></div> FILES
-      </div>
-       <div id="item2">
-          <div id = "changeCount"></div> CHANGES
       </div>
       <div id="item3">
-        <div id = "downloadCount"></div> DOWNLOAD
       </div>
      
     </div>
 
+
+
+    <div class="grid-container2" style ="background-color: beige;">
+      
+         <div id="outerItem1">
+                    DATABASE INFO (A4)
+</div> 
+              <div id="outerItem2">
+              
+
+    <div class="grid-container" style ="background-color: beige;">
+    
+      <div id="item1">
+        <div id = "fileCount"></div> 
+      </div>
+       <div id="item2">
+          <div id = "changeCount"></div> 
+      </div>
+      <div id="item3">
+        <div id = "downloadCount"></div> 
+      </div>
+     
+    </div>
+    </div>
+              
+    
+</div>
 
           
 

@@ -322,6 +322,15 @@ $(document).ready(function () {
             },
             //Use only for send
             success: function (data) {
+                let fileCount = document.getElementById("fileCount");
+                let changeCount = document.getElementById("changeCount");
+                let downloadCount = document.getElementById("downloadCount");
+
+                fileCount.innerHTML = data.fileCount + " files";
+                changeCount.innerHTML = data.changeCount + " changes";
+                downloadCount.innerHTML = data.downloadCount + " download";
+
+
             },
             fail: (error) => {
 

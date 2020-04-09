@@ -221,7 +221,19 @@ app.get('/displayStatus', async function (req, res) {
 
 
     connection = await mysql.createConnection(credentials);
+    let [vRow, vCol] = await connection.execute("SELECT COUNT(*) FROM FILE")
+    let [vRow1, vCol1] = await connection.execute("SELECT COUNT(*) FROM DOWNLOAD")
+    let [vRow2, vCol2] = await connection.execute("SELECT COUNT(*) FROM IMG_CHANGE")
 
+    for (const item of vRow) {
+      fileCount = item["COUNT(*)"];
+    }
+    for (const item of vRow1) {
+      downloadCount = item["COUNT(*)"];
+    }
+    for (const item of vRow2) {
+      changeCount = item["COUNT(*)"];
+    }
     //Check for duplicates
 
 
@@ -235,7 +247,7 @@ app.get('/displayStatus', async function (req, res) {
     if (connection && connection.end) connection.end();
 
   }
-  res.send({ message: message });
+  res.send({ message: message, fileCount: fileCount, downloadCount: downloadCount, changeCount: changeCount });
 });
 
 app.get("/login", async function (req, res, next) {
@@ -350,7 +362,7 @@ app.get("/storeFiles", async function (req, res, next) {
 
 app.get("/trackDownloads", async function (req, res, next) {
   let message = null;
-  let fileName = req.body.fileName;
+  let fileName = req.query.fileName;
   let connection;
   try {
 

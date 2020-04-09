@@ -40,6 +40,10 @@ thead tr th{
 #item2 { grid-area: two; }
 #item3 { grid-area: three; }
 
+
+#outerItem1 { grid-area: one1; }
+#outerItem2 { grid-area: two1; }
+
 .grid-container {
             background-color: rgb(255, 249, 249);
 
@@ -50,6 +54,15 @@ thead tr th{
   width: 100%;
 }
 
+.grid-container2 {
+            background-color: rgb(255, 249, 249);
+
+  display: grid;
+  grid-template-areas:
+    'one1 two1';
+  grid-gap: 10px;
+  width: 100%;
+}
 
 .center-screen {
   display: flex;
