@@ -28,6 +28,83 @@ function getClick(obj) {
 
 
 }
+$("#clearData").on('click', (function (e) {
+    console.log("clicked!!!")
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/clearData',   //The server endpoint we are connecting to
+        data: {
+
+
+
+        },
+        success: function (data) {
+
+            alert(data.message);
+            //   alert("hi");
+            /*
+            if (title.length < 1 || description.length < 1) {
+                alert("Too short!")
+            }
+            else {
+                alert("Success!")
+            }
+            */
+
+
+
+
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    e.preventDefault();
+}
+));
+
+
+
+$("#storeFiles").on('click', (function (e) {
+    console.log("clicked!!!")
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/storeFiles',   //The server endpoint we are connecting to
+        data: {
+
+
+
+        },
+        success: function (data) {
+
+            alert(data.message);
+            //   alert("hi");
+            /*
+            if (title.length < 1 || description.length < 1) {
+                alert("Too short!")
+            }
+            else {
+                alert("Success!")
+            }
+            */
+
+
+
+
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    e.preventDefault();
+}
+));
 
 
 $("#editCircx").on('click', (function (e) {
@@ -253,7 +330,7 @@ $(document).ready(function () {
                 let body = document.getElementById("body");
 
                 if (creds == false) {
-                    body.style.display = "none";
+                    body.style.display = "block";
 
                 }
                 else {
@@ -394,6 +471,9 @@ $(document).ready(function () {
         success: function (data) {
             //Gets the Dropdown to show files, knows through due our call with query 
             let dropDown = document.getElementById("panelDropDown");
+
+            if (data.files == null) {
+            }
             if (data.files != null) {
                 for (let i = 0; i < data.files.length; i++) {
                     let a = document.createElement("a");
@@ -402,6 +482,7 @@ $(document).ready(function () {
 
                     a.text = data.files[i];
                     dropDown.appendChild(a);
+
 
                 }
 
@@ -884,6 +965,10 @@ $(document).ready(function () {
             console.log(data.cons);
             let table = document.getElementById("fileLogTable");
 
+            let storeFiles = document.getElementById("storeFiles");
+
+            storeFiles.style.display = "block";
+
             if (data.length == 0) {
 
                 table_tr = document.createElement("tr");
@@ -893,6 +978,9 @@ $(document).ready(function () {
                 table_td1.innerHTML = "NO FILES"
                 table_tr.appendChild(table_td1);
                 console.log("no files")
+                storeFiles.style.display = "none";
+
+
 
             }
             else {

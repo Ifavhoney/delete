@@ -35,11 +35,11 @@
 
 
        <form id = "formLogin" ref="formLogin" enctype="multipart/form-data" method="get" action="/login"  >
-      <input type="text"  id="username" placeholder="login" style ="text-align: center; display: inline-block; width:85%">
+      <input type="text"  id="username" placeholder="username" style ="text-align: center; display: inline-block; width:85%">
       <input type="text"  id="password" placeholder="password" style ="text-align: center; display: inline-block; width:85%">
             <input type="text" id="database" placeholder="database" style ="text-align: center; display: inline-block; width:85%">
 
-          <button id="postFormLogin" type='submit' class="btn btn-info"  style ="text-align: center; display: inline-block; width:85%">Edit Title (A4)</button>
+          <button id="postFormLogin" type='submit' class="btn btn-info"  style ="text-align: center; display: inline-block; width:85%">Login (A4)</button>
 
       </form>
   </div>
@@ -50,10 +50,13 @@
   
 
     <div id="home"></div>
+          
+    <button id="storeFiles" type='submit' class="btn btn-info">Store All Files </button>
 
     <div id="center-screen">
 
         <div id="fileLog">
+
             <div id="scroll">
                 <table id="fileLogTable" class="table table-bordered table-lg bg-light">
 
@@ -302,6 +305,18 @@
 </form>
 
                 </div>
+
+                    <div class="center-screen-right" >
+
+                <form ref="formClear" id = "formClear" enctype="multipart/form-data" method="get" action="/clearData">
+       <button type='submit' id = "clearData" class="btn btn-info">Create Data (A4)</button>
+  
+ 
+
+</form>
+
+                </div>
+
 
 
 

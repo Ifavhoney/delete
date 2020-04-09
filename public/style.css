@@ -46,6 +46,13 @@ thead tr th{
   text-align: center;
   min-height: 100vh;
 }
+.center-screen-right{
+  display: flex;
+  flex-direction: column;
+  justify-content: right;
+  align-items:flex-end ;
+  text-align: right;
+}
 a:link:hover {
     -webkit-transition: all 0.3s ease;
     -moz-transition: all 0.3s ease;

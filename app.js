@@ -183,6 +183,31 @@ let credentials = {
   database: "jnguessa"
 
 };
+
+app.get('/clearData', async function (req, res) {
+  let connection;
+  try {
+
+
+    connection = await mysql.createConnection(credentials);
+
+    //Check for duplicates
+
+    const [rows1, fields1] = await connection.execute("SELECT * FROM FILE where file_name = " + '\'' + files[i] + '\'');
+
+
+    message = "success";
+  }
+  catch (e) {
+    message = "fail";
+  }
+  finally {
+    if (connection && connection.end) connection.end();
+
+  }
+  res.send({ message: message });
+});
+
 app.get("/login", async function (req, res, next) {
 
   let username = req.query.username;
@@ -223,7 +248,6 @@ app.get("/storeFiles", async function (req, res, next) {
 
   fs.readdir(path.join(__dirname + '/uploads'), async (err, files) => {
     for (let i = 0; i < files.length; i++) {
-
       let connection;
       try {
 
@@ -232,7 +256,7 @@ app.get("/storeFiles", async function (req, res, next) {
         const [vRow, vField] = await connection.execute("select TABLE_NAME from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'FILE' ");
         if (vRow.length != 0) {
 
-
+          console.log("hi");
 
 
           let value = path.join(__dirname + "/uploads/" + files[i]);
@@ -265,16 +289,20 @@ app.get("/storeFiles", async function (req, res, next) {
 
         }
         message = "success";
+
       }
       catch (e) {
         message = "fail";
         console.log("Query file error: " + e);
+
       }
       finally {
         if (connection && connection.end) connection.end();
 
       }
     }
+    res.send({ message: message });
+
 
 
 
@@ -284,7 +312,6 @@ app.get("/storeFiles", async function (req, res, next) {
 
 
   );
-  res.send({ message: message });
 
 
 
