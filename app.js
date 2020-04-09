@@ -596,17 +596,62 @@ app.get('/editCirc', async function (req, res) {
 
 })
 app.get('/editRect', async function (req, res) {
-  /*
-  let fileName = parseFloat(req.query.fileName);
+
+  let fileName = req.query.fileName;
 
   let x = parseFloat(req.query.x);
   let y = parseFloat(req.query.y);
   let width = parseFloat(req.query.width);
   let height = parseFloat(req.query.height);
   let units = req.query.units;
+  let index = req.query.index;
 
   console.log(x + y + width + height + units);
-  */
+
+  if (units.length == 0) {
+    units = " ";
+  }
+  let jsonValue = sharedLibrary.updateRect(path.join(__dirname + '/uploads/' + fileName), x, y, width, height, units, index);
+
+  let message;
+
+
+  if (jsonValue == true) {
+    let connection;
+
+    try {
+
+      // INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) VALUES('Emoji_poo.svg', 'emoji', '2020-01-01 10:10:10', 1);
+
+
+      console.log(credentials);
+      connection = await mysql.createConnection(credentials);
+      const svg_id = await getSVG_ID(connection, fileName)
+
+
+      await connection.execute("INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) " +
+        "VALUES" + "(" + '\'' + "Edit" + '\',\'' + "Edit Rect @ index: " + index.toString() + '\',\'' + getTime() + '\',' + svg_id + ");");
+
+      console.log('successfully added to database');
+
+      message = "success please refresh";
+
+
+    } catch (e) {
+      console.log("Query file error: " + e);
+      message = "fail";
+    } finally {
+      if (connection && connection.end) connection.end();
+
+    }
+
+  }
+  else {
+    message = "fail"
+
+  }
+  res.send({ message: message });
+
 })
 app.get('/someendpoint', function (req, res) {
   let retStr = req.query.name1 + " " + req.query.name2;

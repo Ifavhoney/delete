@@ -114,6 +114,8 @@ $("#editRectx").on('click', (function (e) {
 
         },
         success: function (data) {
+
+            alert(data.message);
             //   alert("hi");
             /*
             if (title.length < 1 || description.length < 1) {
