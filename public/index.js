@@ -13,14 +13,13 @@
 
 function getClick(obj) {
 
-    alert(obj.download);
     $.ajax({
-        type: 'post',            //Request type
+        type: 'get',            //Request type
         dataType: 'json',       //Data type - we will use JSON for almost everything 
         url: '/trackDownloads',   //The server endpoint we are connecting to
         data: { fileName: obj.download },
         success: function (data) {
-
+            alert(data.message);
         },
         fail: function (data) {
 
@@ -170,40 +169,60 @@ $('#createSVG').submit(function (e) {
     // e.preventDefault();
 
 });
+let creds = false;
 
+$('#postFormLogin').on("click", (function (e) {
+    let username = document.getElementById("username").value;
+    let password = document.getElementById("password").value;
+    let database = document.getElementById("database").value;
 
-$('#formLogin').submit(function (e) {
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/login',   //The server endpoint we are connecting to
+        data: {
+            username: username,
+            password: password,
+            database: database
+        },
+        success: function (data) {
+            alert(data.message);
+            if (data.message == "success") {
+                let body = document.getElementById("body");
+                body.style.display = "block";
 
-    $.ajax(
-
-        {
-            type: 'get',
-            dataType: 'json',
-            url: '/storeFiles',
-            data: {
-            },
-            //Use only for send
-            success: function (data) {
-                console.log("Gets here")
-
-                alert(data.message);
-                console.log(data);
-
-
-                if (data.text != null) {
-                    console.log(text);
-                }
-
-            },
-            fail: (error) => {
-
-                console.log("error!!!");
+                let login = document.getElementById("login");
+                login.style.display = "none";
+                cruds = true;
             }
 
-        });
-    // e.preventDefault();
+            //   alert("hi");
+            /*
+            if (title.length < 1 || description.length < 1) {
+                alert("Too short!")
+            }
+            else {
+                alert("Success!")
+            }
+            */
 
-});
+
+
+
+        },
+        fail: function (data) {
+
+        }
+    });
+
+
+    e.preventDefault();
+
+
+
+
+
+}));
 
 
 
@@ -215,22 +234,7 @@ $(document).ready(function () {
 
 
 
-    $.ajax(
 
-        {
-            type: 'get',
-            dataType: 'html',
-            url: '/storeFiles',
-            data: {
-            },
-            //Use only for send
-            success: function (data) {
-
-            },
-            fail: function (data) {
-
-            }
-        });
 
 
 
@@ -244,9 +248,15 @@ $(document).ready(function () {
             },
             //Use only for send
             success: function (data) {
-
                 let body = document.getElementById("body");
-                body.style.display = "block";
+
+                if (creds == false) {
+                    body.style.display = "none";
+
+                }
+                else {
+                    body.style.display = "block";
+                }
 
                 let tBodyDoc = null;
 
@@ -780,9 +790,8 @@ $(document).ready(function () {
 
                                     },
                                     success: function (data) {
+
                                         alert(data.message);
-
-
                                     },
                                     fail: function (data) {
 

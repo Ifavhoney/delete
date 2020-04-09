@@ -184,11 +184,10 @@ let credentials = {
 
 };
 app.get("/login", async function (req, res, next) {
-  console.log("again");
+
   let username = req.query.username;
   let password = req.query.password;
   let database = req.query.database;
-  console.log(username);
   let message = null;
 
   if (username != null && password != null & database != null) {
@@ -201,20 +200,15 @@ app.get("/login", async function (req, res, next) {
         database: database
 
       }
-      console.log("test" + message);
-
 
     }
     catch (e) {
-      message = "fail";
+      message = "Incorrect Account";
       console.log("There has been an error:" + message);
     }
 
   }
-  console.log(message);
-  res.redirect("/");
-  // res.redirect("/login:" + message);
-  //res.send(JSON.stringify({ message: message }));
+  res.send({ message: message });
 
 })
 
@@ -222,9 +216,10 @@ app.get("/login", async function (req, res, next) {
 // for a file using the A3 interface, insert a recordintotheDOWNLOADtable.
 // Makesurethatthenewrecord'ssvg_idcorrectlyreferencestherelevantin the FILE table.
 
+//unable to call alert atm
 app.get("/storeFiles", async function (req, res, next) {
 
-
+  let message = null;
 
   fs.readdir(path.join(__dirname + '/uploads'), async (err, files) => {
     for (let i = 0; i < files.length; i++) {
@@ -269,10 +264,11 @@ app.get("/storeFiles", async function (req, res, next) {
           }
 
         }
+        message = "success";
       }
       catch (e) {
+        message = "fail";
         console.log("Query file error: " + e);
-        return false;
       }
       finally {
         if (connection && connection.end) connection.end();
@@ -281,17 +277,22 @@ app.get("/storeFiles", async function (req, res, next) {
     }
 
 
+
   }
 
 
+
+
   );
+  res.send({ message: message });
 
 
 
 
 });
 
-app.post("/trackDownloads", async function (req, res, next) {
+app.get("/trackDownloads", async function (req, res, next) {
+  let message = null;
   let fileName = req.body.fileName;
   let connection;
   try {
@@ -310,14 +311,18 @@ app.post("/trackDownloads", async function (req, res, next) {
       ("INSERT INTO DOWNLOAD (d_descr, svg_id) VALUES(" + '\'' + d_descr + '\', ' + svg_id + ");");
 
 
-
+    message = "success";
   } catch (e) {
+    message = "fail";
+
     console.log("Query file error: " + e);
 
   } finally {
     if (connection && connection.end) connection.end();
 
   }
+  res.send({ message: message })
+
 
 });
 
@@ -434,7 +439,7 @@ app.get('/editFileNameTitle', async function (req, res) {
 
   //console.log(fileName);
   let jsonValue = sharedLibrary.updateTilteDesc(path.join(__dirname + '/uploads/' + fileName), editTitle, " ");
-  let message;
+  let message = null;
 
 
   if (jsonValue == true) {
@@ -446,7 +451,6 @@ app.get('/editFileNameTitle', async function (req, res) {
       // INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) VALUES('Emoji_poo.svg', 'emoji', '2020-01-01 10:10:10', 1);
 
 
-      console.log(credentials);
       connection = await mysql.createConnection(credentials);
       const svg_id = await getSVG_ID(connection, fileName)
 
@@ -467,7 +471,7 @@ app.get('/editFileNameTitle', async function (req, res) {
 
   }
   else {
-
+    message = "fail";
   }
   res.send({ message: message });
 

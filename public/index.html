@@ -32,14 +32,19 @@
   min-height: 100vh;
   padding: 20px;">
 
-       <form id = "formLogin" ref="formLogin" enctype="multipart/form-data" method="get" action="/login"  >
-      <input type="text"  name="username" placeholder="login" style ="text-align: center; display: inline-block; width:85%">
-      <input type="text"  name="password" placeholder="password" style ="text-align: center; display: inline-block; width:85%">
-            <input type="text" name="database" placeholder="database" style ="text-align: center; display: inline-block; width:85%">
 
-      <input id = "postFormLogin" type="submit" value="Log In" style ="text-align: center; display: inline-block; width:85%">
-    </form>
+
+       <form id = "formLogin" ref="formLogin" enctype="multipart/form-data" method="get" action="/login"  >
+      <input type="text"  id="username" placeholder="login" style ="text-align: center; display: inline-block; width:85%">
+      <input type="text"  id="password" placeholder="password" style ="text-align: center; display: inline-block; width:85%">
+            <input type="text" id="database" placeholder="database" style ="text-align: center; display: inline-block; width:85%">
+
+          <button id="postFormLogin" type='submit' class="btn btn-info"  style ="text-align: center; display: inline-block; width:85%">Edit Title (A4)</button>
+
+      </form>
   </div>
+  
+  
 
 <article id ="body">
   

@@ -13,6 +13,8 @@ creation_time DATETIME NOT NULL,
 file_size INT NOT NULL,
   CONSTRAINT svg_id PRIMARY KEY (svg_id)
 );
+update FILE SET file_size = 1 where svg_id = 1;
+
 
  INSERT INTO FILE ( file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time,file_size ) VALUES ('Emoji_poo.svg', 'emoji', 'super big',
  0,0,0,0,'2020-01-01 10:10:10', 20);
