@@ -283,6 +283,10 @@ app.get('/query2', async function (req, res) {
 
 app.get('/query3', async function (req, res) {
   let message = null;
+  let query3;
+  let sortByName;
+  let sortBySize;
+  let sortByDate;
   let connection;
 
   try {
@@ -290,6 +294,20 @@ app.get('/query3', async function (req, res) {
 
     connection = await mysql.createConnection(credentials);
 
+    let date = new Date();
+    let cur_date = date.toISOString().slice(0, 10);
+    let time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+    let creation_time = cur_date + " " + time;
+    console.log(creation_time);
+    let [vRow, vCol] = await connection.execute("SELECT FILE.file_name, FILE.file_size, IMG_CHANGE.change_time, COUNT(*) AS count FROM FILE, IMG_CHANGE WHERE FILE.svg_id = IMG_CHANGE.svg_id and IMG_CHANGE.change_time between '2020-04-01 00:00:00' and " + '\'' + creation_time + '\'' + " GROUP BY IMG_CHANGE.svg_id");
+    let [vRow1, vCol1] = await connection.execute("SELECT FILE.file_name, FILE.file_size, IMG_CHANGE.change_time, COUNT(*) AS count FROM FILE, IMG_CHANGE WHERE FILE.svg_id = IMG_CHANGE.svg_id and IMG_CHANGE.change_time between '2020-04-01 00:00:00' and " + '\'' + creation_time + '\'' + " GROUP BY IMG_CHANGE.svg_id ORDER BY FILE.file_name");
+    let [vRow2, vCol2] = await connection.execute("SELECT FILE.file_name, FILE.file_size, IMG_CHANGE.change_time, COUNT(*) AS count FROM FILE, IMG_CHANGE WHERE FILE.svg_id = IMG_CHANGE.svg_id and IMG_CHANGE.change_time between '2020-04-01 00:00:00' and " + '\'' + creation_time + '\'' + " GROUP BY IMG_CHANGE.svg_id ORDER BY FILE.file_size");
+    let [vRow3, vCol3] = await connection.execute("SELECT FILE.file_name, FILE.file_size, IMG_CHANGE.change_time, COUNT(*) AS count FROM FILE, IMG_CHANGE WHERE FILE.svg_id = IMG_CHANGE.svg_id and IMG_CHANGE.change_time between '2020-04-01 00:00:00' and " + '\'' + creation_time + '\'' + " GROUP BY IMG_CHANGE.svg_id ORDER BY IMG_CHANGE.change_time");
+
+    query3 = vRow;
+    sortByName = vRow1;
+    sortBySize = vRow2;
+    sortByDate = vRow3
 
 
     message = "success";
@@ -301,7 +319,7 @@ app.get('/query3', async function (req, res) {
     if (connection && connection.end) connection.end();
 
   }
-  res.send({ message: message });
+  res.send({ message: message, query3: query3, sortByName: sortByName, sortBySize: sortBySize, sortByDate: sortByDate });
 });
 //#endregion
 

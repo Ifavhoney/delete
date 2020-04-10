@@ -12,14 +12,12 @@
 let showQuery1 = document.getElementById("showQuery1");
 let showQuery2 = document.getElementById("showQuery2");
 let showQuery3 = document.getElementById("showQuery3");
-let showQuery4 = document.getElementById("showQuery4");
 let showQuery5 = document.getElementById("showQuery5");
 
 function convertDate(temp) {
     let date = new Date(temp);
     if (date.getMonth() < 10) {
         return date.getFullYear() + '-' + "0" + (date.getMonth() + 1) + '-' + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
-
     }
     return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
 
@@ -687,6 +685,7 @@ $("#sortQuery2creationDate").on('click', (function (e) {
 }
 ));
 //#endregion
+//#region  query3
 $("#query3").on('click', (function (e) {
 
 
@@ -703,10 +702,206 @@ $("#query3").on('click', (function (e) {
             let id = "query3Body";
             clearTable(id);
 
-            //let loop = data.sortByDate;
+            let loop = data.query3;
 
             showQuery3.style.display = "block"
             alert(data.message);
+            console.log(data.query3);
+
+
+            let tBody = document.getElementById(id);
+            for (const item of loop) {
+                let tr = document.createElement("tr");
+                let file_name = document.createElement("th");
+                file_name.scope = "row";
+                file_name.innerHTML = item["file_name"];
+                tr.appendChild(file_name);
+
+                let file_size = document.createElement("th");
+                file_size.scope = "row";
+                file_size.innerHTML = item["file_size"];
+                tr.appendChild(file_size);
+
+                let change_time = document.createElement("th");
+                change_time.scope = "row";
+                change_time.innerHTML = convertDate(item["change_time"]);
+                tr.appendChild(change_time);
+                let count = document.createElement("th");
+                count.scope = "row";
+                count.innerHTML = item["count"];
+                tr.appendChild(count);
+
+
+                tBody.appendChild(tr);
+            }
+
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    e.preventDefault();
+}
+));
+$("#sortQuery3Name").on('click', (function (e) {
+
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/query3',   //The server endpoint we are connecting to
+        data: {
+
+
+
+        },
+        success: function (data) {
+            let id = "query3Body";
+            clearTable(id);
+
+            let loop = data.sortByName;
+
+            showQuery3.style.display = "block"
+            alert(data.message);
+
+
+            let tBody = document.getElementById(id);
+            for (const item of loop) {
+                let tr = document.createElement("tr");
+                let file_name = document.createElement("th");
+                file_name.scope = "row";
+                file_name.innerHTML = item["file_name"];
+                tr.appendChild(file_name);
+
+                let file_size = document.createElement("th");
+                file_size.scope = "row";
+                file_size.innerHTML = item["file_size"];
+                tr.appendChild(file_size);
+
+                let change_time = document.createElement("th");
+                change_time.scope = "row";
+                change_time.innerHTML = convertDate(item["change_time"]);
+                tr.appendChild(change_time);
+                let count = document.createElement("th");
+                count.scope = "row";
+                count.innerHTML = item["count"];
+                tr.appendChild(count);
+
+
+                tBody.appendChild(tr);
+            }
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    e.preventDefault();
+}
+));
+$("#sortQuery3Size").on('click', (function (e) {
+
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/query3',   //The server endpoint we are connecting to
+        data: {
+
+
+
+        },
+        success: function (data) {
+            let id = "query3Body";
+            clearTable(id);
+
+            let loop = data.sortBySize;
+
+            showQuery3.style.display = "block"
+            alert(data.message);
+
+
+            let tBody = document.getElementById(id);
+            for (const item of loop) {
+                let tr = document.createElement("tr");
+                let file_name = document.createElement("th");
+                file_name.scope = "row";
+                file_name.innerHTML = item["file_name"];
+                tr.appendChild(file_name);
+
+                let file_size = document.createElement("th");
+                file_size.scope = "row";
+                file_size.innerHTML = item["file_size"];
+                tr.appendChild(file_size);
+
+                let change_time = document.createElement("th");
+                change_time.scope = "row";
+                change_time.innerHTML = convertDate(item["change_time"]);
+                tr.appendChild(change_time);
+                let count = document.createElement("th");
+                count.scope = "row";
+                count.innerHTML = item["count"];
+                tr.appendChild(count);
+
+
+                tBody.appendChild(tr);
+            }
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    e.preventDefault();
+}
+));
+$("#sortQuery3Change_time").on('click', (function (e) {
+
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/query3',   //The server endpoint we are connecting to
+        data: {
+
+
+
+        },
+        success: function (data) {
+            let id = "query3Body";
+            clearTable(id);
+
+            let loop = data.sortByDate;
+
+            showQuery3.style.display = "block"
+            alert(data.message);
+
+            let tBody = document.getElementById(id);
+            for (const item of loop) {
+                let tr = document.createElement("tr");
+                let file_name = document.createElement("th");
+                file_name.scope = "row";
+                file_name.innerHTML = item["file_name"];
+                tr.appendChild(file_name);
+
+                let file_size = document.createElement("th");
+                file_size.scope = "row";
+                file_size.innerHTML = item["file_size"];
+                tr.appendChild(file_size);
+
+                let change_time = document.createElement("th");
+                change_time.scope = "row";
+                change_time.innerHTML = convertDate(item["change_time"]);
+                tr.appendChild(change_time);
+                let count = document.createElement("th");
+                count.scope = "row";
+                count.innerHTML = item["count"];
+                tr.appendChild(count);
+
+
+                tBody.appendChild(tr);
+            }
         },
         fail: function (data) {
 
@@ -717,6 +912,8 @@ $("#query3").on('click', (function (e) {
 }
 ));
 
+
+//#endregion
 $("#clearData").on('click', (function (e) {
     console.log("clicked!!!")
 
@@ -1002,7 +1199,6 @@ $(document).ready(function () {
                 showQuery1.style.display = "none"
                 showQuery2.style.display = "none"
                 showQuery3.style.display = "none"
-                showQuery4.style.display = "none"
                 showQuery5.style.display = "none"
 
 
