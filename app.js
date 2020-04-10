@@ -143,7 +143,6 @@ async function getSVG_ID(connection, fileName) {
   }
   return svg_id;
 
-
 }
 
 const bodyParser = require('body-parser');
@@ -210,6 +209,87 @@ app.get('/clearData', async function (req, res) {
   res.send({ message: message });
 });
 
+//#region execute queries
+app.get('/query1', async function (req, res) {
+  let message = null;
+  let connection;
+  let query1;
+  let sortByName;
+  let sortBySize;
+
+  try {
+
+
+    connection = await mysql.createConnection(credentials);
+    let [vRow, vCol] = await connection.execute("SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE;");
+    let [vRow1, vCol1] = await connection.execute("SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_name;");
+    let [vRow2, vCol2] = await connection.execute("SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size;");
+    message = "success";
+    query1 = vRow;
+    sortByName = vRow1;
+    sortBySize = vRow2;
+  }
+  catch (e) {
+    message = "fail";
+  }
+  finally {
+    if (connection && connection.end) connection.end();
+
+  }
+  res.send({ message: message, query1: query1, sortByName: sortByName, sortBySize: sortBySize });
+});
+
+
+app.get('/query2', async function (req, res) {
+  let message = null;
+  let connection;
+
+  try {
+
+
+    connection = await mysql.createConnection(credentials);
+
+
+
+    message = "success";
+  }
+  catch (e) {
+    message = "fail";
+  }
+  finally {
+    if (connection && connection.end) connection.end();
+
+  }
+  res.send({ message: message });
+});
+
+
+
+app.get('/query4', async function (req, res) {
+  let message = null;
+  let connection;
+
+  try {
+
+
+    connection = await mysql.createConnection(credentials);
+
+
+
+    message = "success";
+  }
+  catch (e) {
+    message = "fail";
+  }
+  finally {
+    if (connection && connection.end) connection.end();
+
+  }
+  res.send({ message: message });
+});
+//#endregion
+
+
 
 app.get('/displayStatus', async function (req, res) {
   let message = null;
@@ -234,7 +314,6 @@ app.get('/displayStatus', async function (req, res) {
     for (const item of vRow2) {
       changeCount = item["COUNT(*)"];
     }
-    //Check for duplicates
 
 
 

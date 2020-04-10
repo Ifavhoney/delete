@@ -1,3 +1,40 @@
+//QUERY 1
+SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE;
+SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_name ;
+SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
+
+//QUERY 2
+SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE  WHERE creation_time BETWEEN CAST('2020-04-09' AS DATE) AND CAST('2020-04-10' AS DATE);
+SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE  WHERE creation_time BETWEEN CAST('2020-04-09' AS DATE) AND CAST('2020-04-10' AS DATE) ORDER BY file_name;
+SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE  WHERE creation_time BETWEEN CAST('2020-04-09' AS DATE) AND CAST('2020-04-10' AS DATE) ORDER BY file_size;
+SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE  WHERE creation_time BETWEEN CAST('2020-04-09' AS DATE) AND CAST('2020-04-10' AS DATE) ORDER BY creation_time;
+
+//QUERY 3
+  //QUERY 3.2 DISPLAYS ALL FILES MODIFIED DURING THAT TIME
+SELECT * from IMG_CHANGE  WHERE change_time BETWEEN CAST('2020-04-09' AS DATE) AND CAST('2020-04-10' AS DATE) ORDER BY change_time;
+  //QUERY 3.2.1 (LOGIC)
+GET THE FIRST ROW & DISPLAY THAT
+  //QUERY 3.2.2
+GET NUMBER OF TIMES THE FILE HAS BEEN MODIFIED in the day
+  select * from IMG_CHANGE 
+where change_time between '2020-04-09 00:00:00' and '2020-04-09 23:59:59' AND svg_id = 1; 
+  //QUERY 3.2.3
+  Call getSVG(id) to show most its data
+  
+  //Query 3.3 (Sorts by Modification time)
+
+select * from IMG_CHANGE 
+where svg_id = 1  ORDER BY change_time; 
+  //Query 3.4 (Sorts by change_time, then gets the size given id)
+  USE A LOOP AND CALL SELECT * FROM FILE WHERE svg_id = 1; at correct time
+
+//Query 4 (Question 5)
+
+#insert into DOWNLOAD (d_descr, svg_id) VALUES ("SS", 2);
+#SELECT svg_id, COUNT(*) AS count FROM DOWNLOAD GROUP BY svg_id'
+#Then as you LOOP through, call SELECT * FROM FILE where svg_id = 1;  -> get summary + creation date
+
+
 //FILE TABLE
 
 CREATE TABLE IF NOT EXISTS FILE (

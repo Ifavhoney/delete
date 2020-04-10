@@ -28,6 +28,79 @@ function getClick(obj) {
 
 
 }
+
+$("#query1").on('click', (function (e) {
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/query1',   //The server endpoint we are connecting to
+        data: {
+
+
+        },
+        success: function (data) {
+
+            console.log(data.query1);
+            console.log(data.sortByName);
+            console.log(data.sortBySize);
+
+
+            alert(data.message);
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    e.preventDefault();
+}
+));
+
+$("#query2").on('click', (function (e) {
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/query2',   //The server endpoint we are connecting to
+        data: {
+
+
+        },
+        success: function (data) {
+
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    e.preventDefault();
+}
+));
+$("#query4").on('click', (function (e) {
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/query4',   //The server endpoint we are connecting to
+        data: {
+
+
+
+        },
+        success: function (data) {
+
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    e.preventDefault();
+}
+));
+
 $("#clearData").on('click', (function (e) {
     console.log("clicked!!!")
 
@@ -83,19 +156,6 @@ $("#storeFiles").on('click', (function (e) {
         success: function (data) {
 
             alert(data.message);
-            //   alert("hi");
-            /*
-            if (title.length < 1 || description.length < 1) {
-                alert("Too short!")
-            }
-            else {
-                alert("Success!")
-            }
-            */
-
-
-
-
         },
         fail: function (data) {
 
@@ -326,9 +386,8 @@ $(document).ready(function () {
                 let changeCount = document.getElementById("changeCount");
                 let downloadCount = document.getElementById("downloadCount");
 
-                fileCount.innerHTML = data.fileCount + " files";
-                changeCount.innerHTML = data.changeCount + " changes";
-                downloadCount.innerHTML = data.downloadCount + " download";
+                fileCount.innerHTML = data.fileCount + " file (s)";
+                changeCount.innerHTML = data.changeCount + " change (s)";
 
 
             },
