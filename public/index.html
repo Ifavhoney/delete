@@ -325,26 +325,27 @@
      
     </div>
 
-<h1>EXECUTE QUERY </h1>
+<h3 style = "margin: 1em">EXECUTE QUERY (REFRESH BEFORE MOVING ON TO NEXT QUERY) </h3>
      <div class="grid-container" style ="background-color:beige">
     
       <div id="item1">
                <button type='submit' id = "query1" class="btn btn-info">Query #1 (A4)</button>
            
+           <div id="showQuery1" class ="" style="background-color: white;">
+
+      <div class="grid-container_inner" style ="background-color:beige">
+      <div id="innerItem1">
+
+             <button type='submit' id = "sortQuery1Name" class="btn btn-info">Query1: Sort By Name (A4)</button>
+            </div>
+                  <div id="innerItem2">
+                  </div>
+
+                  <div id="innerItem3">
+
+             <button type='submit' id = "sortQuery1Size" class="btn btn-info">Query1: Sort By Size (A4)</button>
                     </div>
-                    
-       <div id="item2">
-                       <button type='submit' id = "query2" class="btn btn-info">Query #2 (A4)</button>
-
-      </div>
-      <div id="item3">
-                             <button type='submit' id = "query4" class="btn btn-info">Query #4 (A4)</button>
-
-      </div>
-
-    </div>
-
-           <div id="showQuery1" class ="center-screen" style="background-color: white;">
+            </div>
              QUERY 1
                     <table class="table table-bordered">
   <thead class="">
@@ -364,24 +365,80 @@
     </tr>
   </thead>
   <tbody id = "query1Body">
+
+
+
+
+
   </tbody>
 </table>
 
-     <div class="grid-container" style ="background-color:beige">
-      <div id="item1">
+   
 
-             <button type='submit' id = "sortQuery1Name" class="btn btn-info">Query1: Sort By Name (A4)</button>
-            </div>
-                  <div id="item2">
                   </div>
 
-                  <div id="item3">
+                    </div>
+                    
+                
+       <div id="item2">
+        
+                       <button type='submit' id = "query2" class="btn btn-info">Query #2 (A4)</button>
 
-             <button type='submit' id = "sortQuery1Size" class="btn btn-info">Query1: Sort By Size (A4)</button>
+                       
+    <div id="showQuery2" class ="" style="background-color: white;">
+           <div class="grid-container_inner" style ="background-color:beige">
+      <div id="innerItem1">
+
+             <button type='submit' id = "sortQuery2Name" class="btn btn-info">Query2: Sort By Name (A4)</button>
+            </div>
+                  <div id="innerItem2">
+                                 <button type='submit' id = "sortQuery2Size" class="btn btn-info">Query2: Sort By Size (A4)</button>
+
+                  </div>
+
+                  <div id="innerItem3">
+
+             <button type='submit' id = "sortQuery2creationDate" class="btn btn-info">Query2: Sort By Date (A4)</button>
                     </div>
             </div>
+             QUERY 2 (Between April 1rst & Current time)
+
+                    <table class="table table-bordered">
+  <thead class="">
+    <tr>
+      <th scope="col">file_name</th>
+      <th scope="col">file_title</th>
+                  <th scope="col">file_description</th>
+                          <th scope="col">n_rect</th>
+
+      <th scope="col">n_circ</th>
+      <th scope="col">n_path</th>
+      <th scope="col">n_group</th>
+            <th scope="col">creation_time</th>
+            <th scope="col">file_size</th>
+
+
+    </tr>
+  </thead>
+  <tbody id = "query2Body">
+  </tbody>
+</table>
+
 
                   </div>
+
+
+
+
+
+      </div>
+      <div id="item3">
+                             <button type='submit' id = "query4" class="btn btn-info">Query #4 (A4)</button>
+
+      </div>
+
+    </div>
+
 
 
 
@@ -395,15 +452,15 @@
               <div id="outerItem2">
               
 
-    <div class="grid-container" style ="background-color: beige;">
+    <div class="grid-container_inner" style ="background-color: beige;">
     
-      <div id="item1">
+      <div id="innerItem1">
         <div id = "fileCount"></div> 
       </div>
-       <div id="item2">
+       <div id="innerItem2">
           <div id = "changeCount"></div> 
       </div>
-      <div id="item2">
+      <div id="innerItem3">
         <div id = "downloadCount"></div> 
       </div>
      

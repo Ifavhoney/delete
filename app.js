@@ -229,8 +229,6 @@ app.get('/query1', async function (req, res) {
     sortByName = vRow1;
     sortBySize = vRow2;
 
-    let date = new Date('2020-04-09T16:30:12.000Z');
-    console.log(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + date.getHours());
   }
   catch (e) {
     message = "fail";
@@ -247,13 +245,28 @@ app.get('/query2', async function (req, res) {
   let message = null;
   let connection;
 
+  let query2;
+  let sortByName;
+  let sortBySize;
+  let sortByDate;
   try {
 
 
     connection = await mysql.createConnection(credentials);
-
-
-
+    let date = new Date();
+    let cur_date = date.toISOString().slice(0, 10);
+    let time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+    let creation_time = cur_date + " " + time;
+    console.log(creation_time)
+    console.log("gets here");
+    let [vRow, vCol] = await connection.execute("SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE  WHERE creation_time BETWEEN '2020-04-01 00:00:00' AND " + '\'' + creation_time + '\'');
+    let [vRow1, vCol1] = await connection.execute("SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE  WHERE creation_time BETWEEN '2020-04-01 00:00:00' AND " + '\'' + creation_time + '\'' + " ORDER BY file_name");
+    let [vRow2, vCol2] = await connection.execute("SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE  WHERE creation_time BETWEEN '2020-04-01 00:00:00' AND " + '\'' + creation_time + '\'' + " ORDER BY file_size");
+    let [vRow3, vCol3] = await connection.execute("SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE  WHERE creation_time BETWEEN '2020-04-01 00:00:00' AND " + '\'' + creation_time + '\'' + " ORDER BY creation_time");
+    query2 = vRow;
+    sortByName = vRow1;
+    sortBySize = vRow2;
+    sortByDate = vRow3
     message = "success";
   }
   catch (e) {
@@ -263,7 +276,7 @@ app.get('/query2', async function (req, res) {
     if (connection && connection.end) connection.end();
 
   }
-  res.send({ message: message });
+  res.send({ message: message, query2: query2, sortByName: sortByName, sortBySize: sortBySize, sortByDate: sortByDate });
 });
 
 

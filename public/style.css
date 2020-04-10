@@ -40,6 +40,11 @@ thead tr th{
 #item2 { grid-area: two; }
 #item3 { grid-area: three; }
 
+#innerItem1 { grid-area: one1; }
+#innerItem2 { grid-area: two1; }
+#innerItem3 { grid-area: three1; }
+
+
 
 #outerItem1 { grid-area: one1; }
 #outerItem2 { grid-area: two1; }
@@ -49,10 +54,23 @@ thead tr th{
 
   display: grid;
   grid-template-areas:
-    'one two three';
-  grid-gap: 10px;
+    'one'
+    'two'
+    'three';
+   
+  grid-gap: 2px;
   width: 100%;
 }
+.grid-container_inner {
+            background-color: rgb(255, 249, 249);
+
+  display: grid;
+  grid-template-areas:
+    'one1 two1 three1';
+  grid-gap: 2px;
+  width: 100%;
+}
+
 
 .grid-container2 {
             background-color: rgb(255, 249, 249);
