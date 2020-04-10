@@ -692,7 +692,7 @@ $("#query4").on('click', (function (e) {
     $.ajax({
         type: 'get',            //Request type
         dataType: 'json',       //Data type - we will use JSON for almost everything 
-        url: '/query4',   //The server endpoint we are connecting to
+        url: '/query3',   //The server endpoint we are connecting to
         data: {
 
 
