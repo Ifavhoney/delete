@@ -9,6 +9,24 @@
 
 
 
+let showQuery1 = document.getElementById("showQuery1");
+
+function convertDate(temp) {
+    let date = new Date(temp);
+    if (date.getMonth() < 10) {
+        return date.getFullYear() + '-' + "0" + (date.getMonth() + 1) + '-' + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+
+    }
+    return date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + " " + date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+
+
+}
+function clearTable(id) {
+    let query = document.getElementById(id);
+    while (query.hasChildNodes()) {
+        query.removeChild(query.childNodes[0]);
+    }
+}
 
 
 function getClick(obj) {
@@ -29,6 +47,7 @@ function getClick(obj) {
 
 }
 
+//#region  QUERY1
 $("#query1").on('click', (function (e) {
 
     $.ajax({
@@ -40,13 +59,166 @@ $("#query1").on('click', (function (e) {
 
         },
         success: function (data) {
+            let id = "query1Body";
+            let loop = data.query1;
+            clearTable(id);
+            showQuery1.style.display = "block"
 
             console.log(data.query1);
-            console.log(data.sortByName);
-            console.log(data.sortBySize);
 
 
             alert(data.message);
+
+
+            //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
+
+
+
+            let tBody = document.getElementById(id);
+            for (const item of loop) {
+                let tr = document.createElement("tr");
+                let file_name = document.createElement("th");
+                file_name.scope = "row";
+                file_name.innerHTML = item["file_name"];
+                tr.appendChild(file_name);
+
+                let file_title = document.createElement("th");
+                file_title.scope = "row";
+                file_title.innerHTML = item["file_title"];
+                tr.appendChild(file_title);
+
+                let file_description = document.createElement("th");
+                file_description.scope = "row";
+                file_description.innerHTML = item["file_description"];
+                tr.appendChild(file_description);
+
+                let n_rect = document.createElement("th");
+                n_rect.scope = "row";
+                n_rect.innerHTML = item["n_rect"];
+                tr.appendChild(n_rect);
+
+                let n_circ = document.createElement("th");
+                n_circ.scope = "row";
+                n_circ.innerHTML = item["n_circ"];
+                tr.appendChild(n_circ);
+
+                let n_path = document.createElement("th");
+                n_path.scope = "row";
+                n_path.innerHTML = item["n_path"];
+                tr.appendChild(n_path);
+
+                let n_group = document.createElement("th");
+                n_group.scope = "row";
+                n_group.innerHTML = item["n_group"];
+                tr.appendChild(n_group);
+
+                let creation_time = document.createElement("th");
+                creation_time.scope = "row";
+                creation_time.innerHTML = convertDate(item["creation_time"]);
+
+                tr.appendChild(creation_time);
+
+                let file_size = document.createElement("th");
+                file_size.scope = "row";
+                file_size.innerHTML = item["file_size"];
+                tr.appendChild(file_size);
+
+                tBody.appendChild(tr);
+
+
+            }
+
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    //e.preventDefault();
+}
+));
+
+
+
+$("#sortQuery1Name").on('click', (function (e) {
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/query1',   //The server endpoint we are connecting to
+        data: {
+
+
+        },
+        success: function (data) {
+            let id = "query1Body";
+            showQuery1.style.display = "block";
+            clearTable(id);
+            let loop = data.sortByName;
+
+
+
+            alert(data.message);
+
+
+            //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
+
+
+
+            let tBody = document.getElementById(id);
+            for (const item of loop) {
+                let tr = document.createElement("tr");
+                let file_name = document.createElement("th");
+                file_name.scope = "row";
+                file_name.innerHTML = item["file_name"];
+                tr.appendChild(file_name);
+
+                let file_title = document.createElement("th");
+                file_title.scope = "row";
+                file_title.innerHTML = item["file_title"];
+                tr.appendChild(file_title);
+
+                let file_description = document.createElement("th");
+                file_description.scope = "row";
+                file_description.innerHTML = item["file_description"];
+                tr.appendChild(file_description);
+
+                let n_rect = document.createElement("th");
+                n_rect.scope = "row";
+                n_rect.innerHTML = item["n_rect"];
+                tr.appendChild(n_rect);
+
+                let n_circ = document.createElement("th");
+                n_circ.scope = "row";
+                n_circ.innerHTML = item["n_circ"];
+                tr.appendChild(n_circ);
+
+                let n_path = document.createElement("th");
+                n_path.scope = "row";
+                n_path.innerHTML = item["n_path"];
+                tr.appendChild(n_path);
+
+                let n_group = document.createElement("th");
+                n_group.scope = "row";
+                n_group.innerHTML = item["n_group"];
+                tr.appendChild(n_group);
+
+                let creation_time = document.createElement("th");
+                creation_time.scope = "row";
+                creation_time.innerHTML = convertDate(item["creation_time"]);
+
+                tr.appendChild(creation_time);
+
+                let file_size = document.createElement("th");
+                file_size.scope = "row";
+                file_size.innerHTML = item["file_size"];
+                tr.appendChild(file_size);
+
+                tBody.appendChild(tr);
+
+
+            }
+
         },
         fail: function (data) {
 
@@ -56,6 +228,100 @@ $("#query1").on('click', (function (e) {
     e.preventDefault();
 }
 ));
+
+$("#sortQuery1Size").on('click', (function (e) {
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/query1',   //The server endpoint we are connecting to
+        data: {
+
+
+        },
+        success: function (data) {
+            let id = "query1Body";
+            let loop = data.sortBySize
+            clearTable(id);
+            showQuery1.style.display = "block"
+
+            console.log(data.query1);
+
+
+            alert(data.message);
+
+
+            //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
+
+
+
+            let tBody = document.getElementById(id);
+            for (const item of loop) {
+                let tr = document.createElement("tr");
+                let file_name = document.createElement("th");
+                file_name.scope = "row";
+                file_name.innerHTML = item["file_name"];
+                tr.appendChild(file_name);
+
+                let file_title = document.createElement("th");
+                file_title.scope = "row";
+                file_title.innerHTML = item["file_title"];
+                tr.appendChild(file_title);
+
+                let file_description = document.createElement("th");
+                file_description.scope = "row";
+                file_description.innerHTML = item["file_description"];
+                tr.appendChild(file_description);
+
+                let n_rect = document.createElement("th");
+                n_rect.scope = "row";
+                n_rect.innerHTML = item["n_rect"];
+                tr.appendChild(n_rect);
+
+                let n_circ = document.createElement("th");
+                n_circ.scope = "row";
+                n_circ.innerHTML = item["n_circ"];
+                tr.appendChild(n_circ);
+
+                let n_path = document.createElement("th");
+                n_path.scope = "row";
+                n_path.innerHTML = item["n_path"];
+                tr.appendChild(n_path);
+
+                let n_group = document.createElement("th");
+                n_group.scope = "row";
+                n_group.innerHTML = item["n_group"];
+                tr.appendChild(n_group);
+
+                let creation_time = document.createElement("th");
+                creation_time.scope = "row";
+                creation_time.innerHTML = convertDate(item["creation_time"]);
+
+                tr.appendChild(creation_time);
+
+                let file_size = document.createElement("th");
+                file_size.scope = "row";
+                file_size.innerHTML = item["file_size"];
+                tr.appendChild(file_size);
+
+                tBody.appendChild(tr);
+
+
+            }
+
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    //e.preventDefault();
+}
+));
+
+//#endregion
+
+
 
 $("#query2").on('click', (function (e) {
 
@@ -382,6 +648,9 @@ $(document).ready(function () {
             },
             //Use only for send
             success: function (data) {
+                showQuery1 = document.getElementById("showQuery1");
+                showQuery1.style.display = "none"
+
                 let fileCount = document.getElementById("fileCount");
                 let changeCount = document.getElementById("changeCount");
                 let downloadCount = document.getElementById("downloadCount");

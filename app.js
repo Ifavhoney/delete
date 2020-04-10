@@ -228,6 +228,9 @@ app.get('/query1', async function (req, res) {
     query1 = vRow;
     sortByName = vRow1;
     sortBySize = vRow2;
+
+    let date = new Date('2020-04-09T16:30:12.000Z');
+    console.log(date.getFullYear() + '-' + (date.getMonth() + 1) + '-' + date.getDate() + date.getHours());
   }
   catch (e) {
     message = "fail";
