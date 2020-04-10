@@ -687,7 +687,8 @@ $("#sortQuery2creationDate").on('click', (function (e) {
 }
 ));
 //#endregion
-$("#query4").on('click', (function (e) {
+$("#query3").on('click', (function (e) {
+
 
     $.ajax({
         type: 'get',            //Request type
@@ -699,7 +700,13 @@ $("#query4").on('click', (function (e) {
 
         },
         success: function (data) {
+            let id = "query3Body";
+            clearTable(id);
 
+            //let loop = data.sortByDate;
+
+            showQuery3.style.display = "block"
+            alert(data.message);
         },
         fail: function (data) {
 

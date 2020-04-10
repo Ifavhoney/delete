@@ -1,9 +1,14 @@
 //QUERY 1
+ Display all files. Include all data from FILE except svg_id. Your UI must allow files to be sorted either by name or by size.
+
 SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE;
 SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_name ;
 SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
 
 //QUERY 2
+Display all files created between specific dates.
+Include all data from FILE except svg_id. 
+Allow the user to sort the results by file name, size, or creation date.
 SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE  WHERE creation_time BETWEEN CAST('2020-04-09' AS DATE) AND CAST('2020-04-10' AS DATE);
 SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE  WHERE creation_time BETWEEN CAST('2020-04-09' AS DATE) AND CAST('2020-04-10' AS DATE) ORDER BY file_name;
 SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE  WHERE creation_time BETWEEN CAST('2020-04-09' AS DATE) AND CAST('2020-04-10' AS DATE) ORDER BY file_size;
@@ -11,9 +16,12 @@ SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group,
 
 //QUERY 3
   //QUERY 3.2 DISPLAYS ALL FILES MODIFIED DURING THAT TIME
-SELECT * from IMG_CHANGE  WHERE change_time BETWEEN CAST('2020-04-09' AS DATE) AND CAST('2020-04-10' AS DATE) ORDER BY change_time;
-  //QUERY 3.2.1 (LOGIC)
+  select * from IMG_CHANGE 
+where change_time between '2020-04-09 00:00:00' and '2020-04-09 23:59:59' 
+  //3.2.1
 GET THE FIRST ROW & DISPLAY THAT
+  select * from IMG_CHANGE 
+where change_time between '2020-04-09 00:00:00' and '2020-04-09 23:59:59' ORDER BY change_time;
   //QUERY 3.2.2
 GET NUMBER OF TIMES THE FILE HAS BEEN MODIFIED in the day
   select * from IMG_CHANGE 
@@ -21,6 +29,27 @@ where change_time between '2020-04-09 00:00:00' and '2020-04-09 23:59:59' AND sv
   //QUERY 3.2.3
   Call getSVG(id) to show most its data
   
+SELECT FILE.file_name , FILE.file_size , IMG_CHANGE.change_time, COUNT(*) AS count 
+FROM FILE ,IMG_CHANGE 
+WHERE FILE.svg_id = IMG_CHANGE.svg_id and IMG_CHANGE.change_time between '2020-04-09 00:00:00' and '2020-04-09 23:59:59';
+
+//QUERY 3 - MODIFICATION DATE
+SELECT FILE.file_name , FILE.file_size , IMG_CHANGE.change_time, COUNT(*) AS count 
+FROM FILE ,IMG_CHANGE 
+WHERE FILE.svg_id = IMG_CHANGE.svg_id and IMG_CHANGE.change_time between '2020-04-09 00:00:00' and '2020-04-09 23:59:59' order by IMG_CHANGE.change_time ;
+
+//QUERY 3 - FILE NAME
+SELECT FILE.file_name , FILE.file_size , IMG_CHANGE.change_time, COUNT(*) AS count 
+FROM FILE ,IMG_CHANGE 
+WHERE FILE.svg_id = IMG_CHANGE.svg_id and IMG_CHANGE.change_time between '2020-04-09 00:00:00' and '2020-04-09 23:59:59' order by FILE.file_name ;
+
+
+SELECT FILE.file_name , FILE.file_size , IMG_CHANGE.change_time, COUNT(*) AS count 
+FROM FILE ,IMG_CHANGE 
+WHERE FILE.svg_id = IMG_CHANGE.svg_id and IMG_CHANGE.change_time between '2020-04-09 00:00:00' and '2020-04-09 23:59:59' order by FILE.file_size ;
+
+
+
   //Query 3.3 (Sorts by Modification time)
 
 select * from IMG_CHANGE 
