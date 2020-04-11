@@ -66,14 +66,13 @@ where svg_id = 1  ORDER BY change_time;
 
 //QUERY 4
 
-SELECT file_name, file_size, n_rect, n_circ, n_path, n_group FROM FILE where n_path between 0 and 10;
+SELECT file_name, file_size, n_path FROM FILE where n_path between 0 and 10;
 
-SELECT file_name, file_size, n_rect, n_circ, n_path, n_group FROM FILE where n_path between 0 and 10 ORDER BY file_name;
+SELECT file_name, file_size, n_path FROM FILE where n_path between 0 and 10 ORDER BY file_name;
 
-SELECT file_name, file_size, n_rect, n_circ, n_path, n_group FROM FILE where n_path between 0 and 10 ORDER BY file_size;
+SELECT file_name, file_size, n_path FROM FILE where n_path between 0 and 10 ORDER BY file_size;
 
-SELECT file_name, file_size, n_rect, n_circ, n_path, n_group FROM FILE where n_path between 0 and 10 ORDER BY n_path;
-
+SELECT file_name, file_size, n_path where n_path between 0 and 10 ORDER BY  n_path
 
 //Query 5 
 

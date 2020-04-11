@@ -121,8 +121,6 @@ $("#query4").on('click', (function (e) {
                     tr.appendChild(shapeCount);
 
 
-
-
                     tBody.appendChild(tr);
 
 
@@ -150,70 +148,267 @@ $("#query4").on('click', (function (e) {
 
 $("#sortQuery4Name").on('click', (function (e) {
 
-    $.ajax({
-        type: 'get',            //Request type
-        dataType: 'json',       //Data type - we will use JSON for almost everything 
-        url: '/query4',   //The server endpoint we are connecting to
-        data: {
+
+    let shape = document.getElementById("shape");
+    let begin = document.getElementById("begin");
+    let end = document.getElementById("end");
+
+    if (shape.selectedIndex == 0) {
+
+        alert("Select a shape");
+    }
 
 
-        },
-        success: function (data) {
-            let id = "query4Body";
-            clearTable(id);
-            showQuery4.style.display = "block"
+    else if (begin.value > end.value) {
+        alert("Beginning is greater than end value");
+
+    }
+
+
+    else {
+        let shapeValue = shape.options[shape.selectedIndex].value;
+        let beginValue = begin.options[begin.selectedIndex].value;
+        let endValue = end.options[end.selectedIndex].value;
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/query4',   //The server endpoint we are connecting to
+            data: {
+                shape: shapeValue,
+                begin: beginValue,
+                end: endValue
+
+            },
+            success: function (data) {
+                let id = "query4Body";
+                clearTable(id);
+                showQuery4.style.display = "block"
+                let loop = data.sortByName
+
+                alert(data.message);
+
+
+                //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
 
 
 
-            alert(data.message);
+                let tBody = document.getElementById(id);
+                for (const item of loop) {
+                    let tr = document.createElement("tr");
+                    let file_name = document.createElement("th");
+                    file_name.scope = "row";
+                    file_name.innerHTML = item["file_name"];
+                    tr.appendChild(file_name);
 
 
-            //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
+                    let file_size = document.createElement("th");
+                    file_size.scope = "row";
+                    file_size.innerHTML = item["file_size"];
+                    tr.appendChild(file_size);
+
+                    let shapeCount = document.createElement("th");
+                    shapeCount.scope = "row";
+                    shapeCount.innerHTML = item[shapeValue];
+                    tr.appendChild(shapeCount);
 
 
+                    tBody.appendChild(tr);
 
-        },
-        fail: function (data) {
 
-        }
-    });
+                }
 
-    e.preventDefault();
+
+                alert(data.message);
+
+
+                //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
+
+            },
+            fail: function (data) {
+
+            }
+        });
+
+        e.preventDefault();
+    }
 }
-));
+))
 
 
 $("#sortQuery4Size").on('click', (function (e) {
 
-    $.ajax({
-        type: 'get',            //Request type
-        dataType: 'json',       //Data type - we will use JSON for almost everything 
-        url: '/query4',   //The server endpoint we are connecting to
-        data: {
+
+    let shape = document.getElementById("shape");
+    let begin = document.getElementById("begin");
+    let end = document.getElementById("end");
+
+    if (shape.selectedIndex == 0) {
+
+        alert("Select a shape");
+    }
 
 
-        },
-        success: function (data) {
-            let id = "query4Body";
-            clearTable(id);
-            showQuery4.style.display = "block"
+    else if (begin.value > end.value) {
+        alert("Beginning is greater than end value");
+
+    }
+
+
+    else {
+        let shapeValue = shape.options[shape.selectedIndex].value;
+        let beginValue = begin.options[begin.selectedIndex].value;
+        let endValue = end.options[end.selectedIndex].value;
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/query4',   //The server endpoint we are connecting to
+            data: {
+                shape: shapeValue,
+                begin: beginValue,
+                end: endValue
+
+            },
+            success: function (data) {
+                let id = "query4Body";
+                clearTable(id);
+                showQuery4.style.display = "block"
+                let loop = data.sortBySize;
+
+                alert(data.message);
+
+
+                //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
 
 
 
-            alert(data.message);
+                let tBody = document.getElementById(id);
+                for (const item of loop) {
+                    let tr = document.createElement("tr");
+                    let file_name = document.createElement("th");
+                    file_name.scope = "row";
+                    file_name.innerHTML = item["file_name"];
+                    tr.appendChild(file_name);
 
 
-            //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
+                    let file_size = document.createElement("th");
+                    file_size.scope = "row";
+                    file_size.innerHTML = item["file_size"];
+                    tr.appendChild(file_size);
+
+                    let shapeCount = document.createElement("th");
+                    shapeCount.scope = "row";
+                    shapeCount.innerHTML = item[shapeValue];
+                    tr.appendChild(shapeCount);
+
+
+                    tBody.appendChild(tr);
+
+
+                }
+
+
+                alert(data.message);
+
+
+                //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
+
+            },
+            fail: function (data) {
+
+            }
+        });
+
+        e.preventDefault();
+    }
+}
+));
+
+
+$("#sortQuery4Shape").on('click', (function (e) {
+
+
+    let shape = document.getElementById("shape");
+    let begin = document.getElementById("begin");
+    let end = document.getElementById("end");
+
+    if (shape.selectedIndex == 0) {
+
+        alert("Select a shape");
+    }
+
+
+    else if (begin.value > end.value) {
+        alert("Beginning is greater than end value");
+
+    }
+
+
+    else {
+        let shapeValue = shape.options[shape.selectedIndex].value;
+        let beginValue = begin.options[begin.selectedIndex].value;
+        let endValue = end.options[end.selectedIndex].value;
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/query4',   //The server endpoint we are connecting to
+            data: {
+                shape: shapeValue,
+                begin: beginValue,
+                end: endValue
+
+            },
+            success: function (data) {
+                let id = "query4Body";
+                clearTable(id);
+                showQuery4.style.display = "block"
+                let loop = data.sortByShape;
+
+                alert(data.message);
+
+
+                //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
 
 
 
-        },
-        fail: function (data) {
+                let tBody = document.getElementById(id);
+                for (const item of loop) {
+                    let tr = document.createElement("tr");
+                    let file_name = document.createElement("th");
+                    file_name.scope = "row";
+                    file_name.innerHTML = item["file_name"];
+                    tr.appendChild(file_name);
 
-        }
-    });
 
-    e.preventDefault();
+                    let file_size = document.createElement("th");
+                    file_size.scope = "row";
+                    file_size.innerHTML = item["file_size"];
+                    tr.appendChild(file_size);
+
+                    let shapeCount = document.createElement("th");
+                    shapeCount.scope = "row";
+                    shapeCount.innerHTML = item[shapeValue];
+                    tr.appendChild(shapeCount);
+
+
+                    tBody.appendChild(tr);
+
+
+                }
+
+
+                alert(data.message);
+
+
+                //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
+
+            },
+            fail: function (data) {
+
+            }
+        });
+
+        e.preventDefault();
+    }
 }
 ));
 

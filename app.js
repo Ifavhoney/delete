@@ -346,6 +346,7 @@ app.get('/query4', async function (req, res) {
     sortBySize = vRow2;
     sortByShape = vRow3;
     message = "success";
+
   }
   catch (e) {
     message = "fail";
