@@ -244,7 +244,7 @@ app.get('/query1', async function (req, res) {
 app.get('/query2', async function (req, res) {
   let message = null;
   let connection;
-
+  let creation_time = req.query.creation_time;
   let query2;
   let sortByName;
   let sortBySize;
@@ -253,11 +253,6 @@ app.get('/query2', async function (req, res) {
 
 
     connection = await mysql.createConnection(credentials);
-    let date = new Date();
-    let cur_date = date.toISOString().slice(0, 10);
-    let time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
-    let creation_time = cur_date + " " + time;
-    console.log(creation_time)
     console.log("gets here");
     let [vRow, vCol] = await connection.execute("SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE  WHERE creation_time BETWEEN '2020-04-01 00:00:00' AND " + '\'' + creation_time + '\'');
     let [vRow1, vCol1] = await connection.execute("SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE  WHERE creation_time BETWEEN '2020-04-01 00:00:00' AND " + '\'' + creation_time + '\'' + " ORDER BY file_name");
@@ -287,6 +282,8 @@ app.get('/query3', async function (req, res) {
   let sortByName;
   let sortBySize;
   let sortByDate;
+  let creation_time = req.query.creation_time;
+
   let connection;
 
   try {
@@ -294,10 +291,7 @@ app.get('/query3', async function (req, res) {
 
     connection = await mysql.createConnection(credentials);
 
-    let date = new Date();
-    let cur_date = date.toISOString().slice(0, 10);
-    let time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
-    let creation_time = cur_date + " " + time;
+
     console.log(creation_time);
     let [vRow, vCol] = await connection.execute("SELECT FILE.file_name, FILE.file_size, IMG_CHANGE.change_time, COUNT(*) AS count FROM FILE, IMG_CHANGE WHERE FILE.svg_id = IMG_CHANGE.svg_id and IMG_CHANGE.change_time between '2020-04-01 00:00:00' and " + '\'' + creation_time + '\'' + " GROUP BY IMG_CHANGE.svg_id");
     let [vRow1, vCol1] = await connection.execute("SELECT FILE.file_name, FILE.file_size, IMG_CHANGE.change_time, COUNT(*) AS count FROM FILE, IMG_CHANGE WHERE FILE.svg_id = IMG_CHANGE.svg_id and IMG_CHANGE.change_time between '2020-04-01 00:00:00' and " + '\'' + creation_time + '\'' + " GROUP BY IMG_CHANGE.svg_id ORDER BY FILE.file_name");
@@ -322,6 +316,65 @@ app.get('/query3', async function (req, res) {
   res.send({ message: message, query3: query3, sortByName: sortByName, sortBySize: sortBySize, sortByDate: sortByDate });
 });
 //#endregion
+
+
+app.get('/query5', async function (req, res) {
+
+  let message = null;
+  let query5;
+  let sortByName;
+  let sortBySize;
+  let sortByDate;
+  let connection;
+
+  try {
+
+
+    connection = await mysql.createConnection(credentials);
+
+
+
+    message = "success";
+  }
+  catch (e) {
+    message = "fail";
+  }
+  finally {
+    if (connection && connection.end) connection.end();
+
+  }
+  res.send({ message: message });
+});
+
+
+app.get('/query6', async function (req, res) {
+
+  let message = null;
+  let query6;
+  let sortByName;
+  let sortBySize;
+  let sortByDate;
+  let connection;
+
+  try {
+
+
+    connection = await mysql.createConnection(credentials);
+
+
+
+    message = "success";
+  }
+  catch (e) {
+    message = "fail";
+  }
+  finally {
+    if (connection && connection.end) connection.end();
+
+  }
+  res.send({ message: message });
+});
+
 
 
 
@@ -474,6 +527,8 @@ app.get("/storeFiles", async function (req, res, next) {
 });
 
 app.get("/trackDownloads", async function (req, res, next) {
+
+
   let message = null;
   let fileName = req.query.fileName;
   let connection;
@@ -490,8 +545,12 @@ app.get("/trackDownloads", async function (req, res, next) {
       d_descr = item["file_description"];
       console.log(d_descr);
     }
-    await connection.execute
-      ("INSERT INTO DOWNLOAD (d_descr, svg_id) VALUES(" + '\'' + d_descr + '\', ' + svg_id + ");");
+    let date = new Date();
+    let cur_date = date.toISOString().slice(0, 10);
+    let time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
+    let creation_time = cur_date + " " + time;
+    //+ '\'' + creation_time + '\'' + 
+    await connection.execute("INSERT INTO DOWNLOAD (d_descr, svg_id) VALUES(" + '\'' + "alt: " + d_descr + '\', ' + svg_id + ");");
 
 
     message = "success";
@@ -643,6 +702,8 @@ app.get('/editFileNameTitle', async function (req, res) {
 
       await connection.execute("update FILE SET file_size =" + getSize(fileName) + " where svg_id = " + svg_id + ";");
 
+      await connection.execute("update FILE SET file_title = " + '\'' + editTitle + '\'' + " where svg_id = " + svg_id + ";");
+
     } catch (e) {
       console.log("Query file error: " + e);
       message = "fail"
@@ -656,7 +717,7 @@ app.get('/editFileNameTitle', async function (req, res) {
   else {
     message = "fail";
   }
-  res.send({ message: message });
+  res.send({ message: message, title: editTitle });
 
 
 })
@@ -681,7 +742,7 @@ app.get('/editFileNameDesc', async function (req, res) {
 
 
   if (jsonValue == true) {
-    message = "success please refresh";
+    message = "success";
     let connection;
 
     try {
@@ -699,6 +760,7 @@ app.get('/editFileNameDesc', async function (req, res) {
 
       await connection.execute("update FILE SET file_size =" + getSize(fileName) + " where svg_id = " + svg_id + ";");
 
+      await connection.execute("update FILE SET file_description = " + '\'' + editDescription + '\'' + " where svg_id = " + svg_id + ";");
 
 
     } catch (e) {
@@ -714,7 +776,7 @@ app.get('/editFileNameDesc', async function (req, res) {
     message = "fail";
 
   }
-  res.send({ message: message });
+  res.send({ message: message, description: editDescription });
 
 
 })

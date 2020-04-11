@@ -14,6 +14,8 @@ let showQuery2 = document.getElementById("showQuery2");
 let showQuery3 = document.getElementById("showQuery3");
 let showQuery5 = document.getElementById("showQuery5");
 
+let showQuery6 = document.getElementById("showQuery6");
+
 function convertDate(temp) {
     let date = new Date(temp);
     if (date.getMonth() < 10) {
@@ -326,367 +328,407 @@ $("#sortQuery1Size").on('click', (function (e) {
 
 //#region query2
 $("#query2").on('click', (function (e) {
-
-    $.ajax({
-        type: 'get',            //Request type
-        dataType: 'json',       //Data type - we will use JSON for almost everything 
-        url: '/query2',   //The server endpoint we are connecting to
-        data: {
-
-
-        },
-        success: function (data) {
-            let id = "query2Body";
-            clearTable(id);
-
-            let loop = data.query2;
-
-            showQuery2.style.display = "block"
-            alert(data.message);
+    let creation_time = document.getElementById("creation_time");
+    if (creation_time.selectedIndex == 0) {
+        alert("Select a date");
+    }
+    else {
+        let selectedValue = creation_time.options[creation_time.selectedIndex].value;
 
 
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/query2',   //The server endpoint we are connecting to
+            data: {
+                creation_time: selectedValue
+
+            },
+            success: function (data) {
+                let id = "query2Body";
+                clearTable(id);
+
+                let loop = data.query2;
+
+                showQuery2.style.display = "block"
+                alert(data.message);
 
 
 
 
 
-            //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
+
+
+                //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
 
 
 
-            let tBody = document.getElementById(id);
-            for (const item of loop) {
-                let tr = document.createElement("tr");
-                let file_name = document.createElement("th");
-                file_name.scope = "row";
-                file_name.innerHTML = item["file_name"];
-                tr.appendChild(file_name);
+                let tBody = document.getElementById(id);
+                for (const item of loop) {
+                    let tr = document.createElement("tr");
+                    let file_name = document.createElement("th");
+                    file_name.scope = "row";
+                    file_name.innerHTML = item["file_name"];
+                    tr.appendChild(file_name);
 
-                let file_title = document.createElement("th");
-                file_title.scope = "row";
-                file_title.innerHTML = item["file_title"];
-                tr.appendChild(file_title);
+                    let file_title = document.createElement("th");
+                    file_title.scope = "row";
+                    file_title.innerHTML = item["file_title"];
+                    tr.appendChild(file_title);
 
-                let file_description = document.createElement("th");
-                file_description.scope = "row";
-                file_description.innerHTML = item["file_description"];
-                tr.appendChild(file_description);
+                    let file_description = document.createElement("th");
+                    file_description.scope = "row";
+                    file_description.innerHTML = item["file_description"];
+                    tr.appendChild(file_description);
 
-                let n_rect = document.createElement("th");
-                n_rect.scope = "row";
-                n_rect.innerHTML = item["n_rect"];
-                tr.appendChild(n_rect);
+                    let n_rect = document.createElement("th");
+                    n_rect.scope = "row";
+                    n_rect.innerHTML = item["n_rect"];
+                    tr.appendChild(n_rect);
 
-                let n_circ = document.createElement("th");
-                n_circ.scope = "row";
-                n_circ.innerHTML = item["n_circ"];
-                tr.appendChild(n_circ);
+                    let n_circ = document.createElement("th");
+                    n_circ.scope = "row";
+                    n_circ.innerHTML = item["n_circ"];
+                    tr.appendChild(n_circ);
 
-                let n_path = document.createElement("th");
-                n_path.scope = "row";
-                n_path.innerHTML = item["n_path"];
-                tr.appendChild(n_path);
+                    let n_path = document.createElement("th");
+                    n_path.scope = "row";
+                    n_path.innerHTML = item["n_path"];
+                    tr.appendChild(n_path);
 
-                let n_group = document.createElement("th");
-                n_group.scope = "row";
-                n_group.innerHTML = item["n_group"];
-                tr.appendChild(n_group);
+                    let n_group = document.createElement("th");
+                    n_group.scope = "row";
+                    n_group.innerHTML = item["n_group"];
+                    tr.appendChild(n_group);
 
-                let creation_time = document.createElement("th");
-                creation_time.scope = "row";
-                creation_time.innerHTML = convertDate(item["creation_time"]);
+                    let creation_time = document.createElement("th");
+                    creation_time.scope = "row";
+                    creation_time.innerHTML = convertDate(item["creation_time"]);
 
-                tr.appendChild(creation_time);
+                    tr.appendChild(creation_time);
 
-                let file_size = document.createElement("th");
-                file_size.scope = "row";
-                file_size.innerHTML = item["file_size"];
-                tr.appendChild(file_size);
+                    let file_size = document.createElement("th");
+                    file_size.scope = "row";
+                    file_size.innerHTML = item["file_size"];
+                    tr.appendChild(file_size);
 
-                tBody.appendChild(tr);
+                    tBody.appendChild(tr);
+                }
+            },
+            fail: function (data) {
+
             }
-        },
-        fail: function (data) {
 
-        }
-    });
-
+        });
+    }
 }
 ));
 $("#sortQuery2Name").on('click', (function (e) {
-
-    $.ajax({
-        type: 'get',            //Request type
-        dataType: 'json',       //Data type - we will use JSON for almost everything 
-        url: '/query2',   //The server endpoint we are connecting to
-        data: {
-
-
-        },
-        success: function (data) {
-            let id = "query2Body";
-            clearTable(id);
-
-            let loop = data.sortByName;
-
-            showQuery2.style.display = "block"
-            alert(data.message);
+    let creation_time = document.getElementById("creation_time");
+    if (creation_time.selectedIndex == 0) {
+        alert("Select a date");
+    }
+    else {
+        let selectedValue = creation_time.options[creation_time.selectedIndex].value;
 
 
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/query2',   //The server endpoint we are connecting to
+            data: {
+                creation_time: selectedValue
+
+            },
+            success: function (data) {
+                let id = "query2Body";
+                clearTable(id);
+
+                let loop = data.sortByName;
+
+                showQuery2.style.display = "block"
+                alert(data.message);
 
 
 
 
 
-            //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
+
+
+                //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
 
 
 
-            let tBody = document.getElementById(id);
-            for (const item of loop) {
-                let tr = document.createElement("tr");
-                let file_name = document.createElement("th");
-                file_name.scope = "row";
-                file_name.innerHTML = item["file_name"];
-                tr.appendChild(file_name);
+                let tBody = document.getElementById(id);
+                for (const item of loop) {
+                    let tr = document.createElement("tr");
+                    let file_name = document.createElement("th");
+                    file_name.scope = "row";
+                    file_name.innerHTML = item["file_name"];
+                    tr.appendChild(file_name);
 
-                let file_title = document.createElement("th");
-                file_title.scope = "row";
-                file_title.innerHTML = item["file_title"];
-                tr.appendChild(file_title);
+                    let file_title = document.createElement("th");
+                    file_title.scope = "row";
+                    file_title.innerHTML = item["file_title"];
+                    tr.appendChild(file_title);
 
-                let file_description = document.createElement("th");
-                file_description.scope = "row";
-                file_description.innerHTML = item["file_description"];
-                tr.appendChild(file_description);
+                    let file_description = document.createElement("th");
+                    file_description.scope = "row";
+                    file_description.innerHTML = item["file_description"];
+                    tr.appendChild(file_description);
 
-                let n_rect = document.createElement("th");
-                n_rect.scope = "row";
-                n_rect.innerHTML = item["n_rect"];
-                tr.appendChild(n_rect);
+                    let n_rect = document.createElement("th");
+                    n_rect.scope = "row";
+                    n_rect.innerHTML = item["n_rect"];
+                    tr.appendChild(n_rect);
 
-                let n_circ = document.createElement("th");
-                n_circ.scope = "row";
-                n_circ.innerHTML = item["n_circ"];
-                tr.appendChild(n_circ);
+                    let n_circ = document.createElement("th");
+                    n_circ.scope = "row";
+                    n_circ.innerHTML = item["n_circ"];
+                    tr.appendChild(n_circ);
 
-                let n_path = document.createElement("th");
-                n_path.scope = "row";
-                n_path.innerHTML = item["n_path"];
-                tr.appendChild(n_path);
+                    let n_path = document.createElement("th");
+                    n_path.scope = "row";
+                    n_path.innerHTML = item["n_path"];
+                    tr.appendChild(n_path);
 
-                let n_group = document.createElement("th");
-                n_group.scope = "row";
-                n_group.innerHTML = item["n_group"];
-                tr.appendChild(n_group);
+                    let n_group = document.createElement("th");
+                    n_group.scope = "row";
+                    n_group.innerHTML = item["n_group"];
+                    tr.appendChild(n_group);
 
-                let creation_time = document.createElement("th");
-                creation_time.scope = "row";
-                creation_time.innerHTML = convertDate(item["creation_time"]);
+                    let creation_time = document.createElement("th");
+                    creation_time.scope = "row";
+                    creation_time.innerHTML = convertDate(item["creation_time"]);
 
-                tr.appendChild(creation_time);
+                    tr.appendChild(creation_time);
 
-                let file_size = document.createElement("th");
-                file_size.scope = "row";
-                file_size.innerHTML = item["file_size"];
-                tr.appendChild(file_size);
+                    let file_size = document.createElement("th");
+                    file_size.scope = "row";
+                    file_size.innerHTML = item["file_size"];
+                    tr.appendChild(file_size);
 
-                tBody.appendChild(tr);
+                    tBody.appendChild(tr);
+                }
+            },
+            fail: function (data) {
+
             }
-        },
-        fail: function (data) {
+        });
 
-        }
-    });
-
-    e.preventDefault();
+        e.preventDefault();
+    }
 }
 ));
 
 
 $("#sortQuery2Size").on('click', (function (e) {
-
-    $.ajax({
-        type: 'get',            //Request type
-        dataType: 'json',       //Data type - we will use JSON for almost everything 
-        url: '/query2',   //The server endpoint we are connecting to
-        data: {
-
-
-        },
-        success: function (data) {
-            let id = "query2Body";
-            clearTable(id);
-
-            let loop = data.sortBySize;
-
-            showQuery2.style.display = "block"
-            alert(data.message);
+    let creation_time = document.getElementById("creation_time");
+    if (creation_time.selectedIndex == 0) {
+        alert("Select a date");
+    }
+    else {
+        let selectedValue = creation_time.options[creation_time.selectedIndex].value;
 
 
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/query2',   //The server endpoint we are connecting to
+            data: {
+                creation_time: selectedValue
+
+            },
+            success: function (data) {
+                let id = "query2Body";
+                clearTable(id);
+
+                let loop = data.sortBySize;
+
+                showQuery2.style.display = "block"
+                alert(data.message);
 
 
 
 
 
-            //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
+
+
+                //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
 
 
 
-            let tBody = document.getElementById(id);
-            for (const item of loop) {
-                let tr = document.createElement("tr");
-                let file_name = document.createElement("th");
-                file_name.scope = "row";
-                file_name.innerHTML = item["file_name"];
-                tr.appendChild(file_name);
+                let tBody = document.getElementById(id);
+                for (const item of loop) {
+                    let tr = document.createElement("tr");
+                    let file_name = document.createElement("th");
+                    file_name.scope = "row";
+                    file_name.innerHTML = item["file_name"];
+                    tr.appendChild(file_name);
 
-                let file_title = document.createElement("th");
-                file_title.scope = "row";
-                file_title.innerHTML = item["file_title"];
-                tr.appendChild(file_title);
+                    let file_title = document.createElement("th");
+                    file_title.scope = "row";
+                    file_title.innerHTML = item["file_title"];
+                    tr.appendChild(file_title);
 
-                let file_description = document.createElement("th");
-                file_description.scope = "row";
-                file_description.innerHTML = item["file_description"];
-                tr.appendChild(file_description);
+                    let file_description = document.createElement("th");
+                    file_description.scope = "row";
+                    file_description.innerHTML = item["file_description"];
+                    tr.appendChild(file_description);
 
-                let n_rect = document.createElement("th");
-                n_rect.scope = "row";
-                n_rect.innerHTML = item["n_rect"];
-                tr.appendChild(n_rect);
+                    let n_rect = document.createElement("th");
+                    n_rect.scope = "row";
+                    n_rect.innerHTML = item["n_rect"];
+                    tr.appendChild(n_rect);
 
-                let n_circ = document.createElement("th");
-                n_circ.scope = "row";
-                n_circ.innerHTML = item["n_circ"];
-                tr.appendChild(n_circ);
+                    let n_circ = document.createElement("th");
+                    n_circ.scope = "row";
+                    n_circ.innerHTML = item["n_circ"];
+                    tr.appendChild(n_circ);
 
-                let n_path = document.createElement("th");
-                n_path.scope = "row";
-                n_path.innerHTML = item["n_path"];
-                tr.appendChild(n_path);
+                    let n_path = document.createElement("th");
+                    n_path.scope = "row";
+                    n_path.innerHTML = item["n_path"];
+                    tr.appendChild(n_path);
 
-                let n_group = document.createElement("th");
-                n_group.scope = "row";
-                n_group.innerHTML = item["n_group"];
-                tr.appendChild(n_group);
+                    let n_group = document.createElement("th");
+                    n_group.scope = "row";
+                    n_group.innerHTML = item["n_group"];
+                    tr.appendChild(n_group);
 
-                let creation_time = document.createElement("th");
-                creation_time.scope = "row";
-                creation_time.innerHTML = convertDate(item["creation_time"]);
+                    let creation_time = document.createElement("th");
+                    creation_time.scope = "row";
+                    creation_time.innerHTML = convertDate(item["creation_time"]);
 
-                tr.appendChild(creation_time);
+                    tr.appendChild(creation_time);
 
-                let file_size = document.createElement("th");
-                file_size.scope = "row";
-                file_size.innerHTML = item["file_size"];
-                tr.appendChild(file_size);
+                    let file_size = document.createElement("th");
+                    file_size.scope = "row";
+                    file_size.innerHTML = item["file_size"];
+                    tr.appendChild(file_size);
 
-                tBody.appendChild(tr);
+                    tBody.appendChild(tr);
+                }
+            },
+            fail: function (data) {
+
             }
-        },
-        fail: function (data) {
+        });
 
-        }
-    });
-
-    e.preventDefault();
+        e.preventDefault();
+    }
 }
 ));
 
 
 $("#sortQuery2creationDate").on('click', (function (e) {
 
-    $.ajax({
-        type: 'get',            //Request type
-        dataType: 'json',       //Data type - we will use JSON for almost everything 
-        url: '/query2',   //The server endpoint we are connecting to
-        data: {
+    let creation_time = document.getElementById("creation_time");
+    if (creation_time.selectedIndex == 0) {
+        alert("Select a date");
+    }
+    else {
+        let selectedValue = creation_time.options[creation_time.selectedIndex].value;
 
 
-        },
-        success: function (data) {
-            let id = "query2Body";
-            clearTable(id);
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/query2',   //The server endpoint we are connecting to
+            data: {
+                creation_time: selectedValue
 
-            let loop = data.sortByDate;
+            },
+            success: function (data) {
+                let id = "query2Body";
+                clearTable(id);
 
-            showQuery2.style.display = "block"
-            alert(data.message);
+                let loop = data.sortByDate;
 
-
-
-
-
-
-
-            //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
-
+                showQuery2.style.display = "block"
+                alert(data.message);
 
 
-            let tBody = document.getElementById(id);
-            for (const item of loop) {
-                let tr = document.createElement("tr");
-                let file_name = document.createElement("th");
-                file_name.scope = "row";
-                file_name.innerHTML = item["file_name"];
-                tr.appendChild(file_name);
 
-                let file_title = document.createElement("th");
-                file_title.scope = "row";
-                file_title.innerHTML = item["file_title"];
-                tr.appendChild(file_title);
 
-                let file_description = document.createElement("th");
-                file_description.scope = "row";
-                file_description.innerHTML = item["file_description"];
-                tr.appendChild(file_description);
 
-                let n_rect = document.createElement("th");
-                n_rect.scope = "row";
-                n_rect.innerHTML = item["n_rect"];
-                tr.appendChild(n_rect);
 
-                let n_circ = document.createElement("th");
-                n_circ.scope = "row";
-                n_circ.innerHTML = item["n_circ"];
-                tr.appendChild(n_circ);
 
-                let n_path = document.createElement("th");
-                n_path.scope = "row";
-                n_path.innerHTML = item["n_path"];
-                tr.appendChild(n_path);
+                //SELECT file_name, file_title, file_description, n_rect, n_circ, n_path, n_group, creation_time, file_size from FILE ORDER BY file_size ;
 
-                let n_group = document.createElement("th");
-                n_group.scope = "row";
-                n_group.innerHTML = item["n_group"];
-                tr.appendChild(n_group);
 
-                let creation_time = document.createElement("th");
-                creation_time.scope = "row";
-                creation_time.innerHTML = convertDate(item["creation_time"]);
 
-                tr.appendChild(creation_time);
+                let tBody = document.getElementById(id);
+                for (const item of loop) {
+                    let tr = document.createElement("tr");
+                    let file_name = document.createElement("th");
+                    file_name.scope = "row";
+                    file_name.innerHTML = item["file_name"];
+                    tr.appendChild(file_name);
 
-                let file_size = document.createElement("th");
-                file_size.scope = "row";
-                file_size.innerHTML = item["file_size"];
-                tr.appendChild(file_size);
+                    let file_title = document.createElement("th");
+                    file_title.scope = "row";
+                    file_title.innerHTML = item["file_title"];
+                    tr.appendChild(file_title);
 
-                tBody.appendChild(tr);
+                    let file_description = document.createElement("th");
+                    file_description.scope = "row";
+                    file_description.innerHTML = item["file_description"];
+                    tr.appendChild(file_description);
+
+                    let n_rect = document.createElement("th");
+                    n_rect.scope = "row";
+                    n_rect.innerHTML = item["n_rect"];
+                    tr.appendChild(n_rect);
+
+                    let n_circ = document.createElement("th");
+                    n_circ.scope = "row";
+                    n_circ.innerHTML = item["n_circ"];
+                    tr.appendChild(n_circ);
+
+                    let n_path = document.createElement("th");
+                    n_path.scope = "row";
+                    n_path.innerHTML = item["n_path"];
+                    tr.appendChild(n_path);
+
+                    let n_group = document.createElement("th");
+                    n_group.scope = "row";
+                    n_group.innerHTML = item["n_group"];
+                    tr.appendChild(n_group);
+
+                    let creation_time = document.createElement("th");
+                    creation_time.scope = "row";
+                    creation_time.innerHTML = convertDate(item["creation_time"]);
+
+                    tr.appendChild(creation_time);
+
+                    let file_size = document.createElement("th");
+                    file_size.scope = "row";
+                    file_size.innerHTML = item["file_size"];
+                    tr.appendChild(file_size);
+
+                    tBody.appendChild(tr);
+                }
+            },
+            fail: function (data) {
+
             }
-        },
-        fail: function (data) {
+        });
 
-        }
-    });
-
-    e.preventDefault();
+        e.preventDefault();
+    }
 }
 ));
 //#endregion
 //#region  query3
-$("#query3").on('click', (function (e) {
+
+
+let creation_time = document.getElementById("creation_time");
+if (creation_time.selectedIndex == 0) {
+    alert("Select a date");
+}
+else {
+    let selectedValue = creation_time.options[creation_time.selectedIndex].value;
 
 
     $.ajax({
@@ -694,8 +736,7 @@ $("#query3").on('click', (function (e) {
         dataType: 'json',       //Data type - we will use JSON for almost everything 
         url: '/query3',   //The server endpoint we are connecting to
         data: {
-
-
+            creation_time: selectedValue
 
         },
         success: function (data) {
@@ -914,6 +955,63 @@ $("#sortQuery3Change_time").on('click', (function (e) {
 
 
 //#endregion
+
+//#region  query5
+$("#query5").on('click', (function (e) {
+
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/query5',   //The server endpoint we are connecting to
+        data: {
+
+
+
+        },
+        success: function (data) {
+
+            alert(data.message);
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    e.preventDefault();
+}
+));
+
+//#endregion
+//#region  query6
+$("#query6").on('click', (function (e) {
+
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/query6',   //The server endpoint we are connecting to
+        data: {
+
+
+
+        },
+        success: function (data) {
+            alert(data.message);
+
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    e.preventDefault();
+}
+));
+
+
+//#endregion
+
 $("#clearData").on('click', (function (e) {
     console.log("clicked!!!")
 
@@ -1201,6 +1299,8 @@ $(document).ready(function () {
                 showQuery3.style.display = "none"
                 showQuery5.style.display = "none"
 
+                showQuery6.style.display = "none"
+
 
                 let fileCount = document.getElementById("fileCount");
                 let changeCount = document.getElementById("changeCount");
@@ -1439,15 +1539,6 @@ $(document).ready(function () {
                             titlePanel.innerHTML = jsonTitle + "</br> ";
                             let descPanel = document.getElementById("descPanel")
                             descPanel.innerHTML = jsonDesc + "</br> ";
-
-                            let editTitleDesc = document.createElement("button");
-                            editTitleDesc.id = "showFileName"
-                            editTitleDesc.type = "button";
-                            editTitleDesc.className = "showFileName btn btn-info";
-                            editTitleDesc.innerHTML = "Edit Title/Description (A4)";
-                            titlePanel.appendChild(editTitleDesc);
-
-                            descPanel.appendChild(editTitleDesc);
 
 
                             let imagePanel = document.getElementById("imagePanel")
@@ -1780,15 +1871,19 @@ $(document).ready(function () {
 
                                     },
                                     success: function (data) {
-
+                                        let titlePanel = document.getElementById("titlePanel");
+                                        titlePanel.innerHTML = data.title;
                                         alert(data.message);
+
+
+
+
                                     },
                                     fail: function (data) {
 
                                     }
                                 });
                                 e.preventDefault();
-
 
                             })
 
@@ -1809,6 +1904,9 @@ $(document).ready(function () {
                                     },
                                     success: function (data) {
 
+
+                                        let descPanel = document.getElementById("descPanel");
+                                        descPanel.innerHTML = data.description;
                                         alert(data.message);
 
 

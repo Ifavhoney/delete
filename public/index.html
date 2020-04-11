@@ -126,12 +126,19 @@
 
                 </thead>
                 <tbody>
+
                     <td id="titlePanel" style="width: 30%"">
                         Title's information
+
                     </td>
                     <td id ="descPanel" colspan=" 2">
+
                         Description information
                     </td>
+                      <td  colspan="2">
+          <button id = "showFileName" class = "showFileName btn btn-info"> Edit Title/Description (A4)</button>
+                    </td>
+                    
                 </tbody>
             </div>
         </table>
@@ -169,7 +176,7 @@
 
               <div class="center-screen" >
       <div id="editFileName">
-<form ref="editFileNameTitlex" id="editFileNameTitle" enctype="multipart/form-data" method="post" action="/editFileNameTitle">
+<form ref="editFileNameTitlex" id="editFileNameTitle" enctype="multipart/form-data" method="get" action="/editFileNameTitle">
   <div class="row">
       <input type="text" class="form-control" id ="title" maxlength="64" placeholder="title" name = "fileTitle">
           <button id="editFileNameTitlex" type='submit' class="btn btn-info">Edit Title (A4)</button>
@@ -180,7 +187,7 @@
 
 </form>
 
-<form ref="editFileNameDescx" id="editFileNameDesc" enctype="multipart/form-data" method="post" action="/editFileNameDesc">
+<form ref="editFileNameDescx" id="editFileNameDesc" enctype="multipart/form-data" method="get" action="/editFileNameDesc">
   <div class="row">
       <input type="text" class="form-control"  id ="description" maxlength="64" placeholder="description" name = "fileDescription">
        <button id="editFileNameDescx" type='submit' class="btn btn-info">Edit Desc (A4)</button>
@@ -325,62 +332,65 @@
      
     </div>
 
-<h3 style = "margin: 1em">EXECUTE QUERY (REFRESH BEFORE MOVING ON TO NEXT QUERY) </h3>
+<h5 style = "margin: 1em"><div class="grid-container_inner" >
+ SPECIFIC DATE QUERIES: EXECUTE QUERY BETWEEN  
+
+  <div class="innerItem1">
+    APRIL, 1 2020  AND 
+
+  </div>
+    <div class="innerItem2">
+          
+<select id="creation_time">
+    <option value="0">EMPTY</option>
+  <option value="2020-04-02">2020-04-02</option>
+   <option value="2020-04-03">2020-04-03</option>
+  <option value="2020-04-04">2020-04-04</option>
+  <option value="2020-04-05">2020-04-05</option>
+  <option value="2020-04-06">2020-04-06</option>
+  <option value="2020-04-07">2020-04-07</option>
+  <option value="2020-04-08">2020-04-08</option>
+  <option value="2020-04-09">2020-04-09</option>
+  <option value="2020-04-10">2020-04-10</option>
+  <option value="2020-04-11">2020-04-11</option>
+  <option value="2020-04-12">2020-04-12</option>
+  <option value="2020-04-13">2020-04-13</option>
+  <option value="2020-04-14">2020-04-14</option>
+  <option value="2020-04-15">2020-04-15</option>
+  <option value="2020-04-16">2020-04-16</option>
+  <option value="2020-04-17">2020-04-17</option>
+  <option value="2020-04-18">2020-04-18</option>
+  <option value="2020-04-19">2020-04-19</option>
+  <option value="2020-04-20">2020-04-20</option>
+  <option value="2020-04-21">2020-04-21</option>
+  <option value="2020-04-22">2020-04-22</option>
+  <option value="2020-04-23">2020-04-23</option>
+  <option value="2020-04-24">2020-04-24</option>
+  <option value="2020-04-25">2020-04-25</option>
+  <option value="2020-04-26">2020-04-26</option>
+    <option value="2020-04-27">2020-04-27</option>
+  <option value="2020-04-28">2020-04-28</option>
+  <option value="2020-04-29">2020-04-29</option>
+    <option value="2020-04-30">2020-04-30</option>
+
+
+
+</select>
+
+  </div>
+   <div class="innerItem3">
+
+
+ </div>
+
+</div> 
+
+</h3> 
      <div class="grid-container" style ="background-color:beige">
     
-      <div id="item1">
-               <button type='submit' id = "query1" class="btn btn-info">Query #1 (A4)</button>
-           
-           <div id="showQuery1" class ="" style="background-color: white;">
 
-      <div class="grid-container_inner" style ="background-color:beige">
-      <div id="innerItem1">
-
-             <button type='submit' id = "sortQuery1Name" class="btn btn-info">Query1: Sort By Name (A4)</button>
-            </div>
-                  <div id="innerItem2">
-                  </div>
-
-                  <div id="innerItem3">
-
-             <button type='submit' id = "sortQuery1Size" class="btn btn-info">Query1: Sort By Size (A4)</button>
-                    </div>
-            </div>
-             QUERY 1
-                    <table class="table table-bordered">
-  <thead class="">
-    <tr>
-      <th scope="col">file_name</th>
-      <th scope="col">file_title</th>
-                  <th scope="col">file_description</th>
-                          <th scope="col">n_rect</th>
-
-      <th scope="col">n_circ</th>
-      <th scope="col">n_path</th>
-      <th scope="col">n_group</th>
-            <th scope="col">creation_time</th>
-            <th scope="col">file_size (KB)</th>
-
-
-    </tr>
-  </thead>
-  <tbody id = "query1Body">
-
-
-
-
-
-  </tbody>
-</table>
-
-   
-
-                  </div>
-
-                    </div>
-                    
                 
-       <div id="item2">
+       <div id="item1">
         
                        <button type='submit' id = "query2" class="btn btn-info">Query #2 (A4)</button>
 
@@ -432,7 +442,7 @@
 
 
       </div>
-     <div id="item3">
+     <div id="item2">
                <button type='submit' id = "query3" class="btn btn-info">Query #3 (A4)</button>
            
            <div id="showQuery3" class ="" style="background-color: white;">
@@ -480,6 +490,187 @@
                   </div>
 
                     </div>
+
+
+<div class="item3">
+     <button type='submit' id = "query6" class="btn btn-info">Query6 #2 (A4)</button>
+
+                       
+    <div id="showQuery6" class ="" style="background-color: white;">
+           <div class="grid-container_inner" style ="background-color:beige">
+      <div id="innerItem1">
+
+             <button type='submit' id = "sortQuery6Name" class="btn btn-info">Query6: Sort By Name (A4)</button>
+            </div>
+                  <div id="innerItem2">
+                                 <button type='submit' id = "sortQuery6Size" class="btn btn-info">Query6: Sort By Size (A4)</button>
+
+                  </div>
+
+                  <div id="innerItem3">
+
+             <button type='submit' id = "sortQuery6creationDate" class="btn btn-info">Query6: Sort By Date (A4)</button>
+                    </div>
+            </div>
+             QUERY 6 (Between April 1rst & Current time)
+
+                    <table class="table table-bordered">
+  <thead class="">
+    <tr>
+      <th scope="col">file_name</th>
+      <th scope="col">file_title</th>
+                  <th scope="col">file_description</th>
+                          <th scope="col">n_rect</th>
+
+      <th scope="col">n_circ</th>
+      <th scope="col">n_path</th>
+      <th scope="col">n_group</th>
+            <th scope="col">creation_time</th>
+            <th scope="col">file_size (KB)</th>
+
+
+    </tr>
+  </thead>
+  <tbody id = "query6Body">
+  </tbody>
+</table>
+
+
+                  </div>
+</div>
+                  
+
+                    
+                    
+
+    </div>
+
+    
+    <h3 style = "margin: 1em">EXECUTE QUERY PART 2</h3>
+
+    <div class="grid-container" style ="background-color:beige">
+    
+      <div id="item1">
+               <button type='submit' id = "query5" class="btn btn-info">Query #5 (A4)</button>
+           
+           <div id="showQuery5" class ="" style="background-color: white;">
+
+      <div class="grid-container_inner" style ="background-color:beige">
+      <div id="innerItem1">
+
+             <button type='submit' id = "sortQuery5Name" class="btn btn-info">Query5: Sort By Name (A4)</button>
+            </div>
+                  <div id="innerItem2">
+                  </div>
+
+                  <div id="innerItem3">
+
+             <button type='submit' id = "sortQuery5Size" class="btn btn-info">Query5: Sort By Size (A4)</button>
+                    </div>
+            </div>
+             QUERY 5
+                    <table class="table table-bordered">
+  <thead class="">
+    <tr>
+      <th scope="col">file_name</th>
+      <th scope="col">file_title</th>
+                  <th scope="col">file_description</th>
+                          <th scope="col">n_rect</th>
+
+      <th scope="col">n_circ</th>
+      <th scope="col">n_path</th>
+      <th scope="col">n_group</th>
+            <th scope="col">creation_time</th>
+            <th scope="col">file_size (KB)</th>
+
+
+    </tr>
+  </thead>
+  <tbody id = "query5Body">
+
+
+
+
+
+  </tbody>
+</table>
+
+   
+
+                  </div>
+
+                    </div>
+                    
+                
+       <div id="item2">
+        
+
+
+               <button type='submit' id = "query1" class="btn btn-info">Query #1 (A4)</button>
+           
+           <div id="showQuery1" class ="" style="background-color: white;">
+
+      <div class="grid-container_inner" style ="background-color:beige">
+      <div id="innerItem1">
+
+             <button type='submit' id = "sortQuery1Name" class="btn btn-info">Query1: Sort By Name (A4)</button>
+            </div>
+                  <div id="innerItem2">
+                  </div>
+
+                  <div id="innerItem3">
+
+             <button type='submit' id = "sortQuery1Size" class="btn btn-info">Query1: Sort By Size (A4)</button>
+                    </div>
+            </div>
+             QUERY 1
+                    <table class="table table-bordered">
+  <thead class="">
+    <tr>
+      <th scope="col">file_name</th>
+      <th scope="col">file_title</th>
+                  <th scope="col">file_description</th>
+                          <th scope="col">n_rect</th>
+
+      <th scope="col">n_circ</th>
+      <th scope="col">n_path</th>
+      <th scope="col">n_group</th>
+            <th scope="col">creation_time</th>
+            <th scope="col">file_size (KB)</th>
+
+
+    </tr>
+  </thead>
+  <tbody id = "query1Body">
+
+
+
+
+
+  </tbody>
+</table>
+
+   
+
+                  </div>
+
+                    
+
+
+
+
+
+
+
+
+
+
+
+      </div>
+
+
+      
+  
                     
 
     </div>
