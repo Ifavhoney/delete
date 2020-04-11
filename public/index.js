@@ -2099,6 +2099,9 @@ $('#postFormLogin').on("click", (function (e) {
                 let status = document.getElementById("logStatus");
                 status.innerHTML = "Logged In User: " + username;
                 status.style.color = "red";
+
+                let editDetails = document.getElementById("editDetails");
+                editDetails.style.display = "none";
             }
 
             //   alert("hi");
@@ -2355,9 +2358,12 @@ $(document).ready(function () {
 
                 }
 
+
                 let item = " ";
                 $('.file').click(function (e) {
 
+                    let editDetails = document.getElementById("editDetails");
+                    editDetails.style.display = "block";
                     item = $(this).text();
                     e.preventDefault();
 
