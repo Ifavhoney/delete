@@ -126,7 +126,8 @@ function getTime() {
 }
 function getSize(file) {
   let value = path.join(__dirname + "/uploads/" + file);
-  let size = Math.round((fs.statSync(value).size / 1024));
+
+  let size = (fs.statSync(value).size / 1024).toFixed(2);
   return size;
 }
 async function getSVG_ID(connection, fileName) {
@@ -393,16 +394,33 @@ app.get('/query6', async function (req, res) {
 
   let message = null;
   let query6;
-  let sortByName;
-  let sortBySize;
-  let sortByDate;
+  let file_name = req.query.file_name;
+  let creation_time = req.query.creation_time;
+  let sortByType;
+  let sortByDesc;
+  let sortByAsc;
   let connection;
 
   try {
 
 
     connection = await mysql.createConnection(credentials);
+    let [vRowId, vColId] = await connection.execute("SELECT * FROM FILE where file_name = " + '\'' + file_name + '\'');
+    let id = 0;
+    for (const item of vRowId) {
+      id = item["svg_id"];
+    }
 
+
+    let [vRow, vCol] = await connection.execute(" SELECT FILE.file_name, IMG_CHANGE.change_type, IMG_CHANGE.change_summary, IMG_CHANGE.change_time FROM FILE, IMG_CHANGE WHERE FILE.svg_id = " + id + " and IMG_CHANGE.change_time between '2020-04-01 00:00:00' and " + '\'' + creation_time + '\'');
+    let [vRow1, vCol1] = await connection.execute(" SELECT FILE.file_name, IMG_CHANGE.change_type, IMG_CHANGE.change_summary, IMG_CHANGE.change_time FROM FILE, IMG_CHANGE WHERE FILE.svg_id = " + id + " and IMG_CHANGE.change_time between '2020-04-01 00:00:00' and " + '\'' + creation_time + '\'' + " ORDER BY IMG_CHANGE.change_type");
+    let [vRow2, vCol2] = await connection.execute(" SELECT FILE.file_name, IMG_CHANGE.change_type, IMG_CHANGE.change_summary, IMG_CHANGE.change_time FROM FILE, IMG_CHANGE WHERE FILE.svg_id = " + id + " and IMG_CHANGE.change_time between '2020-04-01 00:00:00' and " + '\'' + creation_time + '\'' + " ORDER BY IMG_CHANGE.change_time DESC");
+    let [vRow3, vCol3] = await connection.execute(" SELECT FILE.file_name, IMG_CHANGE.change_type, IMG_CHANGE.change_summary, IMG_CHANGE.change_time FROM FILE, IMG_CHANGE WHERE FILE.svg_id = " + id + " and IMG_CHANGE.change_time between '2020-04-01 00:00:00' and " + '\'' + creation_time + '\'' + " ORDER BY IMG_CHANGE.change_time ASC");
+
+    query6 = vRow;
+    sortByType = vRow1;
+    sortByDesc = vRow2;
+    sortByAsc = vRow3;
 
 
     message = "success";
@@ -414,7 +432,7 @@ app.get('/query6', async function (req, res) {
     if (connection && connection.end) connection.end();
 
   }
-  res.send({ message: message });
+  res.send({ message: message, query6: query6, sortByType: sortByType, sortByDesc: sortByDesc, sortByAsc: sortByAsc });
 });
 
 
@@ -513,7 +531,7 @@ app.get("/storeFiles", async function (req, res, next) {
           let jsonTitle = sharedLibrary.titleViewPanelToString(value, "null");
           let jsonDesc = sharedLibrary.descViewPanelToString(value, "null");
           let jsonNums = JSON.parse(sharedLibrary.createSVGChar(value, "null"));
-          let size = Math.round((fs.statSync(value).size / 1024));
+          let size = getSize(value);
 
           /*console.log("size: " + size);
           console.log("(" + '\'' + files[i] + '\',\'' + jsonTitle + '\',\'' + jsonDesc + '\',' + jsonNums.numRect + ',' + jsonNums.numCirc + ',' + jsonNums.numPaths + ','
@@ -573,26 +591,25 @@ app.get("/trackDownloads", async function (req, res, next) {
 
   let message = null;
   let fileName = req.query.fileName;
+  let d_descr = req.query.d_descr;
   let connection;
   try {
 
 
     connection = await mysql.createConnection(credentials);
-    console.log(fileName);
     const [vRow, vField] = await connection.execute("select * from FILE where file_name = " + '\'' + fileName + '\'');
     let svg_id = 1;
-    let d_descr = " ";
     for (const item of vRow) {
       svg_id = item["svg_id"];
-      d_descr = item["file_description"];
       console.log(d_descr);
     }
     let date = new Date();
     let cur_date = date.toISOString().slice(0, 10);
     let time = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds()
     let creation_time = cur_date + " " + time;
+
     //+ '\'' + creation_time + '\'' + 
-    await connection.execute("INSERT INTO DOWNLOAD (d_descr, svg_id) VALUES(" + '\'' + "alt: " + d_descr + '\', ' + svg_id + ");");
+    await connection.execute("INSERT INTO DOWNLOAD (d_descr, svg_id) VALUES(" + '\'' + d_descr + " at " + getTime() + '\', ' + svg_id + ");");
 
 
     message = "success";
@@ -740,7 +757,7 @@ app.get('/editFileNameTitle', async function (req, res) {
 
 
       await connection.execute("INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) " +
-        "VALUES" + "(" + '\'' + "Edit" + '\',\'' + "Edit Title" + '\',\'' + getTime() + '\',' + svg_id + ");");
+        "VALUES" + "(" + '\'' + "Edit Title" + '\',\'' + "Change Title to " + editTitle + ' \',\'' + getTime() + '\',' + svg_id + ");");
 
       await connection.execute("update FILE SET file_size =" + getSize(fileName) + " where svg_id = " + svg_id + ";");
 
@@ -798,7 +815,7 @@ app.get('/editFileNameDesc', async function (req, res) {
 
 
       await connection.execute("INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) " +
-        "VALUES" + "(" + '\'' + "Edit" + '\',\'' + "Edit Description" + '\',\'' + getTime() + '\',' + svg_id + ");");
+        "VALUES" + "(" + '\'' + "Edit Description " + '\',\'' + "Change Description to " + editDescription + '\',\'' + getTime() + '\',' + svg_id + ");");
 
       await connection.execute("update FILE SET file_size =" + getSize(fileName) + " where svg_id = " + svg_id + ";");
 
@@ -856,8 +873,10 @@ app.get('/editCirc', async function (req, res) {
       const svg_id = await getSVG_ID(connection, fileName)
 
 
+
+      index++;
       await connection.execute("INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) " +
-        "VALUES" + "(" + '\'' + "Edit" + '\',\'' + "Edit Circle @ index: " + index.toString() + '\',\'' + getTime() + '\',' + svg_id + ");");
+        "VALUES" + "(" + '\'' + "Edit Circle " + '\',\'' + "Edit Circle Attribute # " + index.toString() + '\',\'' + getTime() + '\',' + svg_id + ");");
 
       console.log('successfully added to database');
 
@@ -915,9 +934,9 @@ app.get('/editRect', async function (req, res) {
       connection = await mysql.createConnection(credentials);
       const svg_id = await getSVG_ID(connection, fileName)
 
-
+      index++;
       await connection.execute("INSERT INTO IMG_CHANGE(change_type, change_summary, change_time, svg_id) " +
-        "VALUES" + "(" + '\'' + "Edit" + '\',\'' + "Edit Rect @ index: " + index.toString() + '\',\'' + getTime() + '\',' + svg_id + ");");
+        "VALUES" + "(" + '\'' + "Edit Rectangle" + '\',\'' + "Edit Rectangle Atttribute # " + index.toString() + '\',\'' + getTime() + '\',' + svg_id + ");");
 
       console.log('successfully added to database');
 
@@ -976,8 +995,9 @@ app.get('/getListOfFiles', function (req, res) {
     files.forEach(file => {
 
       let svgPath = path.join(__dirname + "/uploads/" + file);
-      let size = Math.round((fs.statSync(svgPath).size / kb)) + ' KB';
-      arr.push(size);
+      let size = (fs.statSync(svgPath).size / kb).toFixed(2)
+
+      arr.push(size + " KB");
     });
     res.send({
       length: files.length,

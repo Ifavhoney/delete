@@ -96,11 +96,11 @@ and IMG_CHANGE.svg_id = 1 and IMG_CHANGE.change_time between '2020-04-10 18:00:0
 
 
 SELECT FILE.file_name, IMG_CHANGE.change_type, IMG_CHANGE.change_summary, IMG_CHANGE.change_time FROM FILE, IMG_CHANGE WHERE FILE.svg_id = 1
-and IMG_CHANGE.svg_id = 1 and IMG_CHANGE.change_time between '2020-04-10 18:00:00' and '2020-04-10 18:40:30' and IMG_CHANGE.change_type;
+and IMG_CHANGE.svg_id = 1 and IMG_CHANGE.change_time between '2020-04-10 18:00:00' and '2020-04-10 18:40:30' ORDER BY IMG_CHANGE.change_type;
 
 
 SELECT FILE.file_name, IMG_CHANGE.change_type, IMG_CHANGE.change_summary, IMG_CHANGE.change_time FROM FILE, IMG_CHANGE WHERE FILE.svg_id = 1
-and IMG_CHANGE.svg_id = 1 and IMG_CHANGE.change_time between '2020-04-10 18:00:00' and '2020-04-10 18:40:30' order by IMG_CHANGE.change_time DESC ;
+and IMG_CHANGE.svg_id = 1 and IMG_CHANGE.change_time between '2020-04-10 18:00:00' and '2020-04-10 18:40:30' ORDER BY IMG_CHANGE.change_time DESC ;
 
 
 SELECT FILE.file_name, IMG_CHANGE.change_type, IMG_CHANGE.change_summary, IMG_CHANGE.change_time FROM FILE, IMG_CHANGE WHERE FILE.svg_id = 1

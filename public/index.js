@@ -38,12 +38,14 @@ function clearTable(id) {
 
 
 function getClick(obj) {
-
     $.ajax({
         type: 'get',            //Request type
         dataType: 'json',       //Data type - we will use JSON for almost everything 
         url: '/trackDownloads',   //The server endpoint we are connecting to
-        data: { fileName: obj.download },
+        data: {
+            fileName: obj.download,
+            d_descr: obj.className
+        },
         success: function (data) {
             alert(data.message);
         },
@@ -1385,10 +1387,46 @@ $("#query6").on('click', (function (e) {
             url: '/query6',   //The server endpoint we are connecting to
             data: {
                 creation_time: selectedValue,
-                fileName: selectedValue2
+                file_name: selectedValue2
             },
             success: function (data) {
+                let id = "query6Body";
+                clearTable(id);
+
+                let loop = data.query6;
+
+                showQuery6.style.display = "block"
                 alert(data.message);
+
+
+                let tBody = document.getElementById(id);
+                for (const item of loop) {
+                    let tr = document.createElement("tr");
+                    let file_name = document.createElement("th");
+                    file_name.scope = "row";
+                    file_name.innerHTML = item["file_name"];
+                    tr.appendChild(file_name);
+
+                    let change_type = document.createElement("th");
+                    change_type.scope = "row";
+                    change_type.innerHTML = item["change_type"];
+                    tr.appendChild(change_type);
+
+                    let change_summary = document.createElement("th");
+                    change_summary.scope = "row";
+                    change_summary.innerHTML = item["change_summary"];
+                    tr.appendChild(change_summary);
+
+
+                    let change_date = document.createElement("th");
+                    change_date.scope = "row";
+                    change_date.innerHTML = convertDate(item["change_time"]);
+                    tr.appendChild(change_date);
+
+
+
+                    tBody.appendChild(tr);
+                }
 
             },
             fail: function (data) {
@@ -1400,6 +1438,222 @@ $("#query6").on('click', (function (e) {
     }
 }
 ));
+
+$("#sortQuery6Type").on('click', (function (e) {
+    let creation_time = document.getElementById("creation_time_q6");
+    let file_name_q6 = document.getElementById("file_name_q6");
+
+    if (creation_time.selectedIndex == 0) {
+        alert("Select a date");
+    }
+    else {
+        let selectedValue = creation_time.options[creation_time.selectedIndex].value;
+        let selectedValue2 = file_name_q6.options[file_name_q6.selectedIndex].value;
+        console.log(selectedValue2);
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/query6',   //The server endpoint we are connecting to
+            data: {
+                creation_time: selectedValue,
+                file_name: selectedValue2
+            },
+            success: function (data) {
+                let id = "query6Body";
+                clearTable(id);
+
+                let loop = data.sortByType;
+
+                showQuery6.style.display = "block"
+                alert(data.message);
+
+
+                let tBody = document.getElementById(id);
+                for (const item of loop) {
+                    let tr = document.createElement("tr");
+                    let file_name = document.createElement("th");
+                    file_name.scope = "row";
+                    file_name.innerHTML = item["file_name"];
+                    tr.appendChild(file_name);
+
+                    let change_type = document.createElement("th");
+                    change_type.scope = "row";
+                    change_type.innerHTML = item["change_type"];
+                    tr.appendChild(change_type);
+
+                    let change_summary = document.createElement("th");
+                    change_summary.scope = "row";
+                    change_summary.innerHTML = item["change_summary"];
+                    tr.appendChild(change_summary);
+
+
+                    let change_date = document.createElement("th");
+                    change_date.scope = "row";
+                    change_date.innerHTML = convertDate(item["change_time"]);
+                    tr.appendChild(change_date);
+
+
+
+                    tBody.appendChild(tr);
+                }
+
+            },
+            fail: function (data) {
+
+            }
+        });
+
+        e.preventDefault();
+    }
+}
+));
+
+
+$("#sortQuery6Desc").on('click', (function (e) {
+    let creation_time = document.getElementById("creation_time_q6");
+    let file_name_q6 = document.getElementById("file_name_q6");
+
+    if (creation_time.selectedIndex == 0) {
+        alert("Select a date");
+    }
+    else {
+        let selectedValue = creation_time.options[creation_time.selectedIndex].value;
+        let selectedValue2 = file_name_q6.options[file_name_q6.selectedIndex].value;
+        console.log(selectedValue2);
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/query6',   //The server endpoint we are connecting to
+            data: {
+                creation_time: selectedValue,
+                file_name: selectedValue2
+            },
+            success: function (data) {
+                let id = "query6Body";
+                clearTable(id);
+
+                let loop = data.sortByDesc;
+
+                showQuery6.style.display = "block"
+                alert(data.message);
+
+
+                let tBody = document.getElementById(id);
+                for (const item of loop) {
+                    let tr = document.createElement("tr");
+                    let file_name = document.createElement("th");
+                    file_name.scope = "row";
+                    file_name.innerHTML = item["file_name"];
+                    tr.appendChild(file_name);
+
+                    let change_type = document.createElement("th");
+                    change_type.scope = "row";
+                    change_type.innerHTML = item["change_type"];
+                    tr.appendChild(change_type);
+
+                    let change_summary = document.createElement("th");
+                    change_summary.scope = "row";
+                    change_summary.innerHTML = item["change_summary"];
+                    tr.appendChild(change_summary);
+
+
+                    let change_date = document.createElement("th");
+                    change_date.scope = "row";
+                    change_date.innerHTML = convertDate(item["change_time"]);
+                    tr.appendChild(change_date);
+
+
+
+                    tBody.appendChild(tr);
+                }
+
+            },
+            fail: function (data) {
+
+            }
+        });
+
+        e.preventDefault();
+    }
+}
+));
+
+
+
+$("#sortQuery6Asc").on('click', (function (e) {
+    let creation_time = document.getElementById("creation_time_q6");
+    let file_name_q6 = document.getElementById("file_name_q6");
+
+    if (creation_time.selectedIndex == 0) {
+        alert("Select a date");
+    }
+    else {
+        let selectedValue = creation_time.options[creation_time.selectedIndex].value;
+        let selectedValue2 = file_name_q6.options[file_name_q6.selectedIndex].value;
+        console.log(selectedValue2);
+        $.ajax({
+            type: 'get',            //Request type
+            dataType: 'json',       //Data type - we will use JSON for almost everything 
+            url: '/query6',   //The server endpoint we are connecting to
+            data: {
+                creation_time: selectedValue,
+                file_name: selectedValue2
+            },
+            success: function (data) {
+                let id = "query6Body";
+                clearTable(id);
+
+                let loop = data.sortByAsc;
+
+                showQuery6.style.display = "block"
+                alert(data.message);
+
+
+                let tBody = document.getElementById(id);
+                for (const item of loop) {
+                    let tr = document.createElement("tr");
+                    let file_name = document.createElement("th");
+                    file_name.scope = "row";
+                    file_name.innerHTML = item["file_name"];
+                    tr.appendChild(file_name);
+
+                    let change_type = document.createElement("th");
+                    change_type.scope = "row";
+                    change_type.innerHTML = item["change_type"];
+                    tr.appendChild(change_type);
+
+                    let change_summary = document.createElement("th");
+                    change_summary.scope = "row";
+                    change_summary.innerHTML = item["change_summary"];
+                    tr.appendChild(change_summary);
+
+
+                    let change_date = document.createElement("th");
+                    change_date.scope = "row";
+                    change_date.innerHTML = convertDate(item["change_time"]);
+                    tr.appendChild(change_date);
+
+
+
+                    tBody.appendChild(tr);
+                }
+
+            },
+            fail: function (data) {
+
+            }
+        });
+
+        e.preventDefault();
+    }
+}
+));
+
+
+
+
+
+
 
 
 //#endregion
@@ -2428,6 +2682,7 @@ $(document).ready(function () {
                             let table_td1_href = document.createElement("a");
                             table_td1_href.href = element;
                             table_td1_href.download = element;
+                            table_td1_href.className = "Download Image"
                             //  table_td1_href.innerHTML = element;
 
                             table_td1_href.setAttribute("onclick", "getClick(this)");
@@ -2442,6 +2697,8 @@ $(document).ready(function () {
 
                             table_td2_href.download = element
                             table_td2_href.innerHTML = element;
+                            table_td2_href.className = "Download Href"
+
                             table_td2_href.setAttribute("onclick", "getClick(this)");
 
                             table_td2_doc = table_tr.appendChild(table_td2).appendChild(table_td2_href);
