@@ -47,11 +47,25 @@
   
 
 <article id ="body">
-  
+ 
 
     <div id="home"></div>
-          
-    <button id="storeFiles" type='submit' class="btn btn-info">Store All Files </button>
+
+     <div class="grid-container_inner">
+    
+      <div id="innerItem1">
+            <button id="storeFiles" type='submit' class="btn btn-info">Store All Files </button>
+
+      </div>
+       <div id="innerItem2">
+
+      </div>
+       <div id="innerItem3">
+      <h6 id='logStatus'>Not logged in</h6>
+
+      </div>
+
+  </div>
 
     <div id="center-screen">
 
@@ -576,7 +590,7 @@ QUERY
                   </div>
 
                   <div id="innerItem3">
-                                 <button type='submit' id = "sortQuery3Change_time" class="btn btn-info">Query3: Sort By Size (A4)</button>
+                                 <button type='submit' id = "sortQuery3Change_time" class="btn btn-info">Query3: Sort By Date (A4)</button>
 
                     </div>
             </div>
@@ -719,9 +733,12 @@ QUERY
 
 </div>
 
+<h5 style = "margin: 1em"><div class="grid-container_inner" >
+ SPECIFIC SHAPE QUERY: EXECUTE    
+</div>
+</h3>
+   
 
-
-    <h3 style = "margin: 1em">EXECUTE QUERY PART 2</h3>
 
     <div class="grid-container" style ="background-color:beige">
     
@@ -809,33 +826,30 @@ QUERY
              <button type='submit' id = "sortQuery5Name" class="btn btn-info">Query5: Sort By Name (A4)</button>
             </div>
                   <div id="innerItem2">
+                                 <button type='submit' id = "sortQuery5Count" class="btn btn-info">Query5: Sort By Count (A4)</button>
+
                   </div>
 
                   <div id="innerItem3">
 
-             <button type='submit' id = "sortQuery5Size" class="btn btn-info">Query5: Sort By Size (A4)</button>
+             <button type='submit' id = "sortQuery5Recent" class="btn btn-info">Query5: Sort By Most Recent (A4)</button>
                     </div>
             </div>
-             QUERY 5
+             
+            QUERY 5
                     <table class="table table-bordered">
   <thead class="">
     <tr>
-      <th scope="col">file_name</th>
-      <th scope="col">file_title</th>
-                  <th scope="col">file_description</th>
-                          <th scope="col">n_rect</th>
 
-      <th scope="col">n_circ</th>
-      <th scope="col">n_path</th>
-      <th scope="col">n_group</th>
-            <th scope="col">creation_time</th>
-            <th scope="col">file_size (KB)</th>
+                <th scope="col">file_name</th>
 
+        <th scope="col">d_descr</th>
+
+      <th scope="col">count</th>
 
     </tr>
   </thead>
   <tbody id = "query5Body">
-
 
 
 
@@ -863,7 +877,7 @@ QUERY
     <div class="grid-container2" style ="background-color: beige;">
       
          <div id="outerItem1">
-                    DATABASE INFO (A4)
+                    DATABASE STATUS INFO - REFRESH TO SEE RESULTS (A4)
 </div> 
               <div id="outerItem2">
               

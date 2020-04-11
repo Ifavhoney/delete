@@ -366,8 +366,8 @@ app.get('/query5', async function (req, res) {
   let message = null;
   let query5;
   let sortByName;
-  let sortBySize;
   let sortByDate;
+  let sortByCount;
   let connection;
 
   try {
@@ -376,7 +376,14 @@ app.get('/query5', async function (req, res) {
     connection = await mysql.createConnection(credentials);
 
 
-
+    let [vRow, vCol] = await connection.execute("SELECT COUNT(*) as count, DOWNLOAD.svg_id, FILE.file_name, DOWNLOAD.d_descr FROM DOWNLOAD, FILE where FILE.svg_id = DOWNLOAD.svg_id GROUP BY FILE.svg_id; ");
+    let [vRow1, vCol1] = await connection.execute("SELECT COUNT(*) as count, DOWNLOAD.svg_id, FILE.file_name, DOWNLOAD.d_descr FROM DOWNLOAD, FILE where FILE.svg_id = DOWNLOAD.svg_id GROUP BY FILE.svg_id ORDER BY FILE.svg_id ; ");
+    let [vRow2, vCol2] = await connection.execute("SELECT COUNT(*) as count, DOWNLOAD.svg_id, FILE.file_name, DOWNLOAD.d_descr FROM DOWNLOAD, FILE where FILE.svg_id = DOWNLOAD.svg_id GROUP BY FILE.svg_id ORDER BY count;");
+    let [vRow3, vCol3] = await connection.execute("SELECT COUNT(*) as count, DOWNLOAD.svg_id, FILE.file_name, DOWNLOAD.d_descr FROM DOWNLOAD, FILE where FILE.svg_id = DOWNLOAD.svg_id GROUP BY FILE.svg_id ORDER BY DOWNLOAD.download_id DESC;");
+    query5 = vRow;
+    sortByName = vRow1;
+    sortByCount = vRow2;
+    sortByDate = vRow3;
     message = "success";
   }
   catch (e) {
@@ -386,7 +393,7 @@ app.get('/query5', async function (req, res) {
     if (connection && connection.end) connection.end();
 
   }
-  res.send({ message: message });
+  res.send({ message: message, query5: query5, sortByName: sortByName, sortByCount: sortByCount, sortByDate: sortByDate });
 });
 
 
@@ -600,7 +607,6 @@ app.get("/trackDownloads", async function (req, res, next) {
     let svg_id = 1;
     for (const item of vRow) {
       svg_id = item["svg_id"];
-      console.log(d_descr);
     }
     let date = new Date();
     let cur_date = date.toISOString().slice(0, 10);

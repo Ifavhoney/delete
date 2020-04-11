@@ -63,20 +63,23 @@ $("#query4").on('click', (function (e) {
     let shape = document.getElementById("shape");
     let begin = document.getElementById("begin");
     let end = document.getElementById("end");
-
+    let valid = 1;
     if (shape.selectedIndex == 0) {
-
+        valid = -1
         alert("Select a shape");
     }
 
 
-    else if (begin.value > end.value) {
+    if (begin.value > end.value) {
+        valid = -1;
+        console.log(begin.value);
+        console.log("END" + end.value);
         alert("Beginning is greater than end value");
 
     }
 
+    if (valid == 1) {
 
-    else {
         let shapeValue = shape.options[shape.selectedIndex].value;
         let beginValue = begin.options[begin.selectedIndex].value;
         let endValue = end.options[end.selectedIndex].value;
@@ -1345,6 +1348,7 @@ $("#sortQuery3Change_time").on('click', (function (e) {
 //#region  query5
 $("#query5").on('click', (function (e) {
 
+    //summary is d_descr
 
     $.ajax({
         type: 'get',            //Request type
@@ -1356,6 +1360,208 @@ $("#query5").on('click', (function (e) {
 
         },
         success: function (data) {
+            let id = "query5Body";
+            clearTable(id);
+            showQuery5.style.display = "block"
+            alert(data.message);
+
+
+            let loop = data.query5;
+
+
+            let tBody = document.getElementById(id);
+            for (const item of loop) {
+                let tr = document.createElement("tr");
+                let file_name = document.createElement("th");
+                file_name.scope = "row";
+                file_name.innerHTML = item["file_name"];
+                tr.appendChild(file_name);
+
+                let d_descr = document.createElement("th");
+                d_descr.scope = "row";
+                d_descr.innerHTML = item["d_descr"];
+                tr.appendChild(d_descr);
+
+                let count = document.createElement("th");
+                count.scope = "row";
+                count.innerHTML = item["count"];
+                tr.appendChild(count);
+
+
+
+                tBody.appendChild(tr);
+            }
+
+            alert(data.message);
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    e.preventDefault();
+}
+));
+
+$("#sortQuery5Name").on('click', (function (e) {
+
+    //summary is d_descr
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/query5',   //The server endpoint we are connecting to
+        data: {
+
+
+
+        },
+        success: function (data) {
+            let id = "query5Body";
+            clearTable(id);
+            showQuery5.style.display = "block"
+            alert(data.message);
+
+
+            let loop = data.sortByName;
+
+
+            let tBody = document.getElementById(id);
+            for (const item of loop) {
+                let tr = document.createElement("tr");
+                let file_name = document.createElement("th");
+                file_name.scope = "row";
+                file_name.innerHTML = item["file_name"];
+                tr.appendChild(file_name);
+
+                let d_descr = document.createElement("th");
+                d_descr.scope = "row";
+                d_descr.innerHTML = item["d_descr"];
+                tr.appendChild(d_descr);
+
+                let count = document.createElement("th");
+                count.scope = "row";
+                count.innerHTML = item["count"];
+                tr.appendChild(count);
+
+
+
+                tBody.appendChild(tr);
+            }
+
+            alert(data.message);
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    e.preventDefault();
+}
+));
+
+$("#sortQuery5Count").on('click', (function (e) {
+
+    //summary is d_descr
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/query5',   //The server endpoint we are connecting to
+        data: {
+
+
+
+        },
+        success: function (data) {
+            let id = "query5Body";
+            clearTable(id);
+            showQuery5.style.display = "block"
+            alert(data.message);
+
+
+            let loop = data.sortByCount;
+
+
+            let tBody = document.getElementById(id);
+            for (const item of loop) {
+                let tr = document.createElement("tr");
+                let file_name = document.createElement("th");
+                file_name.scope = "row";
+                file_name.innerHTML = item["file_name"];
+                tr.appendChild(file_name);
+
+                let d_descr = document.createElement("th");
+                d_descr.scope = "row";
+                d_descr.innerHTML = item["d_descr"];
+                tr.appendChild(d_descr);
+
+                let count = document.createElement("th");
+                count.scope = "row";
+                count.innerHTML = item["count"];
+                tr.appendChild(count);
+
+
+
+                tBody.appendChild(tr);
+            }
+
+            alert(data.message);
+        },
+        fail: function (data) {
+
+        }
+    });
+
+    e.preventDefault();
+}
+));
+
+$("#sortQuery5Recent").on('click', (function (e) {
+
+    //summary is d_descr
+
+    $.ajax({
+        type: 'get',            //Request type
+        dataType: 'json',       //Data type - we will use JSON for almost everything 
+        url: '/query5',   //The server endpoint we are connecting to
+        data: {
+
+
+
+        },
+        success: function (data) {
+            let id = "query5Body";
+            clearTable(id);
+            showQuery5.style.display = "block"
+            alert(data.message);
+
+
+            let loop = data.sortByDate;
+
+
+            let tBody = document.getElementById(id);
+            for (const item of loop) {
+                let tr = document.createElement("tr");
+                let file_name = document.createElement("th");
+                file_name.scope = "row";
+                file_name.innerHTML = item["file_name"];
+                tr.appendChild(file_name);
+
+                let d_descr = document.createElement("th");
+                d_descr.scope = "row";
+                d_descr.innerHTML = item["d_descr"];
+                tr.appendChild(d_descr);
+
+                let count = document.createElement("th");
+                count.scope = "row";
+                count.innerHTML = item["count"];
+                tr.appendChild(count);
+
+
+
+                tBody.appendChild(tr);
+            }
 
             alert(data.message);
         },
@@ -1889,6 +2095,10 @@ $('#postFormLogin').on("click", (function (e) {
                 let login = document.getElementById("login");
                 login.style.display = "none";
                 creds = true;
+
+                let status = document.getElementById("logStatus");
+                status.innerHTML = "Logged In User: " + username;
+                status.style.color = "red";
             }
 
             //   alert("hi");
@@ -1955,7 +2165,7 @@ $(document).ready(function () {
 
                 fileCount.innerHTML = data.fileCount + " file (s)";
                 changeCount.innerHTML = data.changeCount + " change (s)";
-
+                downloadCount.innerHTML = data.downloadCount + " download (s)";
 
             },
             fail: (error) => {
@@ -1984,7 +2194,7 @@ $(document).ready(function () {
                 let body = document.getElementById("body");
 
                 if (creds == false) {
-                    body.style.display = "block";
+                    body.style.display = "none";
 
                 }
                 else {

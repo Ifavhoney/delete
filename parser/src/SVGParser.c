@@ -621,14 +621,14 @@ SVGimage *createSVGimage(char *fileName)
 }
 
 char *createSVGChar(char *filename,char *schemaFile){
-   SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+   SVGimage *doc = createValidSVGimage(filename, "./svg.xsd" );
    if(doc == NULL){
 
        return NULL;
 
    }
 
-   bool isValid = validateSVGimage(doc, "../svg.xsd");
+   bool isValid = validateSVGimage(doc, "./svg.xsd");
 
    if(isValid == true){
        return SVGtoJSON(doc);
@@ -640,14 +640,14 @@ char *createSVGChar(char *filename,char *schemaFile){
 }
  
 bool updateTilteDesc(char *fileName, char* title, char *description){
-SVGimage *doc = createValidSVGimage(fileName, "../svg.xsd" );
+SVGimage *doc = createValidSVGimage(fileName, "./svg.xsd" );
    if(doc == NULL){
 
        return NULL;
 
    }
     
-   bool isValid = validateSVGimage(doc, "../svg.xsd");
+   bool isValid = validateSVGimage(doc, "./svg.xsd");
     strcpy(doc -> title, title );
     strcpy(doc -> description, description);
    if(isValid == true){
@@ -662,7 +662,7 @@ SVGimage *doc = createValidSVGimage(fileName, "../svg.xsd" );
 
 bool updateCirc(char *fileName, float cx, float cy, float r, char *units, int index){
 
-SVGimage *doc = createValidSVGimage(fileName, "../svg.xsd" );
+SVGimage *doc = createValidSVGimage(fileName, "./svg.xsd" );
        if(doc == NULL || index >= doc -> circles -> length){
         return false;
     }
@@ -687,7 +687,7 @@ SVGimage *doc = createValidSVGimage(fileName, "../svg.xsd" );
      
   
     
-   bool isValid = validateSVGimage(doc, "../svg.xsd");
+   bool isValid = validateSVGimage(doc, "./svg.xsd");
   //  strcpy(doc -> title, title );
    // strcpy(doc -> description, description);
    if(isValid == true){
@@ -702,7 +702,7 @@ SVGimage *doc = createValidSVGimage(fileName, "../svg.xsd" );
 
 bool updateRect(char *fileName, float x, float y, float width, float height, char *units, int index){
 
-SVGimage *doc = createValidSVGimage(fileName, "../svg.xsd" );
+SVGimage *doc = createValidSVGimage(fileName, "./svg.xsd" );
     if(doc == NULL || index >= doc -> rectangles -> length){
         return false;
     }
@@ -729,7 +729,7 @@ SVGimage *doc = createValidSVGimage(fileName, "../svg.xsd" );
      
   
     
-   bool isValid = validateSVGimage(doc, "../svg.xsd");
+   bool isValid = validateSVGimage(doc, "./svg.xsd");
   //  strcpy(doc -> title, title );
    // strcpy(doc -> description, description);
    if(isValid == true){
@@ -746,13 +746,13 @@ char* descViewPanelToString(char *filename, char *schemaFile){
     //change after;
 // SVGimage *doc = createValidSVGimage(filename, "svg.xsd" );
 
-SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+SVGimage *doc = createValidSVGimage(filename, "./svg.xsd" );
       if(doc == NULL){
 
        return NULL;
    }
  // bool isValid = validateSVGimage(doc, "svg.xsd");
-    bool isValid = validateSVGimage(doc, "../svg.xsd");
+    bool isValid = validateSVGimage(doc, "./svg.xsd");
    if(isValid == true){
       // printf("HI %s\t\n", pathListToJSON(doc ->paths));
        char *value = malloc(strlen(doc -> description) + 1);
@@ -776,13 +776,13 @@ char* titleViewPanelToString(char *filename, char *schemaFile){
     //change after;
     //SVGimage *doc = createValidSVGimage(filename, "svg.xsd" );
 
-SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+SVGimage *doc = createValidSVGimage(filename, "./svg.xsd" );
       if(doc == NULL){
 
        return NULL;
    }
  // bool isValid = validateSVGimage(doc, "svg.xsd");
-bool isValid = validateSVGimage(doc, "../svg.xsd");
+bool isValid = validateSVGimage(doc, "./svg.xsd");
    if(isValid == true){
       // printf("HI %s\t\n", pathListToJSON(doc ->paths));
        char *value = malloc(strlen(doc -> title) + 1);
@@ -805,12 +805,12 @@ return NULL;
 char *pathViewPanelToJSON(char *filename, char *schemaFile){
         //change after;
 
-        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+        SVGimage *doc = createValidSVGimage(filename, "./svg.xsd" );
           if(doc == NULL){
 
            return NULL;
        }
-       bool isValid = validateSVGimage(doc, "../svg.xsd");
+       bool isValid = validateSVGimage(doc, "./svg.xsd");
        if(isValid == true){
           // printf("HI %s\t\n", pathListToJSON(doc ->paths));
            char *value = pathListToJSON(doc -> paths);
@@ -828,12 +828,12 @@ char *pathViewPanelToJSON(char *filename, char *schemaFile){
 char *groupViewPanelToJSON(char *filename, char *schemaFile){
         //change after;
 
-        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+        SVGimage *doc = createValidSVGimage(filename, "./svg.xsd" );
           if(doc == NULL){
 
            return NULL;
        }
-       bool isValid = validateSVGimage(doc, "../svg.xsd");
+       bool isValid = validateSVGimage(doc, "./svg.xsd");
        if(isValid == true){
           // printf("HI %s\t\n", pathListToJSON(doc ->paths));
            char *value = groupListToJSON(doc -> groups);
@@ -852,12 +852,12 @@ char *groupViewPanelToJSON(char *filename, char *schemaFile){
 char *circViewPanelToJSON(char *filename, char *schemaFile){
         //change after;
 
-        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+        SVGimage *doc = createValidSVGimage(filename, "./svg.xsd" );
           if(doc == NULL){
 
            return NULL;
        }
-       bool isValid = validateSVGimage(doc, "../svg.xsd");
+       bool isValid = validateSVGimage(doc, "./svg.xsd");
        if(isValid == true){
           // printf("HI %s\t\n", pathListToJSON(doc ->paths));
            char *value = circListToJSON(doc -> circles);
@@ -878,12 +878,12 @@ char *circViewPanelToJSON(char *filename, char *schemaFile){
 char *rectViewPanelToJSON(char *filename, char *schemaFile){
         //change after;
 
-        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+        SVGimage *doc = createValidSVGimage(filename, "./svg.xsd" );
           if(doc == NULL){
 
            return NULL;
        }
-       bool isValid = validateSVGimage(doc, "../svg.xsd");
+       bool isValid = validateSVGimage(doc, "./svg.xsd");
        if(isValid == true){
            
           // printf("HI %s\t\n", pathListToJSON(doc ->paths));
@@ -910,7 +910,7 @@ char *rectViewPanelToJSON(char *filename, char *schemaFile){
 char *circViewPanelAttrToJSON(char *filename, char *schemaFile){
         //change after;
 
-        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+        SVGimage *doc = createValidSVGimage(filename, "./svg.xsd" );
           if(doc == NULL){
 
            return NULL;
@@ -949,7 +949,7 @@ char *circViewPanelAttrToJSON(char *filename, char *schemaFile){
 char *groupViewPanelAttrToJSON(char *filename, char *schemaFile){
         //change after;
 
-        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+        SVGimage *doc = createValidSVGimage(filename, "./svg.xsd" );
           if(doc == NULL){
 
            return NULL;
@@ -987,7 +987,7 @@ char *groupViewPanelAttrToJSON(char *filename, char *schemaFile){
 char *pathViewPanelAttrToJSON(char *filename, char *schemaFile){
         //change after;
 
-        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+        SVGimage *doc = createValidSVGimage(filename, "./svg.xsd" );
           if(doc == NULL){
 
            return NULL;
@@ -1025,7 +1025,7 @@ char *pathViewPanelAttrToJSON(char *filename, char *schemaFile){
 char *rectViewPanelAttrToJSON(char *filename, char *schemaFile){
         //change after;
 
-        SVGimage *doc = createValidSVGimage(filename, "../svg.xsd" );
+        SVGimage *doc = createValidSVGimage(filename, "./svg.xsd" );
           if(doc == NULL){
 
            return NULL;
@@ -1220,7 +1220,7 @@ SVGimage* JSONtoSVG(char *fileName, const char* svgString, char *title, char *de
         printf("%s\n", image -> title);
         printf("%s", image -> description);
         */
-        bool valid = validateSVGimage(image, "../svg.xsd");
+        bool valid = validateSVGimage(image, "./svg.xsd");
         if(valid == true){
             writeSVGimage(image, fileName);
         }

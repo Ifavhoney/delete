@@ -80,6 +80,18 @@ SELECT file_name, file_size, n_path where n_path between 0 and 10 ORDER BY  n_pa
 #SELECT svg_id, COUNT(*) AS count FROM DOWNLOAD GROUP BY svg_id'
 #Then as you LOOP through, call SELECT * FROM FILE where svg_id = 1;  -> get summary + creation date
 
+SELECT COUNT(*) as count, svg_id, d_descr FROM DOWNLOAD GROUP BY svg_id; 
+
+SELECT COUNT(*) as count, svg_id, d_descr FROM DOWNLOAD GROUP BY svg_id ORDER BY svg_id ; 
+
+SELECT COUNT(*) as count, svg_id, d_descr FROM DOWNLOAD GROUP BY svg_id ORDER BY count ;
+
+SELECT COUNT(*) as count, svg_id, d_descr FROM DOWNLOAD GROUP BY svg_id ORDER BY download_id ASC ; 
+
+
+document.getElementById("status").innerHTML = "'" + user + "' is currently logged in!";
+document.getElementById("status").style.color = "green";
+
 
 QUERY 6 
 Display N most frequently downloaded files, 
