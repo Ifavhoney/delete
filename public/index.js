@@ -92,7 +92,7 @@ $("#query4").on('click', (function (e) {
                 let id = "query4Body";
                 clearTable(id);
                 showQuery4.style.display = "block"
-                //let loop = data.query4
+                let loop = data.query4
 
                 alert(data.message);
 
@@ -109,46 +109,19 @@ $("#query4").on('click', (function (e) {
                     file_name.innerHTML = item["file_name"];
                     tr.appendChild(file_name);
 
-                    let file_title = document.createElement("th");
-                    file_title.scope = "row";
-                    file_title.innerHTML = item["file_title"];
-                    tr.appendChild(file_title);
-
-                    let file_description = document.createElement("th");
-                    file_description.scope = "row";
-                    file_description.innerHTML = item["file_description"];
-                    tr.appendChild(file_description);
-
-                    let n_rect = document.createElement("th");
-                    n_rect.scope = "row";
-                    n_rect.innerHTML = item["n_rect"];
-                    tr.appendChild(n_rect);
-
-                    let n_circ = document.createElement("th");
-                    n_circ.scope = "row";
-                    n_circ.innerHTML = item["n_circ"];
-                    tr.appendChild(n_circ);
-
-                    let n_path = document.createElement("th");
-                    n_path.scope = "row";
-                    n_path.innerHTML = item["n_path"];
-                    tr.appendChild(n_path);
-
-                    let n_group = document.createElement("th");
-                    n_group.scope = "row";
-                    n_group.innerHTML = item["n_group"];
-                    tr.appendChild(n_group);
-
-                    let creation_time = document.createElement("th");
-                    creation_time.scope = "row";
-                    creation_time.innerHTML = convertDate(item["creation_time"]);
-
-                    tr.appendChild(creation_time);
 
                     let file_size = document.createElement("th");
                     file_size.scope = "row";
                     file_size.innerHTML = item["file_size"];
                     tr.appendChild(file_size);
+
+                    let shapeCount = document.createElement("th");
+                    shapeCount.scope = "row";
+                    shapeCount.innerHTML = item[shapeValue];
+                    tr.appendChild(shapeCount);
+
+
+
 
                     tBody.appendChild(tr);
 
