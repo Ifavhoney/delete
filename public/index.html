@@ -332,6 +332,124 @@
      
     </div>
 
+
+
+
+<h5 style = "margin: 1em"><div class="grid-container_inner" >
+ SPECIFIC SHAPE QUERY: EXECUTE             
+<select id="shape">
+    <option value="0">EMPTY</option>
+    <option value="n_path">path</option>
+    <option value="n_rect">rectangle</option>
+    <option value="n_circ">circle</option>
+    <option value="n_group">group</option>
+
+</select>
+QUERY
+
+  <div class="innerItem1">
+
+  </div>
+    <div class="innerItem2">
+      BETWEEN
+<select id="begin">
+      <option value="0">0</option>
+
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+   </select>
+   AND
+<select id="end">
+    <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+      <option value="10000000">Max</option>
+</select>
+
+  </div>
+   <div class="innerItem3">
+
+
+ </div>
+
+</div> 
+
+</h3> 
+         <div class="grid-container" style ="background-color:beige">
+
+   <div id="item1">
+        
+
+
+               <button type='submit' id = "query4" class="btn btn-info">Query #4 (A4)</button>
+           
+           <div id="showQuery4" class ="" style="background-color: white;">
+
+      <div class="grid-container_inner" style ="background-color:beige">
+      <div id="innerItem1">
+
+             <button type='submit' id = "sortQuery4Name" class="btn btn-info">Query4: Sort By Name (A4)</button>
+            </div>
+                  <div id="innerItem2">
+                                 <button type='submit' id = "sortQuery4Size" class="btn btn-info">Query4: Sort By Size (A4)</button>
+
+                  </div>
+
+                  <div id="innerItem3">
+             <button type='submit' id = "sortQuery4Shape" class="btn btn-info">Query4: Sort By Shape Count (A4)</button>
+
+                    </div>
+            </div>
+            
+             QUERY 4
+             
+                    <table class="table table-bordered">
+  <thead class="">
+    <tr>
+      <th scope="col">file_name</th>
+      <th scope="col">file_size</th>
+          <th scope="col">shapeCount</th>
+              
+
+
+    </tr>
+  </thead>
+  <tbody id = "query4Body">
+
+
+
+
+
+  </tbody>
+</table>
+
+   
+
+                  </div>
+
+                    
+
+
+
+      </div>
+      </div>
+
+
 <h5 style = "margin: 1em"><div class="grid-container_inner" >
  SPECIFIC DATE QUERIES: EXECUTE QUERY BETWEEN  
 
@@ -550,59 +668,8 @@
 
     <div class="grid-container" style ="background-color:beige">
     
-      <div id="item1">
-               <button type='submit' id = "query5" class="btn btn-info">Query #5 (A4)</button>
-           
-           <div id="showQuery5" class ="" style="background-color: white;">
-
-      <div class="grid-container_inner" style ="background-color:beige">
-      <div id="innerItem1">
-
-             <button type='submit' id = "sortQuery5Name" class="btn btn-info">Query5: Sort By Name (A4)</button>
-            </div>
-                  <div id="innerItem2">
-                  </div>
-
-                  <div id="innerItem3">
-
-             <button type='submit' id = "sortQuery5Size" class="btn btn-info">Query5: Sort By Size (A4)</button>
-                    </div>
-            </div>
-             QUERY 5
-                    <table class="table table-bordered">
-  <thead class="">
-    <tr>
-      <th scope="col">file_name</th>
-      <th scope="col">file_title</th>
-                  <th scope="col">file_description</th>
-                          <th scope="col">n_rect</th>
-
-      <th scope="col">n_circ</th>
-      <th scope="col">n_path</th>
-      <th scope="col">n_group</th>
-            <th scope="col">creation_time</th>
-            <th scope="col">file_size (KB)</th>
-
-
-    </tr>
-  </thead>
-  <tbody id = "query5Body">
-
-
-
-
-
-  </tbody>
-</table>
-
-   
-
-                  </div>
-
-                    </div>
-                    
                 
-       <div id="item2">
+       <div id="item1">
         
 
 
@@ -668,7 +735,63 @@
 
       </div>
 
+                
+      
+      
 
+
+      
+      <div id="item3">
+               <button type='submit' id = "query5" class="btn btn-info">Query #5 (A4)</button>
+           
+           <div id="showQuery5" class ="" style="background-color: white;">
+
+      <div class="grid-container_inner" style ="background-color:beige">
+      <div id="innerItem1">
+
+             <button type='submit' id = "sortQuery5Name" class="btn btn-info">Query5: Sort By Name (A4)</button>
+            </div>
+                  <div id="innerItem2">
+                  </div>
+
+                  <div id="innerItem3">
+
+             <button type='submit' id = "sortQuery5Size" class="btn btn-info">Query5: Sort By Size (A4)</button>
+                    </div>
+            </div>
+             QUERY 5
+                    <table class="table table-bordered">
+  <thead class="">
+    <tr>
+      <th scope="col">file_name</th>
+      <th scope="col">file_title</th>
+                  <th scope="col">file_description</th>
+                          <th scope="col">n_rect</th>
+
+      <th scope="col">n_circ</th>
+      <th scope="col">n_path</th>
+      <th scope="col">n_group</th>
+            <th scope="col">creation_time</th>
+            <th scope="col">file_size (KB)</th>
+
+
+    </tr>
+  </thead>
+  <tbody id = "query5Body">
+
+
+
+
+
+  </tbody>
+</table>
+
+   
+
+                  </div>
+
+                    </div>
+                    
       
   
                     

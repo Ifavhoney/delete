@@ -276,6 +276,7 @@ app.get('/query2', async function (req, res) {
 
 
 
+
 app.get('/query3', async function (req, res) {
   let message = null;
   let query3;
@@ -292,7 +293,6 @@ app.get('/query3', async function (req, res) {
     connection = await mysql.createConnection(credentials);
 
 
-    console.log(creation_time);
     let [vRow, vCol] = await connection.execute("SELECT FILE.file_name, FILE.file_size, IMG_CHANGE.change_time, COUNT(*) AS count FROM FILE, IMG_CHANGE WHERE FILE.svg_id = IMG_CHANGE.svg_id and IMG_CHANGE.change_time between '2020-04-01 00:00:00' and " + '\'' + creation_time + '\'' + " GROUP BY IMG_CHANGE.svg_id");
     let [vRow1, vCol1] = await connection.execute("SELECT FILE.file_name, FILE.file_size, IMG_CHANGE.change_time, COUNT(*) AS count FROM FILE, IMG_CHANGE WHERE FILE.svg_id = IMG_CHANGE.svg_id and IMG_CHANGE.change_time between '2020-04-01 00:00:00' and " + '\'' + creation_time + '\'' + " GROUP BY IMG_CHANGE.svg_id ORDER BY FILE.file_name");
     let [vRow2, vCol2] = await connection.execute("SELECT FILE.file_name, FILE.file_size, IMG_CHANGE.change_time, COUNT(*) AS count FROM FILE, IMG_CHANGE WHERE FILE.svg_id = IMG_CHANGE.svg_id and IMG_CHANGE.change_time between '2020-04-01 00:00:00' and " + '\'' + creation_time + '\'' + " GROUP BY IMG_CHANGE.svg_id ORDER BY FILE.file_size");
@@ -315,7 +315,48 @@ app.get('/query3', async function (req, res) {
   }
   res.send({ message: message, query3: query3, sortByName: sortByName, sortBySize: sortBySize, sortByDate: sortByDate });
 });
-//#endregion
+
+
+app.get('/query4', async function (req, res) {
+
+  let message = null;
+  let query4;
+  let shape = req.query.shape;
+  let begin = req.query.begin;
+
+  let end = req.query.end;
+
+  let sortByName;
+  let sortBySize;
+  let sortByShape;
+  let connection;
+
+  try {
+
+    connection = await mysql.createConnection(credentials);
+
+
+    let [vRow, vCol] = await connection.execute("SELECT file_name, file_size, " + shape + " FROM FILE where " + shape + " between " + begin + " and " + end);
+    let [vRow1, vCol1] = await connection.execute("SELECT file_name, file_size, " + shape + " FROM FILE where " + shape + " between " + begin + " and " + end + " ORDER BY file_name;");
+    let [vRow2, vCol2] = await connection.execute("SELECT file_name, file_size, " + shape + " FROM FILE where " + shape + " between " + begin + " and " + end + " ORDER BY file_size;");
+    let [vRow3, vCol3] = await connection.execute("SELECT file_name, file_size, " + shape + " FROM FILE where " + shape + " between " + begin + " and " + end + " ORDER BY " + shape + ";");
+
+    query4 = vRow;
+    sortByName = vRow1;
+    sortBySize = vRow2;
+    sortByShape = vRow3;
+    message = "success";
+  }
+  catch (e) {
+    message = "fail";
+  }
+  finally {
+    if (connection && connection.end) connection.end();
+
+  }
+  res.send({ message: message, query4: query4, sortByName: sortByName, sortBySize: sortBySize, sortByShape: sortByShape });
+});
+
 
 
 app.get('/query5', async function (req, res) {

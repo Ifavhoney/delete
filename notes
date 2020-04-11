@@ -50,18 +50,64 @@ WHERE FILE.svg_id = IMG_CHANGE.svg_id and IMG_CHANGE.change_time between '2020-0
 
 
 
-  //Query 3.3 (Sorts by Modification time)
+//Query 3.3 (Sorts by Modification time)
+3. Display all files modified 
+ specific dates. Include the most 
+ recent modification date, number of 
+ changes made to the file during that
+  time, file name, and file size. Allow 
+  the user to sort the results by 
+  file name, size, or most recent modification date.
 
 select * from IMG_CHANGE 
 where svg_id = 1  ORDER BY change_time; 
   //Query 3.4 (Sorts by change_time, then gets the size given id)
   USE A LOOP AND CALL SELECT * FROM FILE WHERE svg_id = 1; at correct time
 
-//Query 4 (Question 5)
+//QUERY 4
+
+SELECT file_name, file_size, n_rect, n_circ, n_path, n_group FROM FILE where n_path between 0 and 10;
+
+SELECT file_name, file_size, n_rect, n_circ, n_path, n_group FROM FILE where n_path between 0 and 10 ORDER BY file_name;
+
+SELECT file_name, file_size, n_rect, n_circ, n_path, n_group FROM FILE where n_path between 0 and 10 ORDER BY file_size;
+
+SELECT file_name, file_size, n_rect, n_circ, n_path, n_group FROM FILE where n_path between 0 and 10 ORDER BY n_path;
+
+
+//Query 5 
 
 #insert into DOWNLOAD (d_descr, svg_id) VALUES ("SS", 2);
 #SELECT svg_id, COUNT(*) AS count FROM DOWNLOAD GROUP BY svg_id'
 #Then as you LOOP through, call SELECT * FROM FILE where svg_id = 1;  -> get summary + creation date
+
+
+QUERY 6 
+Display N most frequently downloaded files, 
+along with their summaries, download counts, 
+and most recent download dates. 
+Allow the user to specify N. 
+Also allow the user to sort the results
+ by file name, download count, or most recent download date.
+
+
+ SELECT * FROM FILE where file_name = "A.svg";
+SELECT FILE.file_name, IMG_CHANGE.change_type, IMG_CHANGE.change_summary, IMG_CHANGE.change_time FROM FILE, IMG_CHANGE WHERE FILE.svg_id = 1
+and IMG_CHANGE.svg_id = 1 and IMG_CHANGE.change_time between '2020-04-10 18:00:00' and '2020-04-10 18:40:30';
+
+
+SELECT FILE.file_name, IMG_CHANGE.change_type, IMG_CHANGE.change_summary, IMG_CHANGE.change_time FROM FILE, IMG_CHANGE WHERE FILE.svg_id = 1
+and IMG_CHANGE.svg_id = 1 and IMG_CHANGE.change_time between '2020-04-10 18:00:00' and '2020-04-10 18:40:30' and IMG_CHANGE.change_type;
+
+
+SELECT FILE.file_name, IMG_CHANGE.change_type, IMG_CHANGE.change_summary, IMG_CHANGE.change_time FROM FILE, IMG_CHANGE WHERE FILE.svg_id = 1
+and IMG_CHANGE.svg_id = 1 and IMG_CHANGE.change_time between '2020-04-10 18:00:00' and '2020-04-10 18:40:30' order by IMG_CHANGE.change_time DESC ;
+
+
+SELECT FILE.file_name, IMG_CHANGE.change_type, IMG_CHANGE.change_summary, IMG_CHANGE.change_time FROM FILE, IMG_CHANGE WHERE FILE.svg_id = 1
+and IMG_CHANGE.svg_id = 1 and IMG_CHANGE.change_time between '2020-04-10 18:00:00' and '2020-04-10 18:40:30' order by IMG_CHANGE.change_time ASC ;
+
+
 
 
 //FILE TABLE
@@ -93,7 +139,7 @@ change_summary VARCHAR(256) NOT NULL,
 change_time DATETIME NOT NULL,
 svg_id INT NOT NULL,
   CONSTRAINT change_id PRIMARY KEY (change_id),
-FOREIGN KEY(svg_id) REFERENCES FILE(svg_id) ON DELETE CASCADE
+FOREIGN KEY(svg_id) REFERENCES FIrLE(svg_id) ON DELETE CASCADE
 );
 
  INSERT INTO IMG_CHANGE ( change_type, change_summary, change_time, svg_id ) VALUES ('Emoji_poo.svg', 'emoji','2020-01-01 10:10:10', 1);
