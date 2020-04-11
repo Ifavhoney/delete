@@ -127,7 +127,7 @@ function getTime() {
 function getSize(file) {
   let value = path.join(__dirname + "/uploads/" + file);
 
-  let size = (fs.statSync(value).size / 1024).toFixed(2);
+  let size = Math.round((fs.statSync(value).size / 1024));
   return size;
 }
 async function getSVG_ID(connection, fileName) {
@@ -524,14 +524,13 @@ app.get("/storeFiles", async function (req, res, next) {
         const [vRow, vField] = await connection.execute("select TABLE_NAME from INFORMATION_SCHEMA.TABLES where TABLE_NAME = 'FILE' ");
         if (vRow.length != 0) {
 
-          console.log("hi");
 
 
           let value = path.join(__dirname + "/uploads/" + files[i]);
           let jsonTitle = sharedLibrary.titleViewPanelToString(value, "null");
           let jsonDesc = sharedLibrary.descViewPanelToString(value, "null");
           let jsonNums = JSON.parse(sharedLibrary.createSVGChar(value, "null"));
-          let size = getSize(value);
+          let size = Math.round((fs.statSync(value).size / 1024));
 
           /*console.log("size: " + size);
           console.log("(" + '\'' + files[i] + '\',\'' + jsonTitle + '\',\'' + jsonDesc + '\',' + jsonNums.numRect + ',' + jsonNums.numCirc + ',' + jsonNums.numPaths + ','
