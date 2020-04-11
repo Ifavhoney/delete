@@ -1369,21 +1369,23 @@ $("#query5").on('click', (function (e) {
 //#endregion
 //#region  query6
 $("#query6").on('click', (function (e) {
-    let creation_time = document.getElementById("creation_time");
+    let creation_time = document.getElementById("creation_time_q6");
+    let file_name_q6 = document.getElementById("file_name_q6");
+
     if (creation_time.selectedIndex == 0) {
         alert("Select a date");
     }
     else {
         let selectedValue = creation_time.options[creation_time.selectedIndex].value;
-
-
+        let selectedValue2 = file_name_q6.options[file_name_q6.selectedIndex].value;
+        console.log(selectedValue2);
         $.ajax({
             type: 'get',            //Request type
             dataType: 'json',       //Data type - we will use JSON for almost everything 
             url: '/query6',   //The server endpoint we are connecting to
             data: {
-                creation_time: selectedValue
-
+                creation_time: selectedValue,
+                fileName: selectedValue2
             },
             success: function (data) {
                 alert(data.message);
@@ -1869,6 +1871,7 @@ $(document).ready(function () {
         success: function (data) {
             //Gets the Dropdown to show files, knows through due our call with query 
             let dropDown = document.getElementById("panelDropDown");
+            let dropDown2 = document.getElementById("file_name_q6");
 
             if (data.files == null) {
             }
@@ -1880,6 +1883,10 @@ $(document).ready(function () {
 
                     a.text = data.files[i];
                     dropDown.appendChild(a);
+                    let opt = document.createElement("option");
+                    opt.value = a.text;
+                    opt.text = a.text;
+                    dropDown2.appendChild(opt);
 
 
                 }
