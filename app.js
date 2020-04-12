@@ -198,6 +198,10 @@ app.get('/clearData', async function (req, res) {
     await connection.execute("DELETE FROM DOWNLOAD");
     await connection.execute("DELETE FROM FILE");
 
+    await connection.execute("ALTER TABLE FILE AUTO_INCREMENT=1")
+    await connection.execute("ALTER TABLE DOWNLOAD AUTO_INCREMENT=1;")
+    await connection.execute("ALTER TABLE IMG_CHANGE AUTO_INCREMENT=1;")
+
     message = "success";
   }
   catch (e) {
@@ -632,15 +636,16 @@ app.get("/trackDownloads", async function (req, res, next) {
 
 });
 
-app.post("/downloadFile", async function (req, res) {
+app.get("/downloadFile", async function (req, res) {
 
 
-  let file = req.body.fileName;
-  let title = req.body.title;
-  let desc = req.body.description;
+  let file = req.query.fileName;
+  let title = req.query.title;
+  let desc = req.query.description;
   file = file.trim();
   title = title.trim();
   desc = desc.trim();
+  let message;
   fs.readdir(path.join(__dirname + '/uploads'), async (err, files) => {
     let exists = false;
 
@@ -658,6 +663,8 @@ app.post("/downloadFile", async function (req, res) {
 
       if ((file + ".svg" == ".svg") || file.indexOf(".svg") >= 0) {
         console.log("not a valid svg");
+        res.send({ message: "Fail due to being empty or incorrect ending with .svg" })
+
       }
       else {
 
@@ -695,14 +702,18 @@ app.post("/downloadFile", async function (req, res) {
               + 0 + ',\'' + getTime() + '\',' + getSize(file + ".svg") + ");");
 
             console.log('successfully added to database');
-
+            message = "success";
           } catch (e) {
+            message = "fail";
+
             console.log("Query file error: " + e);
 
           } finally {
             if (connection && connection.end) connection.end();
 
           }
+          res.send({ message: message })
+
         }
 
 
@@ -715,16 +726,18 @@ app.post("/downloadFile", async function (req, res) {
     else {
       console.log("File already exists");
     }
+
   });
 
   /*
    
    
   */
-  res.redirect("/")
-
   //res.send({ jsonValue });
-});
+
+}
+
+);
 
 app.get('/editFileNameTitle', async function (req, res) {
 

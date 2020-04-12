@@ -150,9 +150,11 @@
                         Description information
                     </td>
                       <td  colspan="2">
+                    <a href="#editFileNameTitle">
           <button id = "showFileName" class = "showFileName btn btn-info"> Edit Title/Description (A4)</button>
-                    </td>
-                    
+                            </a>
+          
+        </td>
                 </tbody>
             </div>
         </table>
@@ -312,19 +314,19 @@
       <div id="item1">
     <div class="center-screen" >
 
-                <form ref="createSVG" id = "createSVG" enctype="multipart/form-data" method="post" action="/downloadFile">
+                <form ref="createSVG" enctype="multipart/form-data" method="get" action="/downloadFile">
   <div class="row">
        <div class="col-12">
-      <input type="text" class="form-control" placeholder="filename (without .svg)" name ="fileName"> 
-            <input type="text" class="form-control" placeholder="title" name ="title"> 
-      <input type="text" class="form-control" placeholder="description" name ="description"> 
+      <input type="text" class="form-control" placeholder="filename (without .svg)" id ="fileNameSVG" name ="fileName"> 
+            <input type="text" class="form-control" placeholder="title" id ="titleSVG"  name ="title"> 
+      <input type="text" class="form-control" placeholder="description" id ="descriptionSVG"  name ="description"> 
 
     </div>
     
   </div>
   
   <div class = "mt-4">
-    <button type='submit' class="btn btn-info">Create File (A4)</button>
+    <button type='submit'  id = "createSVGx"  class="btn btn-info">Create File (A4)</button>
   </div>
 
 </form>

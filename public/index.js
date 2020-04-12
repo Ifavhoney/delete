@@ -1939,6 +1939,7 @@ $("#editCircx").on('click', (function (e) {
     let className = document.getElementById("imagePanel").className;
     //regex -1 for index
     let index = (className.match(/\d+/g)[0]) - 1;
+    e.preventDefault();
 
 
     $.ajax({
@@ -1978,7 +1979,6 @@ $("#editCircx").on('click', (function (e) {
 
 
 
-    e.preventDefault();
 
 })
 
@@ -2045,20 +2045,25 @@ $("#editRectx").on('click', (function (e) {
 
 
 
-$('#createSVG').submit(function (e) {
-
+$('#createSVGx').on("click", (function (e) {
+    let fileName = document.getElementById("fileNameSVG");
+    let title = document.getElementById("titleSVG");
+    let description = document.getElementById("descriptionSVG");
     $.ajax(
 
         {
-            type: 'post',
+            type: 'get',
             dataType: 'json',
             url: '/downloadFile',
             data: {
+                fileName: fileName.value,
+                title: title.value,
+                description: description.value
             },
             //Use only for send
             success: function (data) {
                 //   console.log("Gets here")
-
+                alert(data.message)
 
             },
             fail: (error) => {
@@ -2067,9 +2072,9 @@ $('#createSVG').submit(function (e) {
             }
 
         });
-    // e.preventDefault();
+    e.preventDefault();
 
-});
+}));
 let creds = false;
 
 $('#postFormLogin').on("click", (function (e) {
@@ -2098,23 +2103,11 @@ $('#postFormLogin').on("click", (function (e) {
 
                 let status = document.getElementById("logStatus");
                 status.innerHTML = "Logged In User: " + username;
-                status.style.color = "red";
+                status.style.color = "green";
 
                 let editDetails = document.getElementById("editDetails");
                 editDetails.style.display = "none";
             }
-
-            //   alert("hi");
-            /*
-            if (title.length < 1 || description.length < 1) {
-                alert("Too short!")
-            }
-            else {
-                alert("Success!")
-            }
-            */
-
-
 
 
         },
@@ -2464,12 +2457,17 @@ $(document).ready(function () {
                                     table_td3.appendChild(showButton);
 
                                 }
+                                let href = document.createElement("a");
+                                href.href = "#panelEditRect";
                                 let editButton = document.createElement("button");
                                 editButton.id = "Rectangle" + (index + 1);
+
+
+
                                 editButton.type = "button";
                                 editButton.className = "editRectElement btn btn-info";
                                 editButton.innerHTML = "Edit Elements (A4)";
-                                table_td3.appendChild(editButton);
+                                table_td3.appendChild(href).appendChild(editButton);
 
                             }
 
@@ -2487,6 +2485,7 @@ $(document).ready(function () {
 
                                 let table_td3 = document.createElement("td");
                                 table_td3.innerHTML = jsonCirc[index]["numAttr"] + "</br>";
+
                                 let showButton = document.createElement("button");
                                 showButton.type = "button";
                                 showButton.className = "circElement btn btn-primary";
@@ -2501,12 +2500,15 @@ $(document).ready(function () {
 
                                 }
                                 let editButton = document.createElement("button");
+                                let href = document.createElement("a");
+                                href.href = "#panelEditCirc";
+
                                 editButton.id = "Circle" + (index + 1);
                                 editButton.type = "button";
                                 editButton.className = "editCircElement btn btn-info";
                                 editButton.innerHTML = "Edit Elements (A4)";
+                                table_td3.appendChild(href).appendChild(editButton);
 
-                                table_td3.appendChild(editButton);
 
                             }
 
@@ -2537,6 +2539,7 @@ $(document).ready(function () {
                                 let editButton = document.createElement("button");
                                 editButton.id = "Path" + (index + 1);
                                 editButton.type = "button";
+                                editButton.disabled = true;
                                 editButton.className = "editPathElement btn btn-warning";
                                 editButton.innerHTML = "Edit Elements";
                                 table_td3.appendChild(editButton);
@@ -2573,6 +2576,9 @@ $(document).ready(function () {
                                 let editButton = document.createElement("button");
                                 editButton.id = "Group" + (index + 1);
                                 editButton.type = "button";
+                                editButton.disabled = true;
+
+
                                 editButton.className = "editGroupElement btn btn-warning";
                                 editButton.innerHTML = "Edit Elements";
                                 table_td3.appendChild(editButton);
@@ -2660,6 +2666,7 @@ $(document).ready(function () {
 
                             $("#showFileName").click(function (e) {
                                 let showFile = document.getElementById("editFileName");
+
                                 if (showFile.style.display == "block") {
                                     document.getElementById("editFileName").style.display = "none";
 
