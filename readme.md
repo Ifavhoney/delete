@@ -19,7 +19,9 @@ Six step on website:
 Note that all functionalities are implemented
 </br>
 Student ID: 1079936
+</br>
 Name: Jason N'Guessan
+</br>
 Email: jnguessa@uoguelph.ca
 
 
