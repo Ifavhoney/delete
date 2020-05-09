@@ -9,7 +9,7 @@ Fourth step inside parser:
     run make
 </br>
 Fifth step inside SVGApp:
-     npm run dev 39635 
+     npm run dev [PORT NUMBER]
 </br>
 Six step on website:
     log in with your credentials
